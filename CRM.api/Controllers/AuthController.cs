@@ -15,19 +15,17 @@ namespace CRM.api.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly IConfiguration _configuration;
         private readonly IJWTService _jWTService;
 
-        public AuthController(IConfiguration configuration, IJWTService jWTService)
+        public AuthController(IJWTService jWTService)
         {
-            _configuration = configuration;
             _jWTService = jWTService;
         }
 
         [HttpPost("/security/createToken")]
         public ActionResult<string> CreateToken(User user)
         {
-            if (user.UserName == "j" && user.Password == "j")
+            if (user.UserName == "j")
             {
                 return Ok(_jWTService.GenerateToken(user));
             }
