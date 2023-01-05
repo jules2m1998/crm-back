@@ -1,10 +1,11 @@
-﻿using CRM.api.Models;
+﻿using CRM.core.Models;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace CRM.api.Services;
+namespace CRM.core.Services;
 
 public class JWTService : IJWTService
 {
@@ -12,7 +13,7 @@ public class JWTService : IJWTService
 
     public JWTService(IConfiguration configuration)
     {
-        _configuration= configuration;
+        _configuration = configuration;
     }
 
     public string GenerateToken(User user)

@@ -1,4 +1,4 @@
-﻿namespace CRM.api.Models
+﻿namespace CRM.core.Models
 {
     public class BaseEntity
     {

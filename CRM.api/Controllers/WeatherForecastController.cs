@@ -1,3 +1,6 @@
+using CRM.core.Models;
+using CRM.core.Queries;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,10 +16,12 @@ namespace CRM.api.Controllers
     };
 
         private readonly ILogger<WeatherForecastController> _logger;
+        private readonly ISender _sender;
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
+        public WeatherForecastController(ILogger<WeatherForecastController> logger, ISender sender)
         {
             _logger = logger;
+            _sender = sender;
         }
 
         [HttpGet(Name = "GetWeatherForecast"), Authorize]
@@ -29,6 +34,13 @@ namespace CRM.api.Controllers
                 Summary = Summaries[Random.Shared.Next(Summaries.Length)]
             })
             .ToArray();
+        }
+
+        [HttpGet("mediatr")]
+        public async Task<ActionResult<List<Person>>> GetPersonAsync() {
+            var person = await _sender.Send(new GetPersonListQuery());
+
+            return person;
         }
     }
 }

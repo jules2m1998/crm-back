@@ -1,6 +1,9 @@
-using CRM.api.Data;
-using CRM.api.Models;
-using CRM.api.Services;
+using CRM.core;
+using CRM.core.Data;
+using CRM.core.DataAccess;
+using CRM.core.Models;
+using CRM.core.Services;
+using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -46,6 +49,7 @@ builder.Services.AddSwaggerGen(option =>
 // Injection
 
 builder.Services.AddScoped<IJWTService, JWTService>();
+builder.Services.AddScoped<IDataAccess, DataAccess>();
 
 // Database
 // Add AUTH
@@ -70,7 +74,7 @@ builder.Services.Configure<IdentityOptions>(options =>
 });
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("CRM.api")));
 
 // Add JWT Auth token
 builder.Services.AddAuthentication(options =>
@@ -92,6 +96,9 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuerSigningKey = true
     };
 });
+
+// Add mediatR
+builder.Services.AddMediatR(typeof(MediatorEntry).Assembly);
 
 
 

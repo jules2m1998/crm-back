@@ -1,6 +1,6 @@
-﻿using CRM.api.Models;
+﻿using CRM.core.Models;
 
-namespace CRM.api.Services;
+namespace CRM.core.Services;
 
 public interface IJWTService
 {

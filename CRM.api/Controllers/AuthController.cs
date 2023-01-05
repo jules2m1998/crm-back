@@ -1,5 +1,5 @@
-﻿using CRM.api.Models;
-using CRM.api.Services;
+﻿using CRM.core.Models;
+using CRM.core.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
