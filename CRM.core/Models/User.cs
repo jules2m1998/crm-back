@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System.Text.Json.Serialization;
 
-namespace CRM.api.Models
+namespace CRM.core.Models
 {
     public class User: IdentityUser<Guid>
     {

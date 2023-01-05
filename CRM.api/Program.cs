@@ -1,6 +1,10 @@
-using CRM.api.Data;
-using CRM.api.Models;
-using CRM.api.Services;
+using CRM.api.Extensions;
+using CRM.core;
+using CRM.core.Data;
+using CRM.core.DataAccess;
+using CRM.core.Models;
+using CRM.core.Services;
+using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -43,56 +47,10 @@ builder.Services.AddSwaggerGen(option =>
         });
 });
 
-// Injection
-
-builder.Services.AddScoped<IJWTService, JWTService>();
-
-// Database
-// Add AUTH
-builder.Services.AddIdentity<User, Role>()
-    .AddEntityFrameworkStores<ApplicationDbContext>()
-    .AddDefaultTokenProviders();
-
-builder.Services.Configure<IdentityOptions>(options =>
-{
-    // Default Password settings.
-    options.Password.RequireDigit = false;
-    options.Password.RequireLowercase = false;
-    options.Password.RequireNonAlphanumeric = false;
-    options.Password.RequireUppercase = false;
-    options.Password.RequiredLength = 3;
-    options.Password.RequiredUniqueChars = 1;
-    // Default User settings.
-    options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
-    options.User.RequireUniqueEmail = true;
-    // Reset Sign in settings
-    options.SignIn.RequireConfirmedPhoneNumber = false;
-});
-
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-// Add JWT Auth token
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddJwtBearer(o =>
-{
-    o.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidIssuer = builder.Configuration["Jwt:Issuer"],
-        ValidAudience = builder.Configuration["Jwt:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey
-        (Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = false,
-        ValidateIssuerSigningKey = true
-    };
-});
-
+builder.Services
+    .InjectAllDependencies()
+    .AddDataBaseAndAuth(builder.Configuration)
+    .AddMediatRConf();
 
 
 var app = builder.Build();

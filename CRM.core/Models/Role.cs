@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace CRM.api.Models
+namespace CRM.core.Models
 {
     public class Role: IdentityRole<Guid>
     {
