@@ -1,5 +1,6 @@
 using CRM.App.API.Configs;
 using CRM.Core.Business.Authentication;
+using CRM.Infra.Data;
 using CRM.Infra.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,11 +11,14 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
-builder.Services.AddSecurity(builder.Configuration);
+builder.Services
+    .AddSecurity(builder.Configuration)
+    .AddMediaRConfig();
 
 builder.Services.AddScoped<IJWTService, JWTService>();
 
 var app = builder.Build();
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

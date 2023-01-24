@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using CRM.Core.Domain.Entities;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace CRM.Infra.Data
 {
-    public class ApplicationDbContext
+    public class ApplicationDbContext: IdentityDbContext<User, Role, Guid>
     {
+        public ApplicationDbContext(DbContextOptions dbContextOptions): base(dbContextOptions) { }
     }
 }

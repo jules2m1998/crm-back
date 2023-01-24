@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CRM.core.Queries
+namespace CRM.core.UseCases.GetPersons
 {
-    public record GetPersonListQuery(): IRequest<List<Person>>;
+    public record GetPersonListQuery() : IRequest<List<Person>>;
 }

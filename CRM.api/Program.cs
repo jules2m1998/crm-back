@@ -49,8 +49,7 @@ builder.Services.AddSwaggerGen(option =>
 
 builder.Services
     .InjectAllDependencies()
-    .AddDataBaseAndAuth(builder.Configuration)
-    .AddMediatRConf();
+    .AddDataBaseAndAuth(builder.Configuration);
 
 
 var app = builder.Build();

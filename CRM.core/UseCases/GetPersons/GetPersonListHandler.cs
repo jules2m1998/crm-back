@@ -1,6 +1,5 @@
 ﻿using CRM.core.DataAccess;
 using CRM.core.Models;
-using CRM.core.Queries;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -8,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CRM.core.Handlers;
+namespace CRM.core.UseCases.GetPersons;
 
 public class GetPersonListHandler : IRequestHandler<GetPersonListQuery, List<Person>>
 {

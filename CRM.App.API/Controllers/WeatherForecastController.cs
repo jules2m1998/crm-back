@@ -1,34 +1,46 @@
+using CRM.Core.Business.UseCases.Test;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace CRM.App.API.Controllers
+namespace CRM.App.API.Controllers;
+
+[ApiController]
+[Route("[controller]")]
+public class WeatherForecastController : ControllerBase
 {
-    [ApiController]
-    [Route("[controller]")]
-    public class WeatherForecastController : ControllerBase
+    private static readonly string[] Summaries = new[]
     {
-        private static readonly string[] Summaries = new[]
-        {
-        "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-    };
+    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
+};
 
-        private readonly ILogger<WeatherForecastController> _logger;
+    private readonly ILogger<WeatherForecastController> _logger;
+    private readonly ISender _sender;
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
-        {
-            _logger = logger;
-        }
+    public WeatherForecastController(ILogger<WeatherForecastController> logger, ISender sender)
+    {
+        _logger = logger;
+        _sender = sender;
+    }
 
-        [HttpGet(Name = "GetWeatherForecast"), Authorize]
-        public IEnumerable<WeatherForecast> Get()
+
+    [HttpGet("GetWeatherForecast"), Authorize]
+    public IEnumerable<WeatherForecast> Get()
+    {
+        return Enumerable.Range(1, 5).Select(index => new WeatherForecast
         {
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-            {
-                Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                TemperatureC = Random.Shared.Next(-20, 55),
-                Summary = Summaries[Random.Shared.Next(Summaries.Length)]
-            })
-            .ToArray();
-        }
+            TemperatureC = Random.Shared.Next(-20, 55),
+            Summary = Summaries[Random.Shared.Next(Summaries.Length)]
+        })
+        .ToArray();
+    }
+
+    [HttpGet("mediatr"), Authorize]
+    [Authorize]
+    public async Task<ActionResult<string[]>> GetPersonAsync()
+    {
+        var person = await _sender.Send(new GetTestLisQuery());
+
+        return person;
     }
 }

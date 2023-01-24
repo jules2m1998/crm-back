@@ -1,5 +1,5 @@
 using CRM.core.Models;
-using CRM.core.Queries;
+using CRM.core.UseCases.GetPersons;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -36,7 +36,8 @@ namespace CRM.api.Controllers
             .ToArray();
         }
 
-        [HttpGet("mediatr")]
+        [HttpGet(Name = "mediatr")]
+        [Authorize]
         public async Task<ActionResult<List<Person>>> GetPersonAsync() {
             var person = await _sender.Send(new GetPersonListQuery());
 
