@@ -1,7 +1,9 @@
 ﻿using CRM.Core.Business.Authentication;
 using CRM.Core.Business.Models;
+using CRM.Core.Business.UseCases.Login;
 using CRM.Core.Domain;
 using CRM.Core.Domain.Entities;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,22 +13,20 @@ namespace CRM.App.API.Controllers;
 [ApiController]
 public class AuthController : ControllerBase
 {
-    private readonly IJWTService _jwtService;
-    public AuthController(IJWTService jwtService)
+    private readonly ISender _sender;
+    public AuthController(ISender sender)
     {
-        _jwtService = jwtService;
+        _sender = sender;
     }
 
     [HttpPost, AllowAnonymous]
     [ProducesResponseType(typeof(UserModel), 200)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public IActionResult CreateToken(User u)
+    public async Task<IActionResult> CreateToken([FromBody] LoginQuery login)
     {
-        if(u.UserName == "string")
-        {
-            return Ok(_jwtService.Generate(u, new List<Role> { new Role { Name = Roles.ADMIN } }));
-        }
+        var result = await _sender.Send(login);
 
-        return Unauthorized();
+        if(result is null) return Unauthorized();
+        return Ok(result);
     }
 }

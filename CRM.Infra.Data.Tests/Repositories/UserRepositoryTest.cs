@@ -103,4 +103,85 @@ public class UserRepositoryTest
         CollectionAssert.AreEquivalent(expectR["Email"], result.Errors["Email"]);
         CollectionAssert.AreEquivalent(expectR["UserName"], result.Errors["UserName"]);
     }
+
+
+
+    [TestMethod]
+    public async Task UserRepository_GetByUserAndRoleAsync_Return_Null_If_User_Not_Exist()
+    {
+        User? u = null;
+        // Arranche
+        _userManager.Setup(u => u.FindByNameAsync(It.IsAny<string>()))
+            .ReturnsAsync(u);
+
+        // Act
+        var result = await _repo.GetByUserAndRoleAsync(It.IsAny<string>(), It.IsAny<string>());
+
+        // Assert
+        _userManager.Verify(v => v.FindByNameAsync(It.IsAny<string>()), Times.Once);
+        _userManager.Verify(v => v.CheckPasswordAsync(It.IsAny<User>(), It.IsAny<string>()), Times.Never);
+        _userManager.Verify(r => r.GetRolesAsync(It.IsAny<User>()), Times.Never);
+        Assert.IsNull(result);
+    }
+
+    [TestMethod]
+    public async Task UserRepository_GetByUserAndRoleAsync_Return_Null_If_Wrong_PWD()
+    {
+        Mock<User> u = new();
+        // Arranche
+        _userManager
+            .Setup(u => u.FindByNameAsync(It.IsAny<string>()))
+            .ReturnsAsync(u.Object);
+        _userManager
+            .Setup(u => u.CheckPasswordAsync(It.IsAny<User>(), It.IsAny<string>()))
+            .ReturnsAsync(false);
+
+        // Act
+        var result = await _repo.GetByUserAndRoleAsync(It.IsAny<string>(), It.IsAny<string>());
+
+        // Assert
+        _userManager.Verify(v => v.FindByNameAsync(It.IsAny<string>()), Times.Once);
+        _userManager.Verify(v => v.CheckPasswordAsync(It.IsAny<User>(), It.IsAny<string>()), Times.Once);
+        _userManager.Verify(r => r.GetRolesAsync(It.IsAny<User>()), Times.Never);
+        Assert.IsNull(result);
+    }
+
+    [TestMethod]
+    public async Task UserRepository_GetByUserAndRoleAsync_Return_User_If_Correct_Data()
+    {
+        var user = new User
+        {
+            UserName = "test"
+        };
+        var roles = new List<string> { "Admin" };
+        var role = new Role { Name = "test" };
+        var rolesToReturn = new List<Role> { role };
+
+        // Arranche
+        _userManager
+            .Setup(u => u.FindByNameAsync(It.IsAny<string>()))
+            .ReturnsAsync(user);
+        _userManager
+            .Setup(u => u.CheckPasswordAsync(It.IsAny<User>(), It.IsAny<string>()))
+            .ReturnsAsync(true);
+        _userManager
+            .Setup(u => u.GetRolesAsync(It.IsAny<User>()))
+            .ReturnsAsync(roles);
+        _roleManager
+            .Setup(r => r.FindByNameAsync(It.IsAny<string>()))
+            .ReturnsAsync(role);
+
+        // Act
+        var result = await _repo.GetByUserAndRoleAsync(user.UserName, It.IsAny<string>());
+
+        // Assert
+        _userManager.Verify(v => v.FindByNameAsync(It.IsAny<string>()), Times.Once);
+        _userManager.Verify(v => v.CheckPasswordAsync(It.IsAny<User>(), It.IsAny<string>()), Times.Once);
+        _userManager.Verify(r => r.GetRolesAsync(It.IsAny<User>()), Times.Once);
+        Assert.IsNotNull(result.Item1);
+        Assert.IsNotNull(result.Item2);
+        Assert.AreEqual(user.UserName, result.Item1.UserName);
+        CollectionAssert.AreEquivalent(rolesToReturn, result.Item2);
+
+    }
 }

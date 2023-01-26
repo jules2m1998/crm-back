@@ -99,9 +99,21 @@ namespace CRM.Infra.Data.Repositories
             };
         }
 
-        public Task<Tuple<User, List<Role>>?> GetByUserAndRoleAsync(string username, string password)
+        public async Task<Tuple<User, List<Role>>?> GetByUserAndRoleAsync(string username, string password)
         {
-            throw new NotImplementedException();
+            var user = await _userManager.FindByNameAsync(username);
+            if (user is null) return null;
+            var isCorrectPwd = await _userManager.CheckPasswordAsync(user, password);
+            if (!isCorrectPwd) return null;
+            var roles = await _userManager.GetRolesAsync(user);
+            if(roles is null) return null;
+            var roleEntities = new List<Role>();
+            foreach (var roleEntity in roles)
+            {
+                var r = await _roleManager.FindByNameAsync(roleEntity);
+                if(r is not null) roleEntities.Add(r);
+            }
+            return new Tuple<User, List<Role>>(user, roleEntities);
         }
     }
 }
