@@ -1,4 +1,4 @@
-﻿using CRM.Core.Business.Models;
+﻿using CRM.Core.Domain.Entities;
 
 namespace CRM.Core.Business.Authentication;
 

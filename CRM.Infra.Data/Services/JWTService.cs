@@ -1,5 +1,5 @@
 ﻿using CRM.Core.Business.Authentication;
-using CRM.Core.Business.Models;
+using CRM.Core.Domain.Entities;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;

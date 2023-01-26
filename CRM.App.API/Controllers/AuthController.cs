@@ -1,5 +1,6 @@
 ﻿using CRM.Core.Business.Authentication;
 using CRM.Core.Business.Models;
+using CRM.Core.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,7 +21,7 @@ public class AuthController : ControllerBase
     [ProducesResponseType(typeof(string), 400)]
     public IActionResult CreateToken(User u)
     {
-        if(u.UserName == "string" && u.Password == "string")
+        if(u.UserName == "string")
         {
             return Ok(_jwtService.Generate(u));
         }

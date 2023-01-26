@@ -1,6 +1,9 @@
 using CRM.App.API.Configs;
+using CRM.App.API.Middlewares;
 using CRM.Core.Business.Authentication;
+using CRM.Core.Business.Repositories;
 using CRM.Infra.Data;
+using CRM.Infra.Data.Repositories;
 using CRM.Infra.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,9 +16,9 @@ builder.Services.AddEndpointsApiExplorer();
 
 builder.Services
     .AddSecurity(builder.Configuration)
-    .AddMediaRConfig();
+    .AddMediaRConfig()
+    .AddDependencies();
 
-builder.Services.AddScoped<IJWTService, JWTService>();
 
 var app = builder.Build();
 
@@ -25,7 +28,10 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseDeveloperExceptionPage();
 }
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseHttpsRedirection();
 
@@ -36,4 +42,5 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+app.UseStaticFiles();
 app.Run();
