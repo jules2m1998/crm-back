@@ -1,15 +1,26 @@
-﻿using CRM.Core.Domain.Entities;
+﻿using CRM.Core.Business;
+using CRM.Core.Business.Authentication;
+using CRM.Core.Business.Helpers;
+using CRM.Core.Business.Repositories;
+using CRM.Core.Domain.Entities;
 using CRM.Infra.Data;
+using CRM.Infra.Data.Helpers;
+using CRM.Infra.Data.Repositories;
+using CRM.Infra.Services;
+using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.IO.Compression;
+using System.Reflection;
 using System.Text;
 
 namespace CRM.App.API.Configs;
 
-public static class AddSecurityInjector
+public static class ConfigureServiceCollection
 {
     public static IServiceCollection AddSecurity(this IServiceCollection services, IConfiguration configuration)
     {
@@ -87,6 +98,39 @@ public static class AddSecurityInjector
         });
 
 
+        return services;
+    }
+    public static IServiceCollection AddDependencies(this IServiceCollection services)
+    {
+        services.AddScoped<IJWTService, JWTService>();
+        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IFileHelper, FileHelper>();
+
+        return services;
+    }
+    public static IServiceCollection AddMediaRConfig(this IServiceCollection services)
+    {
+        services.AddMediatR(cfg =>
+        {
+            cfg.AsScoped();
+        }, Assembly.GetAssembly(typeof(MediatREntryPoint)));
+        return services;
+    }
+    public static IServiceCollection AddCompression(this IServiceCollection services)
+    {
+        // compression algorithm config
+        services.AddResponseCompression(options =>
+        {
+            options.EnableForHttps = true;
+            options.Providers.Add<BrotliCompressionProvider>();
+            options.Providers.Add<GzipCompressionProvider>();
+        });
+        services.Configure<BrotliCompressionProviderOptions>(options => { options.Level = CompressionLevel.Fastest; });
+
+        services.Configure<GzipCompressionProviderOptions>(options =>
+        {
+            options.Level = CompressionLevel.SmallestSize;
+        });
         return services;
     }
 }

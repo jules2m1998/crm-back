@@ -1,10 +1,4 @@
 using CRM.App.API.Configs;
-using CRM.App.API.Middlewares;
-using CRM.Core.Business.Authentication;
-using CRM.Core.Business.Repositories;
-using CRM.Infra.Data;
-using CRM.Infra.Data.Repositories;
-using CRM.Infra.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,10 +8,12 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
+// Add security, mediar, all dependencies and compression
 builder.Services
     .AddSecurity(builder.Configuration)
     .AddMediaRConfig()
-    .AddDependencies();
+    .AddDependencies()
+    .AddCompression();
 
 
 var app = builder.Build();
@@ -31,7 +27,9 @@ if (app.Environment.IsDevelopment())
     app.UseDeveloperExceptionPage();
 }
 
-app.UseMiddleware<ExceptionMiddleware>();
+// Add all middlewares
+app.AddMiddlewares()
+    .ConfigureStaticFiles();
 
 app.UseHttpsRedirection();
 
@@ -40,7 +38,8 @@ app.UseAuthentication();
 
 app.UseAuthorization();
 
+app.UseResponseCompression();
+
 app.MapControllers();
 
-app.UseStaticFiles();
 app.Run();

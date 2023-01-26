@@ -19,7 +19,7 @@ namespace CRM.App.API.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(UserModel), 201)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Create([FromForm] AddAdminUserCommand admin)
+        public async Task<IActionResult> AddAdminUser([FromForm] AddAdminUserCommand admin)
         {
             var result = await _sender.Send(admin);
             return Created("", result);
