@@ -11,5 +11,6 @@ namespace CRM.Core.Business.Repositories
     public interface IUserRepository
     {
         Task<UserModel> AddAsync(User user, string pwd, string role);
+        Task<Tuple<User, List<Role>>?> GetByUserAndRoleAsync(string username, string password);
     }
 }

@@ -27,8 +27,7 @@ namespace CRM.App.API.Middlewares
         {
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-            var badRequest = new BadRequestObjectResult(exception.Errors);
-            var errors = JsonSerializer.Serialize(badRequest);
+            var errors = JsonSerializer.Serialize(new { exception.Errors });
             await context.Response.WriteAsync(errors);
         }
     }

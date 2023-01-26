@@ -98,5 +98,10 @@ namespace CRM.Infra.Data.Repositories
                 Roles = new List<string> { role },
             };
         }
+
+        public Task<Tuple<User, List<Role>>?> GetByUserAndRoleAsync(string username, string password)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

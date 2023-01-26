@@ -1,5 +1,6 @@
 ﻿using CRM.Core.Business.Authentication;
 using CRM.Core.Business.Models;
+using CRM.Core.Domain;
 using CRM.Core.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -17,13 +18,13 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost, AllowAnonymous]
-    [ProducesResponseType(typeof(string), 200)]
-    [ProducesResponseType(typeof(string), 400)]
+    [ProducesResponseType(typeof(UserModel), 200)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public IActionResult CreateToken(User u)
     {
         if(u.UserName == "string")
         {
-            return Ok(_jwtService.Generate(u));
+            return Ok(_jwtService.Generate(u, new List<Role> { new Role { Name = Roles.ADMIN } }));
         }
 
         return Unauthorized();

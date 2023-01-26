@@ -17,22 +17,24 @@ public class JWTService : IJWTService
         _configuration = configuration;
     }
 
-    public string Generate(User user)
+    public string Generate(User user, List<Role> roles)
     {
+        var authClaims = new List<Claim>
+        {
+            new(ClaimTypes.Name, user.UserName),
+            new(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+        };
+
+        authClaims.AddRange(roles.Select(userRole => new Claim(ClaimTypes.Role, userRole.Name)));
+
         var issuer = _configuration["Jwt:Issuer"];
         var audience = _configuration["Jwt:Audience"];
         var key = Encoding.ASCII.GetBytes
         (_configuration["Jwt:Key"] ?? "");
         var tokenDescriptor = new SecurityTokenDescriptor
         {
-            Subject = new ClaimsIdentity(new[]
-            {
-                        new Claim("Id", Guid.NewGuid().ToString()),
-                        new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
-                        new Claim(JwtRegisteredClaimNames.Email, user.UserName),
-                        new Claim(JwtRegisteredClaimNames.Jti,
-                        Guid.NewGuid().ToString())
-                     }),
+            Subject = new ClaimsIdentity(authClaims),
             Expires = DateTime.UtcNow.AddMinutes(5),
             Issuer = issuer,
             Audience = audience,

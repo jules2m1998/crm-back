@@ -1,4 +1,5 @@
 using CRM.Core.Business.UseCases.Test;
+using CRM.Core.Domain;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -24,7 +25,7 @@ public class WeatherForecastController : ControllerBase
     }
 
 
-    [HttpGet("GetWeatherForecast"), Authorize]
+    [HttpGet("GetWeatherForecast"), Authorize(Roles =Roles.ADMIN)]
     public IEnumerable<WeatherForecast> Get()
     {
         return Enumerable.Range(1, 5).Select(index => new WeatherForecast
@@ -41,6 +42,6 @@ public class WeatherForecastController : ControllerBase
     {
         var person = await _sender.Send(new GetTestLisQuery());
 
-        return person;
+        return BadRequest();
     }
 }

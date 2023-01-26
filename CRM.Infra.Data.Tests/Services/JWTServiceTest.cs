@@ -25,12 +25,13 @@ public class JWTServiceTest
         {
             UserName = "Test",
         };
+        var roles = Mock.Of<List<Role>>();
         _configuration.Setup(c => c["Jwt:Issuer"]).Returns("");
         _configuration.Setup(c => c["Jwt:Audience"]).Returns("");
         _configuration.Setup(c => c["Jwt:Key"]).Returns("8to6cXIUHX3A1txtRNShGaNcHE-0wulnmx7jSsAiFC5Q4E2yQN7hKhY_u_W-2CbDJCsx6T-FKg-A15Rq5aOwNAz2GC1fxwOqhTZc0fr06BDtERRPDye95ihD1bOlLQxAxiBZmgjKqQQC7xjXgKHUzAKNajzmQZ3cbX39Ji3ITf0");
 
         // Act
-        var result = _jWTService.Generate(user);
+        var result = _jWTService.Generate(user, roles);
 
         // Assert
         Assert.IsNotNull(result);

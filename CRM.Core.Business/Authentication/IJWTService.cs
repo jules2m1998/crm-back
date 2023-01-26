@@ -4,5 +4,5 @@ namespace CRM.Core.Business.Authentication;
 
 public interface IJWTService
 {
-    string Generate(User user);
+    string Generate(User user, List<Role> roles);
 }

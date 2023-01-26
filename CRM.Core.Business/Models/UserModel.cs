@@ -19,4 +19,26 @@ public record UserModel
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdateAt { get; set; }
     public DateTime? DeletedAt { get; set; }
+    public string Token { get; set; } = string.Empty;
+
+    public UserModel()
+    {
+
+    }
+
+    public UserModel(Guid id, string userName, string email, string firstName, string lastName, List<string> roles, string? picture, string? phoneNumber, DateTime createdAt, DateTime? updateAt, DateTime? deletedAt, string token = "")
+    {
+        Id = id;
+        UserName = userName;
+        Email = email;
+        FirstName = firstName;
+        LastName = lastName;
+        Roles = roles;
+        Picture = picture;
+        PhoneNumber = phoneNumber;
+        CreatedAt = createdAt;
+        UpdateAt = updateAt;
+        DeletedAt = deletedAt;
+        Token = token;
+    }
 }
