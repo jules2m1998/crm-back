@@ -12,5 +12,7 @@ namespace CRM.Core.Business.Repositories
     {
         Task<UserModel> AddAsync(User user, string pwd, string role);
         Task<Tuple<User, List<Role>>?> GetByUserAndRoleAsync(string username, string password);
+        Task<Tuple<User, List<Role>>?> GetUserAndRole(string username);
+        UserModel UserToUserModel(User user, List<Role> roles);
     }
 }

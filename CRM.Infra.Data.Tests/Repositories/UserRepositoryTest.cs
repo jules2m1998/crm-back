@@ -184,4 +184,46 @@ public class UserRepositoryTest
         CollectionAssert.AreEquivalent(rolesToReturn, result.Item2);
 
     }
+
+    [TestMethod]
+    public async Task UseerRepository_GetUserAndRole_UserName_Return_Null_If_User_Not_Found()
+    {
+        // Arrange
+        User? user = null;
+        var username = "Test";
+        _userManager.Setup(u => u.FindByNameAsync(It.IsAny<string>())).ReturnsAsync(user);
+
+        // Act
+        var userAndRoles = await _repo.GetUserAndRole(username);
+
+        // Assert
+        _userManager.Verify(u => u.FindByNameAsync(It.IsAny<string>()), Times.Once);
+        _userManager.Verify(v => v.GetRolesAsync(It.IsAny<User>()), Times.Never);
+        _roleManager.Verify(v => v.FindByNameAsync(It.IsAny<string>()), Times.Never);
+        Assert.IsNull(userAndRoles);
+    }
+
+    [TestMethod]
+    public async Task UseerRepository_GetUserAndRole_UserName_Return_User_Alright()
+    {
+        // Arrange
+        User? user = new User();
+        var username = "Test";
+        var role = new Role { Name = "test" };
+        var roles = new List<string> { "Admin" };
+        _userManager.Setup(u => u.FindByNameAsync(It.IsAny<string>())).ReturnsAsync(user);
+        _userManager.Setup(u => u.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(roles);
+        _roleManager
+            .Setup(r => r.FindByNameAsync(It.IsAny<string>()))
+            .ReturnsAsync(role);
+
+        // Act
+        var userAndRoles = await _repo.GetUserAndRole(username);
+
+        // Assert
+        _userManager.Verify(u => u.FindByNameAsync(It.IsAny<string>()), Times.Once);
+        _userManager.Verify(v => v.GetRolesAsync(It.IsAny<User>()), Times.Once);
+        _roleManager.Verify(v => v.FindByNameAsync(It.IsAny<string>()), Times.AtMost(1));
+        Assert.IsNotNull(userAndRoles);
+    }
 }

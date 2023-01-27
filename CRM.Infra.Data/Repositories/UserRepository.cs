@@ -115,5 +115,37 @@ namespace CRM.Infra.Data.Repositories
             }
             return new Tuple<User, List<Role>>(user, roleEntities);
         }
+
+        public async Task<Tuple<User, List<Role>>?> GetUserAndRole(string username)
+        {
+            var user = await _userManager.FindByNameAsync(username);
+            if (user is null) return null;
+            var roles = await _userManager.GetRolesAsync(user);
+            if (roles is null) return null;
+            var roleEntities = new List<Role>();
+            foreach (var roleEntity in roles)
+            {
+                var r = await _roleManager.FindByNameAsync(roleEntity);
+                if (r is not null) roleEntities.Add(r);
+            }
+
+            return new Tuple<User, List<Role>>(user, roleEntities);
+        }
+
+        public UserModel UserToUserModel(User user, List<Role> roles)
+        {
+            return new UserModel(
+                user.Id,
+                user.UserName,
+                user.Email,
+                user.FirstName,
+                user.LastName,
+                roles.Select(r => r.Name).ToList(),
+                user.Picture,
+                user.PhoneNumber,
+                user.CreatedAt,
+                user.UpdateAt,
+                user.DeletedAt);
+        }
     }
 }
