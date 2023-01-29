@@ -34,8 +34,14 @@ namespace CRM.App.API.Controllers
         public async Task<IActionResult> AddUsersByCSV([FromForm] AddUsersByCSVCommand cmd)
         {
             if(cmd.Role == Roles.ADMIN) return Unauthorized();
-            var result = await _sender.Send(cmd);
-            return Created("", result);
+            try
+            {
+                var result = await _sender.Send(cmd);
+                return Created("", result);
+            } catch(UnauthorizedAccessException ex)
+            {
+                return Unauthorized();
+            }
         }
     }
 }

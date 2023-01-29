@@ -152,6 +152,8 @@ namespace CRM.Infra.Data.Repositories
 
         public async Task<List<UserCsvModel>> AddFromListAsync(List<UserCsvModel> users, string role)
         {
+            if(role == Roles.ADMIN) throw new UnauthorizedAccessException();
+            if(role != Roles.CCN) throw new UnauthorizedAccessException();
             foreach(var user in users)
             {
                 if(user.Status == FIleReadStatus.Valid)
