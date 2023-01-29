@@ -31,6 +31,7 @@ namespace CRM.App.API.Controllers
         [HttpPost, Authorize(Roles=Roles.ADMIN)]
         [ProducesResponseType(typeof(List<UserCsvModel>), 201)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> AddUsersByCSV([FromForm] AddUsersByCSVCommand cmd)
         {
             if(cmd.Role == Roles.ADMIN) return Unauthorized();
@@ -38,9 +39,12 @@ namespace CRM.App.API.Controllers
             {
                 var result = await _sender.Send(cmd);
                 return Created("", result);
-            } catch(UnauthorizedAccessException ex)
+            } catch(UnauthorizedAccessException)
             {
                 return Unauthorized();
+            } catch(BadHttpRequestException ex)
+            {
+                return BadRequest(ex.Message);
             }
         }
     }
