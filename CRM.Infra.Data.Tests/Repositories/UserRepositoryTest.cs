@@ -1,4 +1,5 @@
-﻿using CRM.Core.Business.Models;
+﻿using CRM.Core.Business.Helpers;
+using CRM.Core.Business.Models;
 using CRM.Core.Domain.Entities;
 using CRM.Core.Domain.Exceptions;
 using CRM.Core.Domain.Extensions;
@@ -35,7 +36,6 @@ public class UserRepositoryTest
             Email = "Email",
             FirstName = "Firstname",
             LastName = "LastName",
-            Picture = "Pic",
             PhoneNumber = "phone",
             CreatedAt= DateTime.Now,
         };
@@ -61,7 +61,7 @@ public class UserRepositoryTest
         Assert.AreEqual(user.Email, result.Email);
         Assert.AreEqual(user.FirstName, result.FirstName);
         Assert.AreEqual(user.LastName, result.LastName);
-        Assert.AreEqual(user.Picture, result.Picture);
+        Assert.AreEqual("default\\default-user.png", result.Picture);
         Assert.AreEqual(user.PhoneNumber, result.PhoneNumber);
         Assert.AreEqual(user.CreatedAt.Ticks, result.CreatedAt.Ticks);
         Assert.AreEqual(user.UpdateAt?.Ticks, result.UpdateAt?.Ticks);
@@ -225,5 +225,55 @@ public class UserRepositoryTest
         _userManager.Verify(v => v.GetRolesAsync(It.IsAny<User>()), Times.Once);
         _roleManager.Verify(v => v.FindByNameAsync(It.IsAny<string>()), Times.AtMost(1));
         Assert.IsNotNull(userAndRoles);
+    }
+
+    [TestMethod]
+    public async Task UseerRepository_AddFromListAsync_Not_Set_Invalid_Status()
+    {
+        // Arrange
+        var listCsv = new List<UserCsvModel>()
+        {
+            new UserCsvModel {Status = FIleReadStatus.Invalid}
+        };
+
+
+        // Act
+        var result = await _repo.AddFromListAsync(listCsv, "Any");
+
+
+        // Assert
+        _userManager.Verify(u => u.CreateAsync(It.IsAny<User>(), It.IsAny<string>()), Times.Never);
+        _userManager.Verify(u => u.AddToRoleAsync(It.IsAny<User>(), It.IsAny<string>()), Times.Never);
+        Assert.IsNotNull(result);
+        Assert.AreEqual(1, result.Count);
+        Assert.AreEqual(result[0].Status, FIleReadStatus.Invalid);
+    }
+
+    [TestMethod]
+    public async Task UseerRepository_AddFromListAsync_Set_Valid_Status_To_Invalid_Status()
+    {
+        // Arrange
+        var errors = new Dictionary<string, List<string>>()
+        {
+            {"test", new List<string>(){ "test" } }
+        };
+        _userManager.Setup(u => u.CreateAsync(It.IsAny<User>(), It.IsAny<string>()))
+            .Throws(new BaseException(errors));
+        var listCsv = new List<UserCsvModel>()
+        {
+            new UserCsvModel {Status = FIleReadStatus.Valid}
+        };
+
+
+        // Act
+        var result = await _repo.AddFromListAsync(listCsv, "Any");
+
+
+        // Assert
+        _userManager.Verify(u => u.CreateAsync(It.IsAny<User>(), It.IsAny<string>()), Times.Once);
+        _userManager.Verify(u => u.AddToRoleAsync(It.IsAny<User>(), It.IsAny<string>()), Times.Never);
+        Assert.IsNotNull(result);
+        Assert.AreEqual(1, result.Count);
+        Assert.AreEqual(result[0].Status, FIleReadStatus.Invalid);
     }
 }

@@ -27,15 +27,16 @@ public class AddAdminUserHandler : IRequestHandler<AddAdminUserCommand, UserMode
             picture = result.Item1;
         }
 
-        var user = new User
+        var user = new User()
         {
             UserName= request.UserName,
             Email= request.Email,
             FirstName= request.FirstName,
             LastName= request.LastName,
-            PhoneNumber= request.PhoneNumber,
-            Picture = picture
+            PhoneNumber= request.PhoneNumber
         };
+        if (picture is not null) user.Picture = picture;
+
         var admin = await _userRepository.AddAsync(user, request.Password, Roles.ADMIN);
 
         return admin;

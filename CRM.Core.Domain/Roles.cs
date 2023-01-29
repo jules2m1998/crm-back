@@ -9,4 +9,5 @@ namespace CRM.Core.Domain;
 public class Roles
 {
     public const string ADMIN = "ADMIN";
+    public const string CCN = "CCN";
 }

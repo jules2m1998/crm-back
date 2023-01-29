@@ -1,9 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using CsvHelper.Configuration;
+using CsvHelper.Configuration.Attributes;
 
 namespace CRM.Core.Business.Helpers
 {
@@ -12,5 +9,6 @@ namespace CRM.Core.Business.Helpers
         string GetUniqueFileName(string fileName);
         Task<Tuple<string, string>> SaveImageToServerAsync(IFormFile formFile, string[] directory);
         void DeleteImageToServer(string fileName);
+        List<Return> ReadCsvFile<Return, Mapper>(IFormFile file) where Return: IFileReadable where Mapper: ClassMap<Return>;
     }
 }

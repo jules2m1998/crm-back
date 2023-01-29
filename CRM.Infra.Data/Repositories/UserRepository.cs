@@ -1,5 +1,7 @@
-﻿using CRM.Core.Business.Models;
+﻿using CRM.Core.Business.Helpers;
+using CRM.Core.Business.Models;
 using CRM.Core.Business.Repositories;
+using CRM.Core.Domain;
 using CRM.Core.Domain.Entities;
 using CRM.Core.Domain.Exceptions;
 using CRM.Core.Domain.Extensions;
@@ -146,6 +148,36 @@ namespace CRM.Infra.Data.Repositories
                 user.CreatedAt,
                 user.UpdateAt,
                 user.DeletedAt);
+        }
+
+        public async Task<List<UserCsvModel>> AddFromListAsync(List<UserCsvModel> users, string role)
+        {
+            foreach(var user in users)
+            {
+                if(user.Status == FIleReadStatus.Valid)
+                {
+                    var u = new User()
+                    {
+                        UserName= user.UserName ?? "",
+                        Email = user.Email ?? "",
+                        FirstName= user.FirstName ?? "",
+                        LastName= user.LastName ?? "",
+                        PhoneNumber= user.PhoneNumber ?? "",
+                    };
+                    try
+                    {
+                        var nU = await CreateUser(u, DefaultParams.defaultPwd);
+                        var addRoleResult = await AddRole(nU, role);
+                    }
+                    catch(BaseException ex)
+                    {
+                        user.Errors = ex.Errors;
+                        user.Status = FIleReadStatus.Invalid;
+                    }
+                }
+
+            }
+            return users;
         }
     }
 }
