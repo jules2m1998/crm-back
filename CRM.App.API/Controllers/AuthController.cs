@@ -26,10 +26,15 @@ public class AuthController : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> Login([FromBody] LoginQuery login)
     {
-        var result = await _sender.Send(login);
-
-        if(result is null) return Unauthorized();
-        return Ok(result);
+        try
+        {
+            var result = await _sender.Send(login);
+            if(result is null) return Unauthorized();
+            return Ok(result);
+        }catch(UnauthorizedAccessException)
+        {
+            return Unauthorized();
+        }
     }
 
     [HttpGet, Authorize]
