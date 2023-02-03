@@ -45,6 +45,9 @@ namespace CRM.App.API.Controllers
             } catch(BadHttpRequestException ex)
             {
                 return BadRequest(ex.Message);
+            } catch(InvalidDataException ex)
+            {
+                return BadRequest(ex.Message);
             }
         }
     }

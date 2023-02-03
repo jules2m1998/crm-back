@@ -170,11 +170,12 @@ namespace CRM.Infra.Data.Repositories
                     {
                         var nU = await CreateUser(u, DefaultParams.defaultPwd);
                         var addRoleResult = await AddRole(nU, role);
+                        user.CreatedAt = nU.CreatedAt;
                     }
                     catch(BaseException ex)
                     {
                         user.Errors = ex.Errors;
-                        user.Status = FIleReadStatus.Invalid;
+                        user.Status = FIleReadStatus.Exist;
                     }
                 }
 

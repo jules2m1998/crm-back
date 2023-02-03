@@ -238,7 +238,7 @@ public class UserRepositoryTest
 
 
         // Act
-        var result = await _repo.AddFromListAsync(listCsv, "Any");
+        var result = await _repo.AddFromListAsync(listCsv, "CCN");
 
 
         // Assert
@@ -266,7 +266,7 @@ public class UserRepositoryTest
 
 
         // Act
-        var result = await _repo.AddFromListAsync(listCsv, "Any");
+        var result = await _repo.AddFromListAsync(listCsv, "CCN");
 
 
         // Assert
@@ -274,6 +274,6 @@ public class UserRepositoryTest
         _userManager.Verify(u => u.AddToRoleAsync(It.IsAny<User>(), It.IsAny<string>()), Times.Never);
         Assert.IsNotNull(result);
         Assert.AreEqual(1, result.Count);
-        Assert.AreEqual(result[0].Status, FIleReadStatus.Invalid);
+        Assert.AreEqual(result[0].Status, FIleReadStatus.Exist);
     }
 }
