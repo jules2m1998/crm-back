@@ -1,5 +1,6 @@
 ﻿using CRM.Core.Business.Helpers;
 using CRM.Core.Business.Models;
+using CRM.Core.Domain;
 using CRM.Core.Domain.Entities;
 using CRM.Core.Domain.Exceptions;
 using CRM.Core.Domain.Extensions;
@@ -39,7 +40,7 @@ public class UserRepositoryTest
             PhoneNumber = "phone",
             CreatedAt= DateTime.Now,
         };
-        var role = "Test";
+        var role = Roles.CCL;
         var pwd = "";
         _userManager
             .Setup(s => s.CreateAsync(user, pwd))
@@ -75,7 +76,7 @@ public class UserRepositoryTest
     {
         // Arrange
         var user = new User();
-        var role = "Teste";
+        var role = "CCL";
         var pwd = "";
         var idResult = new IdentityResult();
         _userManager
@@ -238,7 +239,7 @@ public class UserRepositoryTest
 
 
         // Act
-        var result = await _repo.AddFromListAsync(listCsv, "CCN");
+        var result = await _repo.AddFromListAsync(listCsv, "CCL");
 
 
         // Assert
@@ -266,7 +267,7 @@ public class UserRepositoryTest
 
 
         // Act
-        var result = await _repo.AddFromListAsync(listCsv, "CCN");
+        var result = await _repo.AddFromListAsync(listCsv, "CCL");
 
 
         // Assert

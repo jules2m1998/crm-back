@@ -10,6 +10,11 @@ namespace CRM.Core.Business
 {
     public class ValidatorBehavior<T> where T : notnull
     {
+        /// <summary>
+        /// Check if model is valid
+        /// </summary>
+        /// <param name="toValidate"></param>
+        /// <exception cref="BaseException"></exception>
         public static void Validate(T toValidate)
         {
             ValidationContext context = new(toValidate);

@@ -8,7 +8,6 @@ using Moq;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 using CsvHelper.Configuration;
-using CsvHelper.Configuration.Attributes;
 
 namespace CRM.Infra.Data.Tests.Helpers;
 
@@ -81,7 +80,7 @@ public class FileHelperTests
     }
 
     [TestMethod]
-    public async Task FileHelper_ReadCsvFile_Throw_BaseException_If_IFormFile_Is_Not_CSVFile()
+    public void FileHelper_ReadCsvFile_Throw_BaseException_If_IFormFile_Is_Not_CSVFile()
     {
         // Arrange
         var bytes = Encoding.UTF8.GetBytes("This is a dummy file");
@@ -96,7 +95,7 @@ public class FileHelperTests
     }
 
     [TestMethod]
-    public async Task FileHelper_ReadCsvFile_Return_List_Of_Model_If_Is_CSVFile()
+    public void FileHelper_ReadCsvFile_Return_List_Of_Model_If_Is_CSVFile()
     {
         // Arrange
         var bytes = Encoding.UTF8.GetBytes("id;lastname\r\n100;Halsey\r\n101;Sabella\r\n102;Vanni\r\n103;Sidonius\r\n104;Norvol\r\n105;Tremayne\r\n106;Redmond\r\n107;Atonsah\r\n108;Land\r\n109;Ardra");
@@ -112,7 +111,7 @@ public class FileHelperTests
     }
 
     [TestMethod]
-    public async Task FileHelper_ReadCsvFile_Verify_Return_Invalid_Object_In_List()
+    public void FileHelper_ReadCsvFile_Verify_Return_Invalid_Object_In_List()
     {
         // Arrange
         var bytes = Encoding.UTF8.GetBytes("id;lastname\r\n;Hal");
@@ -136,7 +135,7 @@ public class FileHelperTests
     }
 
     [TestMethod]
-    public async Task FileHelper_ReadCsvFile_Verify_Return_Valid_Object_In_List()
+    public void FileHelper_ReadCsvFile_Verify_Return_Valid_Object_In_List()
     {
         // Arrange
         var bytes = Encoding.UTF8.GetBytes("id;lastname\r\n100;Sabella");
@@ -156,7 +155,7 @@ public class FileHelperTests
     }
 
     [TestMethod]
-    public async Task FileHelper_ReadCsvFile_Verify_Return_Valid_And_Invalid_Object_In_List()
+    public void FileHelper_ReadCsvFile_Verify_Return_Valid_And_Invalid_Object_In_List()
     {
         // Arrange
         var bytes = Encoding.UTF8.GetBytes("id;lastname\r\n100;Rooney\r\n;Ke");
