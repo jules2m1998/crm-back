@@ -1,6 +1,12 @@
-﻿using CRM.Core.Business.Helpers;
+﻿using CRM.Core.Business;
+using CRM.Core.Business.Helpers;
+using CRM.Core.Domain.Exceptions;
+using CsvHelper;
+using CsvHelper.Configuration;
+using CsvHelper.TypeConversion;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using System.Globalization;
 
 namespace CRM.Infra.Data.Helpers
 {
@@ -63,6 +69,57 @@ namespace CRM.Infra.Data.Helpers
             using var stream = new FileStream(pathToSave, FileMode.Create);
             await formFile.CopyToAsync(stream);
             return new Tuple<string, string>(dbPath, pathToSave);
+        }
+
+        public List<Return> ReadCsvFile<Return, Mapper>(IFormFile file)
+            where Return : IFileReadable
+            where Mapper : ClassMap<Return>
+        {
+            var fileextension = Path.GetExtension(file.FileName);
+            if (fileextension != ".csv") throw new BadHttpRequestException($"Please send a csv file not a {fileextension} file.");
+
+            using var stream = file.OpenReadStream();
+            using var streamReader = new StreamReader(stream);
+            CsvConfiguration csvConfig = new CsvConfiguration(CultureInfo.InvariantCulture)
+            {
+                HasHeaderRecord = true,
+                HeaderValidated = null,
+                MissingFieldFound = null,
+                IgnoreBlankLines = true,
+                Delimiter= ";",
+            };
+
+            using var csvReader = new CsvReader(streamReader, csvConfig);
+            csvReader.Context.RegisterClassMap<Mapper>();
+
+            try
+            {
+
+                var items = csvReader.GetRecords<Return>().ToList();
+                var itemsValidate = GetValidateList(items);
+
+                return itemsValidate;
+
+            } catch(Exception ex)
+            {
+                throw new InvalidDataException(ex.Message);
+            }
+        }
+
+        private List<T> GetValidateList<T>(List<T> elements) where T : IFileReadable
+        {
+            foreach(var element in elements)
+            {
+                try
+                {
+                    ValidatorBehavior<T>.Validate(element);
+                } catch(BaseException ex)
+                {
+                    element.Errors = ex.Errors;
+                    element.Status = FIleReadStatus.Invalid;
+                }
+            }
+            return elements.ToList();
         }
     }
 }

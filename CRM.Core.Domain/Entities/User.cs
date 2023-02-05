@@ -5,7 +5,7 @@ namespace CRM.Core.Domain.Entities;
 
 public class User: IdentityUser<Guid>
 {
-    public string? Picture { get; set; }
+    public string Picture { get; set; } = DefaultParams.defaultUserPicture;
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; } = DateTime.Now;

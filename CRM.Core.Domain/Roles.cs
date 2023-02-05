@@ -9,4 +9,7 @@ namespace CRM.Core.Domain;
 public class Roles
 {
     public const string ADMIN = "ADMIN";
+    public const string CCL = "CCL";
+    public const string SUPERVISOR = "SUPERVISOR";
+    public const string CLIIENT = "CLIENT";
 }

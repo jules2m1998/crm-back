@@ -15,6 +15,8 @@ builder.Services
     .AddDependencies()
     .AddCompression();
 
+builder.Services.AddCors();
+
 
 var app = builder.Build();
 
@@ -30,6 +32,12 @@ if (app.Environment.IsDevelopment())
 // Add all middlewares
 app.AddMiddlewares()
     .ConfigureStaticFiles();
+app.UseCors(opt => opt
+    .WithOrigins("http://localhost:3000", "http://localhost:8000", "http://localhost:4200")
+    .AllowAnyHeader()
+    .AllowAnyMethod()
+    .AllowCredentials()
+);
 
 app.UseHttpsRedirection();
 

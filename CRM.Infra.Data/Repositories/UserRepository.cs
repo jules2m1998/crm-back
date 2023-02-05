@@ -1,10 +1,11 @@
-﻿using CRM.Core.Business.Models;
+﻿using CRM.Core.Business.Helpers;
+using CRM.Core.Business.Models;
 using CRM.Core.Business.Repositories;
+using CRM.Core.Domain;
 using CRM.Core.Domain.Entities;
 using CRM.Core.Domain.Exceptions;
 using CRM.Core.Domain.Extensions;
 using Microsoft.AspNetCore.Identity;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace CRM.Infra.Data.Repositories
 {
@@ -18,14 +19,41 @@ namespace CRM.Infra.Data.Repositories
             _roleManager = roleManager;
         }
 
+        /// <summary>
+        /// Add new user and his role in the database
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="pwd"></param>
+        /// <param name="role"></param>
+        /// <returns>User and his roles</returns>
+        /// <exception cref="UnauthorizedAccessException">
+        /// Thrown when role in not a valid role
+        /// </exception>
+
         public async Task<UserModel> AddAsync(User user, string pwd, string role)
         {
+            if (
+                role != Roles.CCL &&
+                role != Roles.ADMIN &&
+                role != Roles.SUPERVISOR &&
+                role != Roles.CLIIENT
+                )
+                throw new UnauthorizedAccessException();
             var u = await CreateUser(user, pwd);
             var addRoleResult = await AddRole(u, role);
 
             return addRoleResult;
         }
 
+        /// <summary>
+        /// Create user in database with his password
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="pwd"></param>
+        /// <returns>User created in database</returns>
+        /// <exception cref="BaseException">
+        /// Throwm if the user could not be added because of invalid or existing information
+        /// </exception>
         private async Task<User> CreateUser(User user, string pwd)
         {
             var identityResult = await _userManager.CreateAsync(user, pwd);
@@ -70,6 +98,13 @@ namespace CRM.Infra.Data.Repositories
             return await _userManager.FindByNameAsync(user.UserName!) ?? new User();
         }
 
+        /// <summary>
+        /// Add role to user in database
+        /// </summary>
+        /// <param name="u"></param>
+        /// <param name="role"></param>
+        /// <returns>User and his roles</returns>
+        /// <exception cref="BaseException"></exception>
         private async Task<UserModel> AddRole(User u, string role)
         {
             var roleExist = await _roleManager.RoleExistsAsync(role);
@@ -99,6 +134,12 @@ namespace CRM.Infra.Data.Repositories
             };
         }
 
+        /// <summary>
+        /// Get user on database by his credentials (Username and passwor)
+        /// </summary>
+        /// <param name="username"></param>
+        /// <param name="password"></param>
+        /// <returns>A tuple of user and his roles</returns>
         public async Task<Tuple<User, List<Role>>?> GetByUserAndRoleAsync(string username, string password)
         {
             var user = await _userManager.FindByNameAsync(username);
@@ -116,6 +157,11 @@ namespace CRM.Infra.Data.Repositories
             return new Tuple<User, List<Role>>(user, roleEntities);
         }
 
+        /// <summary>
+        /// Get user and his role by username
+        /// </summary>
+        /// <param name="username"></param>
+        /// <returns>A tuple of user and his roles</returns>
         public async Task<Tuple<User, List<Role>>?> GetUserAndRole(string username)
         {
             var user = await _userManager.FindByNameAsync(username);
@@ -132,12 +178,18 @@ namespace CRM.Infra.Data.Repositories
             return new Tuple<User, List<Role>>(user, roleEntities);
         }
 
+        /// <summary>
+        /// Convert user to user model
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="roles"></param>
+        /// <returns>User model instance</returns>
         public UserModel UserToUserModel(User user, List<Role> roles)
         {
             return new UserModel(
                 user.Id,
-                user.UserName,
-                user.Email,
+                user.UserName ?? "",
+                user.Email ?? "",
                 user.FirstName,
                 user.LastName,
                 roles.Select(r => r.Name).ToList(),
@@ -146,6 +198,46 @@ namespace CRM.Infra.Data.Repositories
                 user.CreatedAt,
                 user.UpdateAt,
                 user.DeletedAt);
+        }
+
+        /// <summary>
+        /// Add users to database using list of user csv model and his roles
+        /// </summary>
+        /// <param name="users"></param>
+        /// <param name="role"></param>
+        /// <returns></returns>
+        /// <exception cref="UnauthorizedAccessException"></exception>
+        public async Task<List<UserCsvModel>> AddFromListAsync(List<UserCsvModel> users, string role)
+        {
+            if(role == Roles.ADMIN) throw new UnauthorizedAccessException();
+            if(role != Roles.CCL) throw new UnauthorizedAccessException();
+            foreach(var user in users)
+            {
+                if(user.Status == FIleReadStatus.Valid)
+                {
+                    var u = new User()
+                    {
+                        UserName= user.UserName ?? "",
+                        Email = user.Email ?? "",
+                        FirstName= user.FirstName ?? "",
+                        LastName= user.LastName ?? "",
+                        PhoneNumber= user.PhoneNumber ?? "",
+                    };
+                    try
+                    {
+                        var nU = await CreateUser(u, DefaultParams.defaultPwd);
+                        var addRoleResult = await AddRole(nU, role);
+                        user.CreatedAt = nU.CreatedAt;
+                    }
+                    catch(BaseException ex)
+                    {
+                        user.Errors = ex.Errors;
+                        user.Status = FIleReadStatus.Exist;
+                    }
+                }
+
+            }
+            return users;
         }
     }
 }
