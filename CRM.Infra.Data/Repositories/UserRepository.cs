@@ -6,6 +6,7 @@ using CRM.Core.Domain.Entities;
 using CRM.Core.Domain.Exceptions;
 using CRM.Core.Domain.Extensions;
 using Microsoft.AspNetCore.Identity;
+using System.Linq;
 
 namespace CRM.Infra.Data.Repositories
 {
@@ -205,13 +206,27 @@ namespace CRM.Infra.Data.Repositories
         /// </summary>
         /// <param name="users"></param>
         /// <param name="role"></param>
+        /// <param name="creatorUserName"></param>
         /// <returns></returns>
-        /// <exception cref="UnauthorizedAccessException"></exception>
-        public async Task<List<UserCsvModel>> AddFromListAsync(List<UserCsvModel> users, string role)
+        /// <exception cref="UnauthorizedAccessException">
+        /// When current user not exist or role is not a known role
+        /// </exception>
+        public async Task<List<UserCsvModel>> AddFromListAsync(List<UserCsvModel> users, string role, string creatorUserName)
         {
             if(role == Roles.ADMIN) throw new UnauthorizedAccessException();
-            if(role != Roles.CCL) throw new UnauthorizedAccessException();
-            foreach(var user in users)
+            if(role != Roles.CCL && role != Roles.SUPERVISOR && role != Roles.CLIIENT) throw new UnauthorizedAccessException();
+            var currentUserRoles = await GetUserAndRole(creatorUserName);
+            if(currentUserRoles == null) throw new UnauthorizedAccessException();
+            var roles = currentUserRoles.Item2;
+            var isClient = roles.Find(r => r.Name == Roles.CLIIENT) != null;
+            var isSupervisor = roles.Find(r => r.Name == Roles.SUPERVISOR) != null;
+            var isCCL = roles.Find(r => r.Name == Roles.CCL) != null;
+            if (isClient) throw new UnauthorizedAccessException();
+            if(isSupervisor && (role == Roles.ADMIN || role == Roles.SUPERVISOR)) throw new UnauthorizedAccessException();
+            if(isCCL && (role == Roles.ADMIN || role == Roles.SUPERVISOR || role == Roles.CCL)) throw new UnauthorizedAccessException();
+
+
+            foreach (var user in users)
             {
                 if(user.Status == FIleReadStatus.Valid)
                 {
@@ -222,6 +237,7 @@ namespace CRM.Infra.Data.Repositories
                         FirstName= user.FirstName ?? "",
                         LastName= user.LastName ?? "",
                         PhoneNumber= user.PhoneNumber ?? "",
+                        Creator = currentUserRoles.Item1
                     };
                     try
                     {

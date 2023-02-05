@@ -4,6 +4,7 @@ using CRM.Core.Business.Repositories;
 using CRM.Core.Domain;
 using CRM.Core.Domain.Entities;
 using MediatR;
+using System.Data;
 
 namespace CRM.Core.Business.UseCases.AddOtherUser
 {
@@ -26,6 +27,15 @@ namespace CRM.Core.Business.UseCases.AddOtherUser
                 request.User.Role == Roles.SUPERVISOR && request.Roles.Contains(Roles.SUPERVISOR)
                 ) throw new UnauthorizedAccessException();
             ValidatorBehavior<UserBodyAndRole>.Validate(request.User);
+            var currentUserRoles = await _repo.GetUserAndRole(request.CurrentUserName);
+            if (currentUserRoles == null) throw new UnauthorizedAccessException();
+            var roles = currentUserRoles.Item2;
+            var isClient = roles.Find(r => r.Name == Roles.CLIIENT) != null;
+            var isSupervisor = roles.Find(r => r.Name == Roles.SUPERVISOR) != null;
+            var isCCL = roles.Find(r => r.Name == Roles.CCL) != null;
+            if (isClient) throw new UnauthorizedAccessException();
+            if (isSupervisor && (request.User.Role == Roles.ADMIN || request.User.Role == Roles.SUPERVISOR)) throw new UnauthorizedAccessException();
+            if (isCCL && (request.User.Role == Roles.ADMIN || request.User.Role == Roles.SUPERVISOR || request.User.Role == Roles.CCL)) throw new UnauthorizedAccessException();
             var cur = request.User;
             string? picture = null;
             if (cur.Picture is not null)
@@ -40,7 +50,8 @@ namespace CRM.Core.Business.UseCases.AddOtherUser
                 Email = cur.Email,
                 FirstName = cur.FirstName,
                 LastName = cur.LastName,
-                PhoneNumber = cur.PhoneNumber
+                PhoneNumber = cur.PhoneNumber,
+                Creator = currentUserRoles.Item1
             };
             if (picture is not null) user.Picture = picture;
             var userAndRole = await _repo.AddAsync(user, request.User.Password, request.User.Role);

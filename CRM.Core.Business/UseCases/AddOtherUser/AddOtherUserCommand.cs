@@ -14,5 +14,6 @@ namespace CRM.Core.Business.UseCases.AddOtherUser
     {
         public UserBodyAndRole User { get; set; } = null!;
         public List<string> Roles { get; set; } = null!;
+        public string CurrentUserName { get; set; } = string.Empty;
     }
 }

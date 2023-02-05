@@ -7,6 +7,7 @@ using CRM.Core.Domain.Extensions;
 using CRM.Infra.Data.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Moq;
+using System.Data;
 
 namespace CRM.Infra.Data.Tests.Repositories;
 
@@ -158,7 +159,7 @@ public class UserRepositoryTest
         var role = new Role { Name = "test" };
         var rolesToReturn = new List<Role> { role };
 
-        // Arranche
+        // Arrange
         _userManager
             .Setup(u => u.FindByNameAsync(It.IsAny<string>()))
             .ReturnsAsync(user);
@@ -228,6 +229,184 @@ public class UserRepositoryTest
         Assert.IsNotNull(userAndRoles);
     }
 
+
+
+    [TestMethod]
+    public async Task UserRepository_AddFromListAsync_Throw_UnauthorizedAccessException_When_Current_User_Is_Client()
+    {
+        // Arrange
+
+        var listCsv = new List<UserCsvModel>()
+        {
+            new UserCsvModel {Status = FIleReadStatus.Invalid}
+        };
+        var user = new User();
+        var role = new Role() { Name = Roles.CLIIENT };
+        _userManager
+            .Setup(ur => ur.FindByNameAsync(It.IsAny<string>()))
+            .ReturnsAsync(user);
+        _userManager
+            .Setup(ur => ur.GetRolesAsync(It.IsAny<User>()))
+            .ReturnsAsync(new List<string>() { Roles.CLIIENT });
+        _roleManager
+            .Setup(rm => rm.FindByNameAsync(It.IsAny<string>()))
+            .ReturnsAsync(role);
+
+        // Act
+        var result = await Assert.ThrowsExceptionAsync<UnauthorizedAccessException>(() => _repo.AddFromListAsync(listCsv, Roles.CLIIENT, "test"));
+
+        // Assert
+        Assert.IsNotNull(result);
+        Assert.IsInstanceOfType(result, typeof(UnauthorizedAccessException));
+    }
+
+
+
+    [TestMethod]
+    public async Task UserRepository_AddFromListAsync_Throw_UnauthorizedAccessException_When_Current_User_Is_Supervisor_And_Role_Is_Admin()
+    {
+        // Arrange
+
+        var listCsv = new List<UserCsvModel>()
+        {
+            new UserCsvModel {Status = FIleReadStatus.Invalid}
+        };
+        var user = new User();
+        var role = new Role() { Name = Roles.SUPERVISOR };
+        _userManager
+            .Setup(ur => ur.FindByNameAsync(It.IsAny<string>()))
+            .ReturnsAsync(user);
+        _userManager
+            .Setup(ur => ur.GetRolesAsync(It.IsAny<User>()))
+            .ReturnsAsync(new List<string>() { Roles.SUPERVISOR });
+        _roleManager
+            .Setup(rm => rm.FindByNameAsync(It.IsAny<string>()))
+            .ReturnsAsync(role);
+
+        // Act
+        var result = await Assert.ThrowsExceptionAsync<UnauthorizedAccessException>(() => _repo.AddFromListAsync(listCsv, Roles.ADMIN, "test"));
+
+        // Assert
+        Assert.IsNotNull(result);
+        Assert.IsInstanceOfType(result, typeof(UnauthorizedAccessException));
+    }
+
+    [TestMethod]
+    public async Task UserRepository_AddFromListAsync_Throw_UnauthorizedAccessException_When_Current_User_Is_Supervisor_And_Role_Is_Supervisor()
+    {
+        // Arrange
+
+        var listCsv = new List<UserCsvModel>()
+        {
+            new UserCsvModel {Status = FIleReadStatus.Invalid}
+        };
+        var user = new User();
+        var role = new Role() { Name = Roles.SUPERVISOR };
+        _userManager
+            .Setup(ur => ur.FindByNameAsync(It.IsAny<string>()))
+            .ReturnsAsync(user);
+        _userManager
+            .Setup(ur => ur.GetRolesAsync(It.IsAny<User>()))
+            .ReturnsAsync(new List<string>() { Roles.SUPERVISOR });
+        _roleManager
+            .Setup(rm => rm.FindByNameAsync(It.IsAny<string>()))
+            .ReturnsAsync(role);
+
+        // Act
+        var result = await Assert.ThrowsExceptionAsync<UnauthorizedAccessException>(() => _repo.AddFromListAsync(listCsv, Roles.SUPERVISOR, "test"));
+
+        // Assert
+        Assert.IsNotNull(result);
+        Assert.IsInstanceOfType(result, typeof(UnauthorizedAccessException));
+    }
+
+    [TestMethod]
+    public async Task UserRepository_AddFromListAsync_Throw_UnauthorizedAccessException_When_Current_User_Is_CCL_And_Role_Is_Supervisor()
+    {
+        // Arrange
+
+        var listCsv = new List<UserCsvModel>()
+        {
+            new UserCsvModel {Status = FIleReadStatus.Invalid}
+        };
+        var user = new User();
+        var role = new Role() { Name = Roles.CCL };
+        _userManager
+            .Setup(ur => ur.FindByNameAsync(It.IsAny<string>()))
+            .ReturnsAsync(user);
+        _userManager
+            .Setup(ur => ur.GetRolesAsync(It.IsAny<User>()))
+            .ReturnsAsync(new List<string>() { Roles.CCL });
+        _roleManager
+            .Setup(rm => rm.FindByNameAsync(It.IsAny<string>()))
+            .ReturnsAsync(role);
+
+        // Act
+        var result = await Assert.ThrowsExceptionAsync<UnauthorizedAccessException>(() => _repo.AddFromListAsync(listCsv, Roles.SUPERVISOR, "test"));
+
+        // Assert
+        Assert.IsNotNull(result);
+        Assert.IsInstanceOfType(result, typeof(UnauthorizedAccessException));
+    }
+
+    [TestMethod]
+    public async Task UserRepository_AddFromListAsync_Throw_UnauthorizedAccessException_When_Current_User_Is_CCL_And_Role_Is_ADMIN()
+    {
+        // Arrange
+
+        var listCsv = new List<UserCsvModel>()
+        {
+            new UserCsvModel {Status = FIleReadStatus.Invalid}
+        };
+        var user = new User();
+        var role = new Role() { Name = Roles.CCL };
+        _userManager
+            .Setup(ur => ur.FindByNameAsync(It.IsAny<string>()))
+            .ReturnsAsync(user);
+        _userManager
+            .Setup(ur => ur.GetRolesAsync(It.IsAny<User>()))
+            .ReturnsAsync(new List<string>() { Roles.CCL });
+        _roleManager
+            .Setup(rm => rm.FindByNameAsync(It.IsAny<string>()))
+            .ReturnsAsync(role);
+
+        // Act
+        var result = await Assert.ThrowsExceptionAsync<UnauthorizedAccessException>(() => _repo.AddFromListAsync(listCsv, Roles.CCL, "test"));
+
+        // Assert
+        Assert.IsNotNull(result);
+        Assert.IsInstanceOfType(result, typeof(UnauthorizedAccessException));
+    }
+
+    [TestMethod]
+    public async Task UserRepository_AddFromListAsync_Save_When_Current_User_Is_Supervisor_And_Role_Is_CCL()
+    {
+        // Arrange
+
+        var listCsv = new List<UserCsvModel>()
+        {
+            new UserCsvModel {Status = FIleReadStatus.Invalid}
+        };
+        var user = new User();
+        var role = new Role() { Name = Roles.SUPERVISOR };
+        _userManager
+            .Setup(ur => ur.FindByNameAsync(It.IsAny<string>()))
+            .ReturnsAsync(user);
+        _userManager
+            .Setup(ur => ur.GetRolesAsync(It.IsAny<User>()))
+            .ReturnsAsync(new List<string>() { Roles.SUPERVISOR });
+        _roleManager
+            .Setup(rm => rm.FindByNameAsync(It.IsAny<string>()))
+            .ReturnsAsync(role);
+
+        // Act
+        var result = await _repo.AddFromListAsync(listCsv, Roles.CCL, "test");
+
+        // Assert
+        Assert.IsNotNull(result);
+        Assert.IsNotInstanceOfType(result, typeof(UnauthorizedAccessException));
+    }
+
     [TestMethod]
     public async Task UseerRepository_AddFromListAsync_Not_Set_Invalid_Status()
     {
@@ -236,10 +415,21 @@ public class UserRepositoryTest
         {
             new UserCsvModel {Status = FIleReadStatus.Invalid}
         };
+        var user = new User();
+        var role = new Role() { Name = Roles.ADMIN};
+        _userManager
+            .Setup(ur => ur.FindByNameAsync(It.IsAny<string>()))
+            .ReturnsAsync(user);
+        _userManager
+            .Setup(ur => ur.GetRolesAsync(It.IsAny<User>()))
+            .ReturnsAsync(new List<string>());
+        _roleManager
+            .Setup(rm => rm.FindByNameAsync(It.IsAny<string>()))
+            .ReturnsAsync(role);
 
 
         // Act
-        var result = await _repo.AddFromListAsync(listCsv, "CCL");
+        var result = await _repo.AddFromListAsync(listCsv, "CCL", "admin");
 
 
         // Assert
@@ -258,6 +448,18 @@ public class UserRepositoryTest
         {
             {"test", new List<string>(){ "test" } }
         };
+        var role = new Role { Name = "test" };
+        var roles = new List<string> { "Admin" };
+        var user = new User();
+        _userManager
+            .Setup(ur => ur.FindByNameAsync(It.IsAny<string>()))
+            .ReturnsAsync(user);
+        _userManager
+            .Setup(ur => ur.GetRolesAsync(It.IsAny<User>()))
+            .ReturnsAsync(new List<string>());
+        _roleManager
+            .Setup(rm => rm.FindByNameAsync(It.IsAny<string>()))
+            .ReturnsAsync(role);
         _userManager.Setup(u => u.CreateAsync(It.IsAny<User>(), It.IsAny<string>()))
             .Throws(new BaseException(errors));
         var listCsv = new List<UserCsvModel>()
@@ -267,7 +469,7 @@ public class UserRepositoryTest
 
 
         // Act
-        var result = await _repo.AddFromListAsync(listCsv, "CCL");
+        var result = await _repo.AddFromListAsync(listCsv, "CCL", "");
 
 
         // Assert

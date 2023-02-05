@@ -11,4 +11,6 @@ public class User: IdentityUser<Guid>
     public DateTime CreatedAt { get; set; } = DateTime.Now;
     public DateTime? UpdateAt { get; set; }
     public DateTime? DeletedAt { get; set; }
+
+    public virtual User? Creator { get; set; } = null!;
 }

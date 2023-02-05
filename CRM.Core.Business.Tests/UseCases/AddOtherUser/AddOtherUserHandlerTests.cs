@@ -6,6 +6,7 @@ using CRM.Core.Domain;
 using CRM.Core.Domain.Entities;
 using CRM.Core.Domain.Exceptions;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Moq;
 using System;
 using System.Collections.Generic;
@@ -119,6 +120,12 @@ namespace CRM.Core.Business.Tests.UseCases.AddOtherUser
                 },
                 Roles = new List<string> { Roles.ADMIN }
             };
+
+            var user = new User();
+            var role = new Role() { Name = Roles.ADMIN };
+            _userRepositoryMock
+                .Setup(ur => ur.GetUserAndRole(It.IsAny<string>()))
+                .ReturnsAsync(new Tuple<User, List<Role>>(user, new List<Role>() { role}));
             var ur = new Tuple<User, List<Role>>(new User
             {
                 UserName = testStr,
