@@ -18,19 +18,30 @@ namespace CRM.Core.Business.UseCases.AddOtherUser
             _fileHelper = fileHelper;
         }
 
+        /// <summary>
+        /// Add single user to database
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        /// <exception cref="UnauthorizedAccessException"></exception>
         public async Task<UserModel> Handle(AddOtherUserCommand request, CancellationToken cancellationToken)
         {
-            request.User.Password = DefaultParams.defaultPwd;
-            if (
-                (request.User.Role == Roles.ADMIN) ||
-                (request.User.Role == Roles.CLIIENT) ||
-                request.User.Role == Roles.SUPERVISOR && request.Roles.Contains(Roles.SUPERVISOR)
-                ) throw new UnauthorizedAccessException();
-            ValidatorBehavior<UserBodyAndRole>.Validate(request.User);
+            if(request.User.Password == null) request.User.Password = DefaultParams.defaultPwd;
             var currentUserRoles = await _repo.GetUserAndRole(request.CurrentUserName);
             if (currentUserRoles == null) throw new UnauthorizedAccessException();
+
             var roles = currentUserRoles.Item2;
-            var isClient = roles.Find(r => r.Name == Roles.CLIIENT) != null;
+            if(roles == null) throw new UnauthorizedAccessException();
+            List<string?> listRoles = roles.Select(v => v.Name).ToList();
+            if (
+                (request.User.Role == Roles.ADMIN) ||
+                (listRoles.Contains(Roles.CLIENT)) ||
+                request.User.Role == Roles.SUPERVISOR && listRoles.Contains(Roles.SUPERVISOR)
+                ) throw new UnauthorizedAccessException();
+            ValidatorBehavior<UserBodyAndRole>.Validate(request.User);
+
+            var isClient = roles.Find(r => r.Name == Roles.CLIENT) != null;
             var isSupervisor = roles.Find(r => r.Name == Roles.SUPERVISOR) != null;
             var isCCL = roles.Find(r => r.Name == Roles.CCL) != null;
             if (isClient) throw new UnauthorizedAccessException();
@@ -51,10 +62,10 @@ namespace CRM.Core.Business.UseCases.AddOtherUser
                 FirstName = cur.FirstName,
                 LastName = cur.LastName,
                 PhoneNumber = cur.PhoneNumber,
-                Creator = currentUserRoles.Item1
+                Creator = currentUserRoles.Item1,
             };
             if (picture is not null) user.Picture = picture;
-            var userAndRole = await _repo.AddAsync(user, request.User.Password, request.User.Role);
+            var userAndRole = await _repo.AddAsync(user, request.User.Password ?? DefaultParams.defaultPwd, request.User.Role);
             return userAndRole;
         }
     }

@@ -38,8 +38,7 @@ namespace CRM.Core.Business.Tests.UseCases.AddOtherUser
                 User = new UserBodyAndRole
                 {
                     Role = Roles.ADMIN
-                },
-                Roles = new List<string> { Roles.SUPERVISOR }
+                }
             };
 
 
@@ -61,9 +60,8 @@ namespace CRM.Core.Business.Tests.UseCases.AddOtherUser
             {
                 User = new UserBodyAndRole
                 {
-                    Role = Roles.CLIIENT
-                },
-                Roles = new List<string> { Roles.CLIIENT }
+                    Role = Roles.CLIENT
+                }
             };
 
 
@@ -82,13 +80,15 @@ namespace CRM.Core.Business.Tests.UseCases.AddOtherUser
         {
             // Arrange
             Mock<Tuple<User, List<Role>>> userRole = new();
+            _userRepositoryMock
+                .Setup(ur => ur.GetUserAndRole(It.IsAny<string>()))
+                .ReturnsAsync(new Tuple<User, List<Role>>(new User(), new List<Role> { new Role { Name = Roles.ADMIN } }));
             var command = new AddOtherUserCommand
             {
                 User = new UserBodyAndRole
                 {
                     Role = Roles.SUPERVISOR
-                },
-                Roles = new List<string> { Roles.ADMIN }
+                }
             };
 
 
@@ -117,8 +117,8 @@ namespace CRM.Core.Business.Tests.UseCases.AddOtherUser
                     Email = testStr,
                     Picture = _fileMock.Object,
                     PhoneNumber = testStr,
-                },
-                Roles = new List<string> { Roles.ADMIN }
+                    Password = testStr,
+                }
             };
 
             var user = new User();
@@ -133,7 +133,7 @@ namespace CRM.Core.Business.Tests.UseCases.AddOtherUser
                 LastName = testStr,
                 Email = testStr,
                 Picture = "f1",
-                PhoneNumber = testStr
+                PhoneNumber = testStr,
             }, new List<Role>() { new Role { Name= "test"} });
             _userRepositoryMock
                 .Setup(ur => ur.AddAsync(It.IsAny<User>(), It.IsAny<string>(), It.IsAny<string>()))

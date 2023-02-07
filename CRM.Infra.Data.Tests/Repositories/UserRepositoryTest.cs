@@ -17,6 +17,7 @@ public class UserRepositoryTest
     private readonly UserRepository _repo;
     private readonly Mock<IUserStore<User>> _store = new();
     private readonly Mock<IRoleStore<Role>> _storeRole = new();
+    private readonly Mock<IFileHelper> _fileHelper = new();
     private readonly Mock<UserManager<User>> _userManager;
     private readonly Mock<RoleManager<Role>> _roleManager;
 
@@ -24,7 +25,7 @@ public class UserRepositoryTest
     {
         _userManager = new(_store.Object, null, null, null, null, null, null, null, null);
         _roleManager = new(_storeRole.Object, null, null, null, null);
-        _repo = new(_userManager.Object, _roleManager.Object);
+        _repo = new(_userManager.Object, _roleManager.Object, _fileHelper.Object);
     }
 
     [TestMethod]
@@ -241,19 +242,19 @@ public class UserRepositoryTest
             new UserCsvModel {Status = FIleReadStatus.Invalid}
         };
         var user = new User();
-        var role = new Role() { Name = Roles.CLIIENT };
+        var role = new Role() { Name = Roles.CLIENT };
         _userManager
             .Setup(ur => ur.FindByNameAsync(It.IsAny<string>()))
             .ReturnsAsync(user);
         _userManager
             .Setup(ur => ur.GetRolesAsync(It.IsAny<User>()))
-            .ReturnsAsync(new List<string>() { Roles.CLIIENT });
+            .ReturnsAsync(new List<string>() { Roles.CLIENT });
         _roleManager
             .Setup(rm => rm.FindByNameAsync(It.IsAny<string>()))
             .ReturnsAsync(role);
 
         // Act
-        var result = await Assert.ThrowsExceptionAsync<UnauthorizedAccessException>(() => _repo.AddFromListAsync(listCsv, Roles.CLIIENT, "test"));
+        var result = await Assert.ThrowsExceptionAsync<UnauthorizedAccessException>(() => _repo.AddFromListAsync(listCsv, Roles.CLIENT, "test"));
 
         // Assert
         Assert.IsNotNull(result);

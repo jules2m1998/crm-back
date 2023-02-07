@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace CRM.Core.Domain;
 
-public class Roles
+public static class Roles
 {
     public const string ADMIN = "ADMIN";
     public const string CCL = "CCL";
     public const string SUPERVISOR = "SUPERVISOR";
-    public const string CLIIENT = "CLIENT";
+    public const string CLIENT = "CLIENT";
 }

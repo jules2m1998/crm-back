@@ -14,10 +14,12 @@ namespace CRM.Infra.Data.Repositories
     {
         private readonly UserManager<User> _userManager;
         private readonly RoleManager<Role> _roleManager;
-        public UserRepository(UserManager<User> userManager, RoleManager<Role> roleManager)
+        private readonly IFileHelper _fileHelper;
+        public UserRepository(UserManager<User> userManager, RoleManager<Role> roleManager, IFileHelper fileHelper)
         {
             _userManager = userManager;
             _roleManager = roleManager;
+            _fileHelper = fileHelper;
         }
 
         /// <summary>
@@ -37,7 +39,7 @@ namespace CRM.Infra.Data.Repositories
                 role != Roles.CCL &&
                 role != Roles.ADMIN &&
                 role != Roles.SUPERVISOR &&
-                role != Roles.CLIIENT
+                role != Roles.CLIENT
                 )
                 throw new UnauthorizedAccessException();
             var u = await CreateUser(user, pwd);
@@ -61,6 +63,7 @@ namespace CRM.Infra.Data.Repositories
             var errors = new Dictionary<string, List<string>>();
             if (!identityResult.Succeeded)
             {
+                if(user.Picture is not null) _fileHelper.DeleteImageToServer(user.Picture);
                 foreach (var error in identityResult.Errors)
                 {
                     switch (error.Code)
@@ -214,11 +217,11 @@ namespace CRM.Infra.Data.Repositories
         public async Task<List<UserCsvModel>> AddFromListAsync(List<UserCsvModel> users, string role, string creatorUserName)
         {
             if(role == Roles.ADMIN) throw new UnauthorizedAccessException();
-            if(role != Roles.CCL && role != Roles.SUPERVISOR && role != Roles.CLIIENT) throw new UnauthorizedAccessException();
+            if(role != Roles.CCL && role != Roles.SUPERVISOR && role != Roles.CLIENT) throw new UnauthorizedAccessException();
             var currentUserRoles = await GetUserAndRole(creatorUserName);
             if(currentUserRoles == null) throw new UnauthorizedAccessException();
             var roles = currentUserRoles.Item2;
-            var isClient = roles.Find(r => r.Name == Roles.CLIIENT) != null;
+            var isClient = roles.Find(r => r.Name == Roles.CLIENT) != null;
             var isSupervisor = roles.Find(r => r.Name == Roles.SUPERVISOR) != null;
             var isCCL = roles.Find(r => r.Name == Roles.CCL) != null;
             if (isClient) throw new UnauthorizedAccessException();

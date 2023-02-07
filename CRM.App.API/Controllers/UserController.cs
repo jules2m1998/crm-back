@@ -1,11 +1,13 @@
 ﻿using CRM.Core.Business.Models;
+using CRM.Core.Business.UseCases.AddOtherUser;
 using CRM.Core.Business.UseCases.AddUser;
 using CRM.Core.Business.UseCases.AddUsersByCSV;
 using CRM.Core.Domain;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 
 namespace CRM.App.API.Controllers
 {
@@ -14,6 +16,7 @@ namespace CRM.App.API.Controllers
     public class UserController : ControllerBase
     {
         private readonly ISender _sender;
+        private string? _username { get { return User.FindFirstValue(ClaimTypes.Name); } }
         public UserController(ISender sender)
         {
             _sender = sender;
@@ -32,8 +35,17 @@ namespace CRM.App.API.Controllers
         [ProducesResponseType(typeof(List<UserCsvModel>), 201)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> AddUsersByCSV([FromForm] AddUsersByCSVCommand cmd)
+        public async Task<IActionResult> AddUsersByCSV(
+            IFormFile file,
+            [FromForm, Required] string role)
         {
+            var username = User.FindFirstValue(ClaimTypes.Name);
+            var cmd = new AddUsersByCSVCommand
+            {
+                File = file,
+                Role = role,
+                CreatorUsername = username
+            };
             if(cmd.Role == Roles.ADMIN) return Unauthorized();
             try
             {
@@ -48,6 +60,29 @@ namespace CRM.App.API.Controllers
             } catch(InvalidDataException ex)
             {
                 return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost]
+        [Authorize(Roles = $"{Roles.ADMIN},{Roles.SUPERVISOR}")]
+        [ProducesResponseType(typeof(UserModel), 200)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> AddUser([FromForm] UserBodyAndRole user)
+        {
+            var username = User.FindFirstValue(ClaimTypes.Name);
+            if (username == null) return Unauthorized();
+            var cmd = new AddOtherUserCommand
+            {
+                User = user,
+                CurrentUserName = username
+            };
+            try
+            {
+                var result = await _sender.Send(cmd);
+                return Created("", result);
+            } catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
             }
         }
     }
