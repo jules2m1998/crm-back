@@ -59,6 +59,10 @@ namespace CRM.Infra.Data.Repositories
         /// </exception>
         private async Task<User> CreateUser(User user, string pwd)
         {
+            var studies = user.Studies;
+            var xp = user.Experiences;
+            user.Experiences = null;
+            user.Studies = null;
             var identityResult = await _userManager.CreateAsync(user, pwd);
             var errors = new Dictionary<string, List<string>>();
             if (!identityResult.Succeeded)
@@ -99,7 +103,10 @@ namespace CRM.Infra.Data.Repositories
                 }
                 throw new BaseException(errors);
             }
-            return await _userManager.FindByNameAsync(user.UserName!) ?? new User();
+            var u = await _userManager.FindByNameAsync(user.UserName!);
+            user.Studies = studies;
+            user.Experiences = xp;
+            return u!;
         }
 
         /// <summary>
@@ -111,6 +118,10 @@ namespace CRM.Infra.Data.Repositories
         /// <exception cref="BaseException"></exception>
         private async Task<UserModel> AddRole(User u, string role)
         {
+            var studies = u.Studies;
+            var xp = u.Experiences;
+            u.Experiences = null;
+            u.Studies = null;
             var roleExist = await _roleManager.RoleExistsAsync(role);
             if (!roleExist)
             {
@@ -122,6 +133,9 @@ namespace CRM.Infra.Data.Repositories
             {
                 throw new BaseException(errors);
             }
+
+            u.Studies = studies;
+            u.Experiences = xp;
             return new UserModel
             {
                 Id = u.Id,

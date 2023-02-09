@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace CRM.Core.Business.Models
 {
@@ -11,5 +6,7 @@ namespace CRM.Core.Business.Models
     {
         [Required]
         public string Role { get; set; } = string.Empty;
+        public ICollection<SkillModel>? Studies { get; set; }
+        public ICollection<SkillModel>? Experiences { get; set;}
     }
 }

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CRM.App.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230125225118_set-user-model")]
-    partial class setusermodel
+    [Migration("20230209142633_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -53,6 +53,53 @@ namespace CRM.App.API.Migrations
                     b.ToTable("AspNetRoles", (string)null);
                 });
 
+            modelBuilder.Entity("CRM.Core.Domain.Entities.Skill", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("ExpertId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsCurrent")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Place")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("StudentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("UpdateAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExpertId");
+
+                    b.HasIndex("StudentId");
+
+                    b.ToTable("Skills");
+                });
+
             modelBuilder.Entity("CRM.Core.Domain.Entities.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -68,6 +115,9 @@ namespace CRM.App.API.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
@@ -128,6 +178,8 @@ namespace CRM.App.API.Migrations
                         .HasColumnType("nvarchar(256)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CreatorId");
 
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
@@ -243,6 +295,32 @@ namespace CRM.App.API.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("CRM.Core.Domain.Entities.Skill", b =>
+                {
+                    b.HasOne("CRM.Core.Domain.Entities.User", "Expert")
+                        .WithMany("Experiences")
+                        .HasForeignKey("ExpertId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("CRM.Core.Domain.Entities.User", "Student")
+                        .WithMany("Studies")
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("Expert");
+
+                    b.Navigation("Student");
+                });
+
+            modelBuilder.Entity("CRM.Core.Domain.Entities.User", b =>
+                {
+                    b.HasOne("CRM.Core.Domain.Entities.User", "Creator")
+                        .WithMany()
+                        .HasForeignKey("CreatorId");
+
+                    b.Navigation("Creator");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
                     b.HasOne("CRM.Core.Domain.Entities.Role", null)
@@ -292,6 +370,13 @@ namespace CRM.App.API.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("CRM.Core.Domain.Entities.User", b =>
+                {
+                    b.Navigation("Experiences");
+
+                    b.Navigation("Studies");
                 });
 #pragma warning restore 612, 618
         }

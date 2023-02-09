@@ -13,4 +13,6 @@ public class User: IdentityUser<Guid>
     public DateTime? DeletedAt { get; set; }
 
     public virtual User? Creator { get; set; } = null!;
+    public virtual ICollection<Skill>? Studies { get; set; }
+    public virtual ICollection<Skill>? Experiences { get; set; }
 }

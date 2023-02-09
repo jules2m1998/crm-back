@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
+using System.Text.Json;
 
 namespace CRM.App.API.Controllers
 {
@@ -39,12 +40,12 @@ namespace CRM.App.API.Controllers
             IFormFile file,
             [FromForm, Required] string role)
         {
-            var username = User.FindFirstValue(ClaimTypes.Name);
+            var username = _username;
             var cmd = new AddUsersByCSVCommand
             {
                 File = file,
                 Role = role,
-                CreatorUsername = username
+                CreatorUsername = username!
             };
             if(cmd.Role == Roles.ADMIN) return Unauthorized();
             try
@@ -69,7 +70,10 @@ namespace CRM.App.API.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> AddUser([FromForm] UserBodyAndRole user)
         {
-            var username = User.FindFirstValue(ClaimTypes.Name);
+            var username = _username;
+
+            DeserializeSkills(user);
+
             if (username == null) return Unauthorized();
             var cmd = new AddOtherUserCommand
             {
@@ -80,10 +84,30 @@ namespace CRM.App.API.Controllers
             {
                 var result = await _sender.Send(cmd);
                 return Created("", result);
-            } catch (UnauthorizedAccessException ex)
+            }
+            catch (UnauthorizedAccessException ex)
             {
                 return Unauthorized(ex.Message);
             }
+        }
+
+        /// <summary>
+        /// Deserialize skills and add them to the user request
+        /// </summary>
+        /// <param name="user"></param>
+        private void DeserializeSkills(UserBodyAndRole user)
+        {
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
+            var studiesForm = Request.Form["Studies"];
+            var studies = studiesForm.Select(s => JsonSerializer.Deserialize<SkillModel>(s!, options)).ToList();
+            if (studies.Any()) user.Studies = studies!;
+
+            var xpForm = Request.Form["Experiences"];
+            var xp = xpForm.Select(s => JsonSerializer.Deserialize<SkillModel>(s!, options)).ToList();
+            if (xpForm.Any()) user.Experiences = xp!;
         }
     }
 }

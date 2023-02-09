@@ -21,4 +21,14 @@ public static class ErrorMessage
     {
         return $"The {fieldName} field is required.";
     }
+
+    public static string ToGreaterThanMsg(this string fieldName, string otherField)
+    {
+        return $"The {fieldName} is greater than the {otherField}";
+    }
+
+    public static string ToTwoNotEmptyMsg(this string fieldName, string otherField)
+    {
+        return $"{fieldName} and {otherField} fields cannot both be empty";
+    }
 }
