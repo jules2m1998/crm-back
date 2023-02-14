@@ -15,4 +15,5 @@ public class User: IdentityUser<Guid>
     public virtual User? Creator { get; set; } = null!;
     public virtual ICollection<Skill>? Studies { get; set; }
     public virtual ICollection<Skill>? Experiences { get; set; }
+    public virtual ICollection<UserRole> UserRoles { get; set; } = null!;
 }

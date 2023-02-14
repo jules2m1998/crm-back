@@ -6,6 +6,7 @@ using CRM.Core.Domain.Exceptions;
 using CRM.Core.Domain.Extensions;
 using CRM.Infra.Data.Repositories;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using System.Data;
 
@@ -479,5 +480,25 @@ public class UserRepositoryTest
         Assert.IsNotNull(result);
         Assert.AreEqual(1, result.Count);
         Assert.AreEqual(result[0].Status, FIleReadStatus.Exist);
+    }
+
+    // Get user by user creator name tests
+    [TestMethod]
+    public async Task UserRepository_GetUsersByCreatorAsync_Throw_Unautorized_Exception_When_Creator_Not_Exist()
+    {
+        // Arrange
+        var creatoUserName = "Test";
+        User? user = null;
+        _userManager
+            .Setup(u => u.FindByNameAsync(creatoUserName))
+            .ReturnsAsync(user);
+
+        // Act
+        var result = await Assert.ThrowsExceptionAsync<UnauthorizedAccessException>(() => _repo.GetUsersByCreatorUserNameAsync(creatoUserName));
+
+        // Assert
+        Assert.IsNotNull(result);
+        Assert.IsInstanceOfType(result, typeof(UnauthorizedAccessException));
+        _userManager.Verify(u => u.FindByNameAsync(creatoUserName), Times.Once);
     }
 }

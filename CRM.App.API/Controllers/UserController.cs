@@ -2,6 +2,7 @@
 using CRM.Core.Business.UseCases.AddOtherUser;
 using CRM.Core.Business.UseCases.AddUser;
 using CRM.Core.Business.UseCases.AddUsersByCSV;
+using CRM.Core.Business.UseCases.GetUsersByCreator;
 using CRM.Core.Domain;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -88,6 +89,24 @@ namespace CRM.App.API.Controllers
             catch (UnauthorizedAccessException ex)
             {
                 return Unauthorized(ex.Message);
+            }
+        }
+
+        [HttpGet, Authorize]
+        [ProducesResponseType(typeof(List<UserAndCreatorModel>), 200)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> GetAllUsers()
+        {
+            if(_username is null) return Unauthorized();
+            var query = new GetUsersByCreatorQuery { CreatorUserName = _username };
+            try
+            {
+                var result = await _sender.Send(query);
+                return Ok(result);
+            } 
+            catch(UnauthorizedAccessException)
+            {
+                return Unauthorized();
             }
         }
 

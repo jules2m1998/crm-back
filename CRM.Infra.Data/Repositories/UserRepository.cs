@@ -6,6 +6,7 @@ using CRM.Core.Domain.Entities;
 using CRM.Core.Domain.Exceptions;
 using CRM.Core.Domain.Extensions;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
 
 namespace CRM.Infra.Data.Repositories
@@ -271,6 +272,92 @@ namespace CRM.Infra.Data.Repositories
 
             }
             return users;
+        }
+
+        /// <summary>
+        /// Get users by the username of their creator
+        /// </summary>
+        /// <param name="creatorUserName">User name of creator</param>
+        /// <returns></returns>
+        /// <exception cref="UnauthorizedAccessException">When creator not exist.</exception>
+        public async Task<ICollection<UserAndCreatorModel>> GetUsersByCreatorUserNameAsync(string creatorUserName)
+        {
+            var creator = await _userManager.FindByNameAsync(creatorUserName);
+            if (creator == null) throw new UnauthorizedAccessException();
+            var userRoles = await _userManager.GetRolesAsync(creator);
+            if(userRoles.Any(ur => ur == Roles.ADMIN))
+            {
+                return _userManager
+                    .Users
+                    .Include(u => u.UserRoles)
+                    .ThenInclude(ur => ur.Role)
+                    .Where(u => !u.UserRoles.Any(ur => ur.Role.Name == Roles.ADMIN))
+                    .Select(u => ConvertUserAndCreator(u, creator)).ToList(); ;
+            }
+            return _userManager
+                    .Users
+                    .Include(u => u.Creator)
+                    .Include(u => u.UserRoles)
+                    .ThenInclude(ur => ur.Role)
+                    .Where(u => u.Creator != null && u.Creator.UserName == creator.UserName)
+                    .Select(u => ConvertUserAndCreator(u, creator)).ToList();
+        }
+
+        private static UserAndCreatorModel ConvertUserAndCreator(User u, User creator)
+        {
+            List<string>? roles = GetRolesInUserRoleList(u);
+            UserAndCreatorModel uandc = Conversion(u, creator);
+            if (roles is not null && roles.Count > 0) uandc.Roles = roles;
+            return uandc;
+        }
+
+        /// <summary>
+        /// Convert user to UserAndCreatorModel
+        /// </summary>
+        /// <param name="u"></param>
+        /// <param name="creator"></param>
+        /// <returns>Convertion version of user to UserAndCreatorModel</returns>
+        private static UserAndCreatorModel Conversion(User u, User creator)
+        {
+            return new UserAndCreatorModel(
+                u.Id,
+                u.UserName!,
+                u.Email!,
+                u.FirstName,
+                u.LastName,
+                new List<string>(),
+                u.Picture,
+                u.PhoneNumber,
+                u.CreatedAt,
+                u.UpdateAt,
+                u.DeletedAt,
+                new BaseUserModel(
+                    creator.Id,
+                    creator.UserName!,
+                    creator.Email!,
+                    creator.FirstName,
+                    creator.LastName,
+                    new List<string>(),
+                    creator.Picture,
+                    creator.PhoneNumber,
+                    creator.CreatedAt,
+                    creator.UpdateAt,
+                    creator.DeletedAt
+                    )
+                );
+        }
+        /// <summary>
+        /// Extract roles of user in his userRole list.
+        /// </summary>
+        /// <param name="u"></param>
+        /// <returns>List of user role to string</returns>
+        private static List<string> GetRolesInUserRoleList(User u)
+        {
+            return u.UserRoles.Aggregate(new List<string>(), (acc, x) =>
+            {
+                if (x.Role.Name is not null) acc.Add(x.Role.Name);
+                return acc;
+            });
         }
     }
 }
