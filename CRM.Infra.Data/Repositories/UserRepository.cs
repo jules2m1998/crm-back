@@ -161,7 +161,7 @@ namespace CRM.Infra.Data.Repositories
         /// <returns>A tuple of user and his roles</returns>
         public async Task<Tuple<User, List<Role>>?> GetByUserAndRoleAsync(string username, string password)
         {
-            var user = await _userManager.FindByNameAsync(username);
+            var user = await FindByNameAsync(username);
             if (user is null) return null;
             var isCorrectPwd = await _userManager.CheckPasswordAsync(user, password);
             if (!isCorrectPwd) return null;
@@ -183,8 +183,8 @@ namespace CRM.Infra.Data.Repositories
         /// <returns>A tuple of user and his roles</returns>
         public async Task<Tuple<User, List<Role>>?> GetUserAndRole(string username)
         {
-            var user = await _userManager.FindByNameAsync(username);
-            if (user is null) return null;
+            var user = await FindByNameAsync(username);
+            if(user is null) return null;
             var roles = await _userManager.GetRolesAsync(user);
             if (roles is null) return null;
             var roleEntities = new List<Role>();
@@ -282,7 +282,7 @@ namespace CRM.Infra.Data.Repositories
         /// <exception cref="UnauthorizedAccessException">When creator not exist.</exception>
         public async Task<ICollection<UserAndCreatorModel>> GetUsersByCreatorUserNameAsync(string creatorUserName)
         {
-            var creator = await _userManager.FindByNameAsync(creatorUserName);
+            var creator = await FindByNameAsync(creatorUserName);
             if (creator == null) throw new UnauthorizedAccessException();
             var userRoles = await _userManager.GetRolesAsync(creator);
             if(userRoles.Any(ur => ur == Roles.ADMIN))
@@ -291,7 +291,7 @@ namespace CRM.Infra.Data.Repositories
                     .Users
                     .Include(u => u.UserRoles)
                     .ThenInclude(ur => ur.Role)
-                    .Where(u => !u.UserRoles.Any(ur => ur.Role.Name == Roles.ADMIN))
+                    .Where(u => !u.UserRoles.Any(ur => ur.Role.Name == Roles.ADMIN) && u.DeletedAt == null)
                     .Select(u => ConvertUserAndCreator(u, creator)).ToList(); ;
             }
             return _userManager
@@ -299,7 +299,7 @@ namespace CRM.Infra.Data.Repositories
                     .Include(u => u.Creator)
                     .Include(u => u.UserRoles)
                     .ThenInclude(ur => ur.Role)
-                    .Where(u => u.Creator != null && u.Creator.UserName == creator.UserName)
+                    .Where(u => u.Creator != null && u.Creator.UserName == creator.UserName && u.DeletedAt == null)
                     .Select(u => ConvertUserAndCreator(u, creator)).ToList();
         }
 
@@ -358,6 +358,76 @@ namespace CRM.Infra.Data.Repositories
                 if (x.Role.Name is not null) acc.Add(x.Role.Name);
                 return acc;
             });
+        }
+
+        /// <summary>
+        /// Mark users as delted on the db
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <param name="username"></param>
+        /// <returns></returns>
+        public async Task MarkAsDeletedRangeAsync(List<Guid> ids, string username)
+        {
+            var users = new List<User>();
+            await GetUserToDelete(ids, username, users);
+            await MarkUseAsDeleted(users);
+        }
+
+        /// <summary>
+        /// Mark user as deleted
+        /// </summary>
+        /// <param name="users"></param>
+        /// <returns></returns>
+        private async Task MarkUseAsDeleted(List<User> users)
+        {
+            foreach (var user in users)
+            {
+                user.DeletedAt = DateTime.UtcNow;
+                await _userManager.UpdateAsync(user);
+            }
+        }
+
+        /// <summary>
+        /// Finds all user to delete in data base en throw exception when 
+        /// One user not exist or creator not have the same username a like params username
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <param name="username"></param>
+        /// <param name="users"></param>
+        /// <returns></returns>
+        /// <exception cref="BaseException"></exception>
+        private async Task GetUserToDelete(List<Guid> ids, string username, List<User> users)
+        {
+            var creator = await GetUserAndRole(username);
+            if (creator == null) throw new UnauthorizedAccessException();
+            foreach (Guid id in ids)
+            {
+                var user =
+                    await _userManager
+                    .Users
+                    .Include(u => u.Creator)
+                    .FirstOrDefaultAsync(x => x.Id == id);
+                if (
+                    user == null || 
+                    (user.Creator?.UserName != username && !creator.Item2.Any(r => r.Name == Roles.ADMIN))) throw new BaseException(new Dictionary<string, List<string>>
+                {
+                    { id.ToString(), new List<string>{ "User is not defined !" } }
+                });
+                users.Add(user);
+            }
+        }
+
+        /// <summary>
+        /// Find user not deleted
+        /// </summary>
+        /// <param name="username"></param>
+        /// <returns></returns>
+        private async Task<User?> FindByNameAsync(string username)
+        {
+            var user = await _userManager.FindByNameAsync(username);
+            if (user is null || user.DeletedAt != null) return null;
+
+            return user;
         }
     }
 }

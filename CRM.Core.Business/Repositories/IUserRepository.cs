@@ -16,5 +16,6 @@ namespace CRM.Core.Business.Repositories
         UserModel UserToUserModel(User user, List<Role> roles);
         Task<List<UserCsvModel>> AddFromListAsync(List<UserCsvModel> users, string role, string creatorUserName);
         Task<ICollection<UserAndCreatorModel>> GetUsersByCreatorUserNameAsync(string creatorUserName);
+        Task MarkAsDeletedRangeAsync(List<Guid> ids, string username);
     }
 }

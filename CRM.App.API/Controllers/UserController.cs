@@ -3,6 +3,7 @@ using CRM.Core.Business.UseCases.AddOtherUser;
 using CRM.Core.Business.UseCases.AddUser;
 using CRM.Core.Business.UseCases.AddUsersByCSV;
 using CRM.Core.Business.UseCases.GetUsersByCreator;
+using CRM.Core.Business.UseCases.MarkAsDeletedRange;
 using CRM.Core.Domain;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -108,6 +109,20 @@ namespace CRM.App.API.Controllers
             {
                 return Unauthorized();
             }
+        }
+
+        [HttpDelete, Authorize]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> RemoveUsers([FromBody] List<Guid> ids)
+        {
+            if(_username is null) return Unauthorized();
+            if (!ids.Any()) return BadRequest();
+            var query = new MarkAsDeletedRangeQuery { Ids= ids, UserName = _username };
+            var result = await _sender.Send(query);
+            if(result)  return NoContent();
+            return BadRequest();
         }
 
         /// <summary>

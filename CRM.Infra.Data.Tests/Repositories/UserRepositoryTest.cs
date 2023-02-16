@@ -501,4 +501,5 @@ public class UserRepositoryTest
         Assert.IsInstanceOfType(result, typeof(UnauthorizedAccessException));
         _userManager.Verify(u => u.FindByNameAsync(creatoUserName), Times.Once);
     }
-}
+
+ }
