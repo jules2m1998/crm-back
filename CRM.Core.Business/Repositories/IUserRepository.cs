@@ -17,5 +17,11 @@ namespace CRM.Core.Business.Repositories
         Task<List<UserCsvModel>> AddFromListAsync(List<UserCsvModel> users, string role, string creatorUserName);
         Task<ICollection<UserAndCreatorModel>> GetUsersByCreatorUserNameAsync(string creatorUserName);
         Task MarkAsDeletedRangeAsync(List<Guid> ids, string username);
+        Task<User?> GetUserAndRolesAsync(string username);
+        Task<User?> GetUserAndRolesAsync(Guid id, string creatorUserName);
+        Task SetUserSkillsAsync(User userToUpdate, ICollection<SkillModel> collection, bool isStudies);
+        Task<User> SetUserSimpleData(User userToUpdate);
+        Task SetUserPasswordAsync(User user, string newPassword, string? oldPassword);
+        Task SetUserRolesAsync(User user, List<string> roles);
     }
 }

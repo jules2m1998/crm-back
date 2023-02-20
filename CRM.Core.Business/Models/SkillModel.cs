@@ -26,5 +26,15 @@ namespace CRM.Core.Business.Models
             StartDate = startDate;
             EndDate = endDate;
         }
+
+        public override bool Equals(object? obj)
+        {
+            return obj is SkillModel model &&
+                   Name == model.Name &&
+                   Place == model.Place &&
+                   IsCurrent == model.IsCurrent &&
+                   StartDate == model.StartDate &&
+                   EndDate == model.EndDate;
+        }
     }
 }

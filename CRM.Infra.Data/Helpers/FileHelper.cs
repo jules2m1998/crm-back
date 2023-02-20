@@ -106,7 +106,7 @@ namespace CRM.Infra.Data.Helpers
             }
         }
 
-        private List<T> GetValidateList<T>(List<T> elements) where T : IFileReadable
+        private static List<T> GetValidateList<T>(List<T> elements) where T : IFileReadable
         {
             foreach(var element in elements)
             {

@@ -4,10 +4,12 @@ using CRM.Core.Business.UseCases.AddUser;
 using CRM.Core.Business.UseCases.AddUsersByCSV;
 using CRM.Core.Business.UseCases.GetUsersByCreator;
 using CRM.Core.Business.UseCases.MarkAsDeletedRange;
+using CRM.Core.Business.UseCases.UpdateUser;
 using CRM.Core.Domain;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Primitives;
 using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using System.Text.Json;
@@ -125,6 +127,25 @@ namespace CRM.App.API.Controllers
             return BadRequest();
         }
 
+        [HttpPost, Authorize]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(UserModel), 200)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> UpdateUser([FromForm] UserUpdateModel user)
+        {
+            var cmd = new UpdateUserCommand
+            {
+                User = user,
+                UserName= _username!
+            };
+            cmd.User.Studies = Deserialize<SkillModel>(Request.Form["Studies"]).ToList();
+            cmd.User.Experiences = Deserialize<SkillModel>(Request.Form["Experiences"]).ToList();
+            var result = await _sender.Send(cmd);
+            if(result is null) return NotFound();
+            return Ok(result);
+        }
+
         /// <summary>
         /// Deserialize skills and add them to the user request
         /// </summary>
@@ -142,6 +163,15 @@ namespace CRM.App.API.Controllers
             var xpForm = Request.Form["Experiences"];
             var xp = xpForm.Select(s => JsonSerializer.Deserialize<SkillModel>(s!, options)).ToList();
             if (xpForm.Any()) user.Experiences = xp!;
+        }
+
+        private static IEnumerable<T> Deserialize<T>(StringValues values)
+        {
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
+            return values.Select(v => JsonSerializer.Deserialize<T>(v!, options));
         }
     }
 }
