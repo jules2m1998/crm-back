@@ -1,10 +1,5 @@
 ﻿using CRM.Core.Business.Models;
 using CRM.Core.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CRM.Core.Business.Repositories
 {
@@ -24,5 +19,19 @@ namespace CRM.Core.Business.Repositories
         Task SetUserPasswordAsync(User user, string newPassword, string? oldPassword);
         Task SetUserRolesAsync(User user, List<string> roles);
         Task ResetUserPassword(User user);
+        /// <summary>
+        /// Get list of user created by creator username and have his id in ids list
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <param name="creatorUserName"></param>
+        /// <exception cref="UnauthorizedAccessException"></exception>
+        /// <returns></returns>
+        Task<ICollection<User>> GetUsersByCreatorUsernameAndIdsAsync(ICollection<Guid> ids, string creatorUserName);
+        /// <summary>
+        /// Toogle activated state of user
+        /// </summary>
+        /// <param name="users"></param>
+        /// <returns></returns>
+        Task<ICollection<User>> ToogleUsersActivationStatus(ICollection<User> users);
     }
 }

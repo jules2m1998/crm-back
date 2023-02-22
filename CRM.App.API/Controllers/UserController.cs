@@ -6,6 +6,7 @@ using CRM.Core.Business.UseCases.GetOneUserById;
 using CRM.Core.Business.UseCases.GetUsersByCreator;
 using CRM.Core.Business.UseCases.MarkAsDeletedRange;
 using CRM.Core.Business.UseCases.ResetPassword;
+using CRM.Core.Business.UseCases.ToogleAccountActiveted;
 using CRM.Core.Business.UseCases.UpdateUser;
 using CRM.Core.Domain;
 using MediatR;
@@ -174,6 +175,29 @@ namespace CRM.App.API.Controllers
             var result = await _sender.Send(cmd); 
             if (result is null) return NotFound();
             return Ok(result);
+        }
+
+        [HttpPut, Authorize]
+        [ProducesResponseType(typeof(ICollection<UserModel>), 200)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> ToogleUserActivation(ICollection<Guid> ids)
+        {
+            if(ids.Count == 0) return BadRequest();
+            var cmd = new ToogleAccountActivatedCommand
+            {
+                Ids = ids.ToList(),
+                UserName = _username ?? ""
+            };
+            try
+            {
+                var result = await _sender.Send(cmd);
+                return Ok(result);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
+            }
         }
 
         /// <summary>

@@ -7,6 +7,7 @@ using CRM.Core.Domain.Exceptions;
 using CRM.Core.Domain.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using System.Linq;
 
 namespace CRM.Infra.Data.Repositories;
@@ -16,6 +17,15 @@ public class UserRepository: IUserRepository
     private readonly UserManager<User> _userManager;
     private readonly RoleManager<Role> _roleManager;
     private readonly IFileHelper _fileHelper;
+    private IIncludableQueryable<User, Role> UserIncluted { get {
+            return _userManager
+            .Users
+            .Include(u => u.Creator)
+            .Include(u => u.Experiences)
+            .Include(u => u.Studies)
+            .Include(u => u.UserRoles)
+            .ThenInclude(ur => ur.Role);
+        } }
     public UserRepository(UserManager<User> userManager, RoleManager<Role> roleManager, IFileHelper fileHelper)
     {
         _userManager = userManager;
@@ -328,7 +338,7 @@ public class UserRepository: IUserRepository
     /// <returns>Convertion version of creator to UserAndCreatorModel</returns>
     private static UserAndCreatorModel Conversion(User u, User creator)
     {
-        return new UserAndCreatorModel(
+        var user = new UserAndCreatorModel(
             u.Id,
             u.UserName!,
             u.Email!,
@@ -354,6 +364,8 @@ public class UserRepository: IUserRepository
                 creator.DeletedAt
                 )
             );
+        user.IsActivated = u.IsActivated;
+        return user;
     }
     /// <summary>
     /// Extract roles of creator in his userRole list.
@@ -441,13 +453,7 @@ public class UserRepository: IUserRepository
     /// <returns></returns>
     public Task<User?> GetUserAndRolesAsync(Guid id)
     {
-        return _userManager
-            .Users
-            .Include(u => u.Creator)
-            .Include(u => u.Experiences)
-            .Include(u => u.Studies)
-            .Include(u => u.UserRoles)
-            .ThenInclude(ur => ur.Role)
+        return UserIncluted
             .Where(u => u.DeletedAt == null && u.Id == id)
             .FirstOrDefaultAsync();
     }
@@ -458,10 +464,7 @@ public class UserRepository: IUserRepository
     /// <returns></returns>
     public Task<User?> GetUserAndRolesAsync(string username)
     {
-        return _userManager
-            .Users
-            .Include(u => u.UserRoles)
-            .ThenInclude(ur => ur.Role)
+        return UserIncluted
             .Where(u => u.DeletedAt == null && u.UserName == username)
             .FirstOrDefaultAsync();
     }
@@ -481,13 +484,7 @@ public class UserRepository: IUserRepository
         var creator = await _userManager.FindByNameAsync(creatorUserName);
         if (creator is null) return null;
         var isAdmin = await _userManager.IsInRoleAsync(creator, Roles.ADMIN);
-        return await _userManager
-            .Users
-            .Include(u => u.Creator)
-            .Include(u => u.Experiences)
-            .Include(u => u.Studies)
-            .Include(u => u.UserRoles)
-            .ThenInclude(ur => ur.Role)
+        return await UserIncluted
             .Where(u => u.DeletedAt == null && u.Id == id && (u.UserName == creatorUserName || (u.Creator != null && u.Creator.UserName == creatorUserName) || isAdmin))
             .FirstOrDefaultAsync();
     }
@@ -605,5 +602,28 @@ public class UserRepository: IUserRepository
     {
         await _userManager.RemovePasswordAsync(user);
         await _userManager.AddPasswordAsync(user, DefaultParams.defaultPwd);
+    }
+
+    public async Task<ICollection<User>> GetUsersByCreatorUsernameAndIdsAsync(ICollection<Guid> ids, string creatorUserName)
+    {
+        var creator = await _userManager.FindByNameAsync(creatorUserName);
+        if (creator is null) throw new UnauthorizedAccessException();
+        var isAdmin = await _userManager.IsInRoleAsync(creator, Roles.ADMIN);
+        var users = await UserIncluted
+            .Where(u => ids.Contains(u.Id) && (u.UserName == creatorUserName || (u.Creator != null && u.Creator.UserName == creatorUserName) || isAdmin))
+            .ToListAsync();
+        if(users.Count != ids.Count)
+            throw new UnauthorizedAccessException();
+        return users;
+    }
+
+    public async Task<ICollection<User>> ToogleUsersActivationStatus(ICollection<User> users)
+    {
+        foreach(var user in users)
+        {
+            user.IsActivated = !user.IsActivated;
+            await _userManager.UpdateAsync(user);
+        }
+        return users;
     }
 }

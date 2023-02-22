@@ -25,7 +25,7 @@ namespace CRM.Core.Business.UseCases.Login
         {
             ValidatorBehavior<LoginQuery>.Validate(request);
             var userRoles = await _userRepository.GetByUserAndRoleAsync(request.UserName, request.Password);
-            if (userRoles == null) throw new UnauthorizedAccessException();
+            if (userRoles == null || !userRoles.Item1.IsActivated) throw new UnauthorizedAccessException();
             var user = userRoles.Item1;
             var roles = userRoles.Item2;
             var token = _jwtService.Generate(user, roles);

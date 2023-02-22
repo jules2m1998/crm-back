@@ -22,6 +22,7 @@ public static class UserExtension
             Email = user.Email!,
             Studies = user.Studies!.Select(st => SkillToSkillModel(st)).ToList(),
             Experiences = user.Experiences!.Select(st => SkillToSkillModel(st)).ToList(),
+            IsActivated= user.IsActivated,
             Roles = user.UserRoles.Select(ur => ur.Role.Name ?? "").ToList(),
             Picture = user.Picture,
             PhoneNumber = user.PhoneNumber,

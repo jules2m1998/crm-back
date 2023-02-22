@@ -20,6 +20,7 @@ namespace CRM.Core.Business.Models
         virtual public DateTime CreatedAt { get; set; }
         virtual public DateTime? UpdateAt { get; set; }
         virtual public DateTime? DeletedAt { get; set; }
+        virtual public bool IsActivated { get; set; } = true;
 
         public BaseUserModel()
         {
