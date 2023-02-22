@@ -2,8 +2,10 @@
 using CRM.Core.Business.UseCases.AddOtherUser;
 using CRM.Core.Business.UseCases.AddUser;
 using CRM.Core.Business.UseCases.AddUsersByCSV;
+using CRM.Core.Business.UseCases.GetOneUserById;
 using CRM.Core.Business.UseCases.GetUsersByCreator;
 using CRM.Core.Business.UseCases.MarkAsDeletedRange;
+using CRM.Core.Business.UseCases.ResetPassword;
 using CRM.Core.Business.UseCases.UpdateUser;
 using CRM.Core.Domain;
 using MediatR;
@@ -127,7 +129,7 @@ namespace CRM.App.API.Controllers
             return BadRequest();
         }
 
-        [HttpPost, Authorize]
+        [HttpPut, Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(UserModel), 200)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -143,6 +145,34 @@ namespace CRM.App.API.Controllers
             cmd.User.Experiences = Deserialize<SkillModel>(Request.Form["Experiences"]).ToList();
             var result = await _sender.Send(cmd);
             if(result is null) return NotFound();
+            return Ok(result);
+        }
+
+        [HttpPut, Authorize, Route("{id:Guid}")]
+        [ProducesResponseType(typeof(UserModel), 200)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> ResetPassword(Guid id)
+        {
+            var cmd = new ResetPasswordCommand { Id= id, UserName = _username ?? "" };
+            var result = await _sender.Send(cmd);
+            if (result is null) return Unauthorized();
+            return Ok(result);
+        }
+
+        [HttpGet, Authorize, Route("{id:Guid}")]
+        [ProducesResponseType(typeof(UserModel), 200)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> GetOneUser(Guid id)
+        {
+            var cmd = new GetOneUserByIdQuery
+            {
+                Id = id,
+                UserName = _username ?? ""
+            };
+            var result = await _sender.Send(cmd); 
+            if (result is null) return NotFound();
             return Ok(result);
         }
 
@@ -171,7 +201,7 @@ namespace CRM.App.API.Controllers
             {
                 PropertyNameCaseInsensitive = true
             };
-            return values.Select(v => JsonSerializer.Deserialize<T>(v!, options));
+            return values.Select(v => JsonSerializer.Deserialize<T>(v!, options)!);
         }
     }
 }

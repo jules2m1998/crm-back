@@ -24,7 +24,7 @@ public class UserRepository: IUserRepository
     }
 
     /// <summary>
-    /// Add new user and his role in the database
+    /// Add new creator and his role in the database
     /// </summary>
     /// <param name="user"></param>
     /// <param name="pwd"></param>
@@ -50,13 +50,13 @@ public class UserRepository: IUserRepository
     }
 
     /// <summary>
-    /// Create user in database with his password
+    /// Create creator in database with his password
     /// </summary>
     /// <param name="user"></param>
     /// <param name="pwd"></param>
     /// <returns>User created in database</returns>
     /// <exception cref="BaseException">
-    /// Throwm if the user could not be added because of invalid or existing information
+    /// Throwm if the creator could not be added because of invalid or existing information
     /// </exception>
     private async Task<User> CreateUser(User user, string pwd)
     {
@@ -101,7 +101,7 @@ public class UserRepository: IUserRepository
                     break;
                 case "UserAlreadyInRole":
                     errors
-                        .AddOrCreate(new KeyValuePair<string, string>("Role", "This user already in role !"));
+                        .AddOrCreate(new KeyValuePair<string, string>("Role", "This creator already in role !"));
                     break;
                 case "DefaultError":
                     errors
@@ -116,7 +116,7 @@ public class UserRepository: IUserRepository
     }
 
     /// <summary>
-    /// Add role to user in database
+    /// Add role to creator in database
     /// </summary>
     /// <param name="u"></param>
     /// <param name="role"></param>
@@ -159,11 +159,11 @@ public class UserRepository: IUserRepository
     }
 
     /// <summary>
-    /// Get user on database by his credentials (Username and passwor)
+    /// Get creator on database by his credentials (Username and passwor)
     /// </summary>
     /// <param name="username"></param>
     /// <param name="password"></param>
-    /// <returns>A tuple of user and his roles</returns>
+    /// <returns>A tuple of creator and his roles</returns>
     public async Task<Tuple<User, List<Role>>?> GetByUserAndRoleAsync(string username, string password)
     {
         var user = await FindByNameAsync(username);
@@ -182,10 +182,10 @@ public class UserRepository: IUserRepository
     }
 
     /// <summary>
-    /// Get user and his role by username
+    /// Get creator and his role by username
     /// </summary>
     /// <param name="username"></param>
-    /// <returns>A tuple of user and his roles</returns>
+    /// <returns>A tuple of creator and his roles</returns>
     public async Task<Tuple<User, List<Role>>?> GetUserAndRole(string username)
     {
         var user = await FindByNameAsync(username);
@@ -203,7 +203,7 @@ public class UserRepository: IUserRepository
     }
 
     /// <summary>
-    /// Convert user to user model
+    /// Convert creator to creator model
     /// </summary>
     /// <param name="user"></param>
     /// <param name="roles"></param>
@@ -225,14 +225,14 @@ public class UserRepository: IUserRepository
     }
 
     /// <summary>
-    /// Add users to database using list of user csv model and his roles
+    /// Add users to database using list of creator csv model and his roles
     /// </summary>
     /// <param name="users"></param>
     /// <param name="role"></param>
     /// <param name="creatorUserName"></param>
     /// <returns></returns>
     /// <exception cref="UnauthorizedAccessException">
-    /// When current user not exist or role is not a known role
+    /// When current creator not exist or role is not a known role
     /// </exception>
     public async Task<List<UserCsvModel>> AddFromListAsync(List<UserCsvModel> users, string role, string creatorUserName)
     {
@@ -297,7 +297,7 @@ public class UserRepository: IUserRepository
                 .Include(u => u.UserRoles)
                 .ThenInclude(ur => ur.Role)
                 .Where(u => !u.UserRoles.Any(ur => ur.Role.Name == Roles.ADMIN) && u.DeletedAt == null)
-                .Select(u => ConvertUserAndCreator(u, creator)).ToList(); ;
+                .Select(u => ConvertUserAndCreator(u, creator)).ToList();
         }
         return _userManager
                 .Users
@@ -307,7 +307,12 @@ public class UserRepository: IUserRepository
                 .Where(u => u.Creator != null && u.Creator.UserName == creator.UserName && u.DeletedAt == null)
                 .Select(u => ConvertUserAndCreator(u, creator)).ToList();
     }
-
+    /// <summary>
+    /// Convert to user and creator model
+    /// </summary>
+    /// <param name="u"></param>
+    /// <param name="creator"></param>
+    /// <returns></returns>
     private static UserAndCreatorModel ConvertUserAndCreator(User u, User creator)
     {
         List<string>? roles = GetRolesInUserRoleList(u);
@@ -315,13 +320,12 @@ public class UserRepository: IUserRepository
         if (roles is not null && roles.Count > 0) uandc.Roles = roles;
         return uandc;
     }
-
     /// <summary>
-    /// Convert user to UserAndCreatorModel
+    /// Convert creator to UserAndCreatorModel
     /// </summary>
     /// <param name="u"></param>
     /// <param name="creator"></param>
-    /// <returns>Convertion version of user to UserAndCreatorModel</returns>
+    /// <returns>Convertion version of creator to UserAndCreatorModel</returns>
     private static UserAndCreatorModel Conversion(User u, User creator)
     {
         return new UserAndCreatorModel(
@@ -352,10 +356,10 @@ public class UserRepository: IUserRepository
             );
     }
     /// <summary>
-    /// Extract roles of user in his userRole list.
+    /// Extract roles of creator in his userRole list.
     /// </summary>
     /// <param name="u"></param>
-    /// <returns>List of user role to string</returns>
+    /// <returns>List of creator role to string</returns>
     private static List<string> GetRolesInUserRoleList(User u)
     {
         return u.UserRoles.Aggregate(new List<string>(), (acc, x) =>
@@ -364,7 +368,6 @@ public class UserRepository: IUserRepository
             return acc;
         });
     }
-
     /// <summary>
     /// Mark users as delted on the db
     /// </summary>
@@ -377,9 +380,8 @@ public class UserRepository: IUserRepository
         await GetUserToDelete(ids, username, users);
         await MarkUseAsDeleted(users);
     }
-
     /// <summary>
-    /// Mark user as deleted
+    /// Mark creator as deleted
     /// </summary>
     /// <param name="users"></param>
     /// <returns></returns>
@@ -391,10 +393,9 @@ public class UserRepository: IUserRepository
             await _userManager.UpdateAsync(user);
         }
     }
-
     /// <summary>
-    /// Finds all user to delete in data base en throw exception when 
-    /// One user not exist or creator not have the same username a like params username
+    /// Finds all creator to delete in data base en throw exception when 
+    /// One creator not exist or creator not have the same username a like params username
     /// </summary>
     /// <param name="ids"></param>
     /// <param name="username"></param>
@@ -421,9 +422,8 @@ public class UserRepository: IUserRepository
             users.Add(user);
         }
     }
-
     /// <summary>
-    /// Find user not deleted
+    /// Find creator not deleted
     /// </summary>
     /// <param name="username"></param>
     /// <returns></returns>
@@ -434,7 +434,11 @@ public class UserRepository: IUserRepository
 
         return user;
     }
-
+    /// <summary>
+    /// Get not deleted user by his id
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
     public Task<User?> GetUserAndRolesAsync(Guid id)
     {
         return _userManager
@@ -447,7 +451,11 @@ public class UserRepository: IUserRepository
             .Where(u => u.DeletedAt == null && u.Id == id)
             .FirstOrDefaultAsync();
     }
-
+    /// <summary>
+    /// Get not deleted user by his username
+    /// </summary>
+    /// <param name="username"></param>
+    /// <returns></returns>
     public Task<User?> GetUserAndRolesAsync(string username)
     {
         return _userManager
@@ -457,20 +465,50 @@ public class UserRepository: IUserRepository
             .Where(u => u.DeletedAt == null && u.UserName == username)
             .FirstOrDefaultAsync();
     }
-
-    public Task<User?> GetUserAndRolesAsync(Guid id, string creatorUserName)
+    /// <summary>
+    /// Get user with information as 
+    /// - creator
+    /// - Experiences
+    /// - Studies
+    /// - User role
+    /// By creator username
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="creatorUserName"></param>
+    /// <returns></returns>
+    public async Task<User?> GetUserAndRolesAsync(Guid id, string creatorUserName)
     {
-        return _userManager
+        var creator = await _userManager.FindByNameAsync(creatorUserName);
+        if (creator is null) return null;
+        var isAdmin = await _userManager.IsInRoleAsync(creator, Roles.ADMIN);
+        return await _userManager
             .Users
             .Include(u => u.Creator)
             .Include(u => u.Experiences)
             .Include(u => u.Studies)
             .Include(u => u.UserRoles)
             .ThenInclude(ur => ur.Role)
-            .Where(u => u.DeletedAt == null && u.Id == id && u.Creator != null && u.Creator.UserName == creatorUserName)
+            .Where(u => u.DeletedAt == null && u.Id == id && (u.UserName == creatorUserName || (u.Creator != null && u.Creator.UserName == creatorUserName) || isAdmin))
             .FirstOrDefaultAsync();
     }
-
+    /// <summary>
+    /// Check is emitter is creator or current user
+    /// </summary>
+    /// <param name="user"></param>
+    /// <param name="emitter"></param>
+    /// <returns></returns>
+    private static bool CheckIsUserIsAdminOrCurrent(User user, string emitter)
+    {
+        return user.UserName == emitter || (user.Creator is not null && user.Creator.UserName == emitter);
+    }
+    /// <summary>
+    /// Set user password
+    /// </summary>
+    /// <param name="user"></param>
+    /// <param name="newPassword"></param>
+    /// <param name="oldPassword"></param>
+    /// <returns></returns>
+    /// <exception cref="BaseException"></exception>
     public async Task SetUserPasswordAsync(User user, string newPassword, string? oldPassword)
     {
         var isPwdValid = await _userManager.CheckPasswordAsync(user, oldPassword);
@@ -482,11 +520,17 @@ public class UserRepository: IUserRepository
         }
         Dictionary<string, List<string>> errors = new Dictionary<string, List<string>>
         {
-            {"Password", new List<string>{"Invalid password"} }
+            {"Password", new List<string>{"Wrong password !"} }
         };
         throw new BaseException(errors);
     }
-
+    /// <summary>
+    /// Replace user roles of user
+    /// </summary>
+    /// <param name="user"></param>
+    /// <param name="roles"></param>
+    /// <returns></returns>
+    /// <exception cref="BaseException"></exception>
     public async Task SetUserRolesAsync(User user, List<string> roles)
     {
         foreach (var role in roles)
@@ -505,7 +549,13 @@ public class UserRepository: IUserRepository
         await _userManager.RemoveFromRolesAsync(user, user.UserRoles.Select(r => r.Role.Name)!);
         await _userManager.AddToRolesAsync(user, roles);
     }
-
+    /// <summary>
+    /// Replace User's skills by new skills
+    /// </summary>
+    /// <param name="userToUpdate"></param>
+    /// <param name="collection"></param>
+    /// <param name="isStudies"></param>
+    /// <returns></returns>
     public async Task SetUserSkillsAsync(User userToUpdate, ICollection<SkillModel> collection, bool isStudies)
     {
         if (isStudies)
@@ -534,12 +584,26 @@ public class UserRepository: IUserRepository
         }
         await _userManager.UpdateAsync(userToUpdate);
     }
-
+    /// <summary>
+    /// Update user data
+    /// </summary>
+    /// <param name="userToUpdate"></param>
+    /// <returns></returns>
     public async Task<User> SetUserSimpleData(User userToUpdate)
     {
         var result = await _userManager.UpdateAsync(userToUpdate);
         if (!result.Succeeded)
             CheckIdentityResultAndThrowException(result);
         return (await GetUserAndRolesAsync(userToUpdate.Id))!;
+    }
+    /// <summary>
+    /// Reset user password to default as [12345678]
+    /// </summary>
+    /// <param name="user"></param>
+    /// <returns></returns>
+    public async Task ResetUserPassword(User user)
+    {
+        await _userManager.RemovePasswordAsync(user);
+        await _userManager.AddPasswordAsync(user, DefaultParams.defaultPwd);
     }
 }

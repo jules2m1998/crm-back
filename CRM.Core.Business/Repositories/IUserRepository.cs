@@ -23,5 +23,6 @@ namespace CRM.Core.Business.Repositories
         Task<User> SetUserSimpleData(User userToUpdate);
         Task SetUserPasswordAsync(User user, string newPassword, string? oldPassword);
         Task SetUserRolesAsync(User user, List<string> roles);
+        Task ResetUserPassword(User user);
     }
 }
