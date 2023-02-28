@@ -4,13 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CRM.Core.Domain.Entities
+namespace CRM.Core.Domain.Entities;
+
+public class BaseEntity
 {
-    public class BaseEntity
-    {
-        public Guid Id { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
-        public DateTime? UpdateAt { get; set; }
-        public DateTime? DeletedAt { get; set; }
-    }
+    virtual public Guid Id { get; set; }
+    virtual public DateTime CreatedAt { get; set; } = DateTime.Now;
+    virtual public DateTime? UpdateAt { get; set; }
+    virtual public DateTime? DeletedAt { get; set; }
+    virtual public bool IsActivated { get; set; } = true;
+    virtual public User? Creator { get; set; } = null!;
 }

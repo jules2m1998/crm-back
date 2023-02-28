@@ -33,5 +33,7 @@ namespace CRM.Core.Business.Repositories
         /// <param name="users"></param>
         /// <returns></returns>
         Task<ICollection<User>> ToogleUsersActivationStatus(ICollection<User> users);
+
+        Task<bool> IsActivatedUserAsync(string userName);
     }
 }

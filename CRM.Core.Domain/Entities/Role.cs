@@ -9,5 +9,6 @@ namespace CRM.Core.Domain.Entities;
 
 public class Role: IdentityRole<Guid>
 {
-    public ICollection<UserRole> UserRoles { get; set; } = null!;
+    public string Label { get; set; } = string.Empty;
+    public virtual ICollection<UserRole> UserRoles { get; set; } = null!;
 }

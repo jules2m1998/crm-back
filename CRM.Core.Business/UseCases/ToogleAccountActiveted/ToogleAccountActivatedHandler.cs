@@ -22,6 +22,8 @@ public class ToogleAccountActivatedHandler : IRequestHandler<ToogleAccountActiva
 
     public async Task<ICollection<UserModel>> Handle(ToogleAccountActivatedCommand request, CancellationToken cancellationToken)
     {
+        var isActive = await _repo.IsActivatedUserAsync(request.UserName);
+        if (!isActive) throw new UnauthorizedAccessException();
         ICollection<User> users = await _repo.GetUsersByCreatorUsernameAndIdsAsync(ids: request.Ids, creatorUserName: request.UserName);
         users = await _repo.ToogleUsersActivationStatus(users);
         return users.Select(u => u.ToUserModel()).ToList();

@@ -28,6 +28,8 @@ public class UpdateUserHandler : IRequestHandler<UpdateUserCommand, UserModel?>
 
     public async Task<UserModel?> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
     {
+        var isActive = await _repo.IsActivatedUserAsync(request.UserName);
+        if (!isActive) throw new UnauthorizedAccessException();
         var errors = new Dictionary<string, List<string>>();
         var user = request.User;
         var userName = request.UserName;

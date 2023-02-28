@@ -19,6 +19,8 @@ namespace CRM.Core.Business.UseCases.MarkAsDeletedRange
 
         public async Task<bool> Handle(MarkAsDeletedRangeQuery request, CancellationToken cancellationToken)
         {
+            var isActive = await _repo.IsActivatedUserAsync(request.UserName);
+            if (!isActive) throw new UnauthorizedAccessException();
             if (!request.Ids.Any() || string.IsNullOrEmpty(request.UserName)) return false;
             await _repo.MarkAsDeletedRangeAsync(request.Ids, request.UserName);
             return true;

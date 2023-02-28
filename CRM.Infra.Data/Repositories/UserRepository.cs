@@ -226,7 +226,7 @@ public class UserRepository: IUserRepository
             user.Email ?? "",
             user.FirstName,
             user.LastName,
-            roles.Select(r => r.Name).ToList(),
+            roles.Select(r => r.Name!).ToList(),
             user.Picture,
             user.PhoneNumber,
             user.CreatedAt,
@@ -275,7 +275,7 @@ public class UserRepository: IUserRepository
                 try
                 {
                     var nU = await CreateUser(u, DefaultParams.defaultPwd);
-                    var addRoleResult = await AddRole(nU, role);
+                    await AddRole(nU, role);
                     user.CreatedAt = nU.CreatedAt;
                 }
                 catch(BaseException ex)
@@ -508,7 +508,7 @@ public class UserRepository: IUserRepository
     /// <exception cref="BaseException"></exception>
     public async Task SetUserPasswordAsync(User user, string newPassword, string? oldPassword)
     {
-        var isPwdValid = await _userManager.CheckPasswordAsync(user, oldPassword);
+        var isPwdValid = await _userManager.CheckPasswordAsync(user, oldPassword ?? "");
         if(isPwdValid)
         {
             await _userManager.RemovePasswordAsync(user);
@@ -625,5 +625,17 @@ public class UserRepository: IUserRepository
             await _userManager.UpdateAsync(user);
         }
         return users;
+    }
+
+    public async Task<bool> IsActivatedUserAsync(string userName)
+    {
+        var userRole = await GetUserAndRole(userName);
+        if (userRole is null) return false;
+        var user = userRole.Item1;
+        var role = userRole.Item2;
+        if (role == null || user == null) return false;
+        var roleIsAdmin = role.Any(r => r.Name == Roles.ADMIN);
+        if (user.DeletedAt is null && (roleIsAdmin || user.IsActivated)) return true;
+        return false;
     }
 }

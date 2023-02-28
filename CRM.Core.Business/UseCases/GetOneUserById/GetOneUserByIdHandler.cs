@@ -20,6 +20,8 @@ public class GetOneUserByIdHandler : IRequestHandler<GetOneUserByIdQuery, UserMo
     }
     public async Task<UserModel> Handle(GetOneUserByIdQuery request, CancellationToken cancellationToken)
     {
+        var isActive = await _repo.IsActivatedUserAsync(request.UserName);
+        if (!isActive) throw new UnauthorizedAccessException();
         var result = await _repo.GetUserAndRolesAsync(request.Id, request.UserName);
         if (result == null) return null;
         else return result.ToUserModel();

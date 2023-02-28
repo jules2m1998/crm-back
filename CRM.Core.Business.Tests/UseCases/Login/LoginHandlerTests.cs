@@ -18,6 +18,7 @@ namespace CRM.Core.Business.Tests.UseCases.Login
         public LoginHandlerTests()
         {
             _handler= new LoginHandler(_userRepository.Object, _jwtService.Object);
+            _userRepository.Setup(u => u.IsActivatedUserAsync(It.IsAny<string>())).ReturnsAsync(true);
         }
 
         [TestMethod]

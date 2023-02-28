@@ -18,6 +18,7 @@ namespace CRM.Core.Business.Tests.UseCases.MarkAsDeletedRange
         public MarkAsDeletedRangeHandlerTests()
         {
             _handle = new(_repoMock.Object);
+            _repoMock.Setup(u => u.IsActivatedUserAsync(It.IsAny<string>())).ReturnsAsync(true);
         }
 
         [TestMethod]

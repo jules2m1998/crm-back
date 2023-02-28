@@ -18,6 +18,10 @@ namespace CRM.Core.Business.UseCases.AddUsersByCSV
 
         public async Task<List<UserCsvModel>> Handle(AddUsersByCSVCommand request, CancellationToken cancellationToken)
         {
+
+            var isActive = await _userRepository.IsActivatedUserAsync(request.CreatorUsername);
+            if (!isActive) throw new UnauthorizedAccessException();
+
             var dataExtract = _fileHelper.ReadCsvFile<UserCsvModel, UserCsvModelMapper>(request.File);
             return await _userRepository.AddFromListAsync(dataExtract, request.Role, request.CreatorUsername);
         }

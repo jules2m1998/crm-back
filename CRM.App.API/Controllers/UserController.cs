@@ -39,7 +39,7 @@ namespace CRM.App.API.Controllers
             return Created("", result);
         }
 
-        [HttpPost, Authorize(Roles=Roles.ADMIN)]
+        [HttpPost, Authorize]
         [ProducesResponseType(typeof(List<UserCsvModel>), 201)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -54,7 +54,6 @@ namespace CRM.App.API.Controllers
                 Role = role,
                 CreatorUsername = username!
             };
-            if(cmd.Role == Roles.ADMIN) return Unauthorized();
             try
             {
                 var result = await _sender.Send(cmd);

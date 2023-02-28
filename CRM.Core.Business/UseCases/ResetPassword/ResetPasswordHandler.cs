@@ -21,6 +21,8 @@ public class ResetPasswordHandler : IRequestHandler<ResetPasswordCommand, UserMo
     }
     public async Task<UserModel?> Handle(ResetPasswordCommand request, CancellationToken cancellationToken)
     {
+        var isActive = await _repo.IsActivatedUserAsync(request.UserName);
+        if (!isActive) throw new UnauthorizedAccessException();
         var user = await _repo.GetUserAndRolesAsync(request.Id, request.UserName);
         if (user is null) return null;
         await _repo.ResetUserPassword(user);

@@ -19,7 +19,9 @@ namespace CRM.Core.Business.UseCases.GetUsersByCreator
         }
         public async Task<ICollection<UserAndCreatorModel>> Handle(GetUsersByCreatorQuery request, CancellationToken cancellationToken)
         {
-            if(string.IsNullOrEmpty(request.CreatorUserName)) throw new UnauthorizedAccessException();
+            var isActive = await _userRepository.IsActivatedUserAsync(request.CreatorUserName);
+            if (!isActive) throw new UnauthorizedAccessException();
+            if (string.IsNullOrEmpty(request.CreatorUserName)) throw new UnauthorizedAccessException();
             return await _userRepository.GetUsersByCreatorUserNameAsync(request.CreatorUserName);
         }
     }

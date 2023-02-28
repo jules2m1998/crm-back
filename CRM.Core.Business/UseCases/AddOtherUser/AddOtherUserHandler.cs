@@ -36,8 +36,10 @@ namespace CRM.Core.Business.UseCases.AddOtherUser
             var currentUserRoles = await _repo.GetUserAndRole(request.CurrentUserName);
             if (currentUserRoles == null) throw new UnauthorizedAccessException();
 
+            var isActive = await _repo.IsActivatedUserAsync(request.CurrentUserName);
             var roles = currentUserRoles.Item2;
-            if (roles == null) throw new UnauthorizedAccessException();
+
+            if (roles == null || !isActive) throw new UnauthorizedAccessException();
             List<string?> listRoles = roles.Select(v => v.Name).ToList();
             UserBodyAndRole cur = CheckValidity(request, roles, listRoles!);
             string? picture = null;

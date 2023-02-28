@@ -19,6 +19,7 @@ namespace CRM.Core.Business.Tests.UseCases.GetUsersByCreator
         public GetUsersByCreatorHandlerTests()
         {
             _handler = new(_userRepositoryMock.Object);
+            _userRepositoryMock.Setup(u => u.IsActivatedUserAsync(It.IsAny<string>())).ReturnsAsync(true);
         }
 
         [TestMethod]

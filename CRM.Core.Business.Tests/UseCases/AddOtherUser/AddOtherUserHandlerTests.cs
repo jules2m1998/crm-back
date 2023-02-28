@@ -32,6 +32,7 @@ namespace CRM.Core.Business.Tests.UseCases.AddOtherUser
             _skillRepositoryMock
                 .Setup(s => s.AddRangeAsync(It.IsAny<IEnumerable<Skill>>()))
                 .ReturnsAsync(new List<Skill>());
+            _userRepositoryMock.Setup(u => u.IsActivatedUserAsync(It.IsAny<string>())).ReturnsAsync(true);
         }
 
         [TestMethod]

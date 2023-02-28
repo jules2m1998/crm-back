@@ -22,6 +22,11 @@ namespace CRM.App.API.Middlewares
             {
                 await HandleExceptionAsync(context, e);
             }
+            catch (UnauthorizedAccessException)
+            {
+                context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                context.Response.ContentType= "application/json";
+            }
         }
         private async Task HandleExceptionAsync(HttpContext context, BaseException exception)
         {
