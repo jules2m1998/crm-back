@@ -638,4 +638,9 @@ public class UserRepository: IUserRepository
         if (user.DeletedAt is null && (roleIsAdmin || user.IsActivated)) return true;
         return false;
     }
+
+    public bool IsAdminUser(User user)
+    {
+        return user.UserRoles.FirstOrDefault(u => u.Role.Name == Roles.ADMIN) != null;
+    }
 }

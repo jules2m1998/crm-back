@@ -89,7 +89,7 @@ public static class ConfigureServiceCollection
                 ValidIssuer = configuration["Jwt:Issuer"],
                 ValidAudience = configuration["Jwt:Audience"],
                 IssuerSigningKey = new SymmetricSecurityKey
-                (Encoding.UTF8.GetBytes(configuration["Jwt:Key"])),
+                (Encoding.UTF8.GetBytes(configuration["Jwt:Key"]!)),
                 ValidateIssuer = true,
                 ValidateAudience = true,
                 ValidateLifetime = false,
@@ -105,8 +105,9 @@ public static class ConfigureServiceCollection
         services.AddScoped<IJWTService, JWTService>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IFileHelper, FileHelper>();
-        services.AddScoped<IApplicationDbContext>(provider => provider.GetService<ApplicationDbContext>());
+        services.AddScoped<IApplicationDbContext>(provider => provider.GetService<ApplicationDbContext>()!);
         services.AddScoped<ISkillRepository, SkillRepository>();
+        services.AddScoped<IProductRepository, ProductRepository>();
 
         return services;
     }

@@ -14,4 +14,13 @@ public class BaseEntity
     virtual public DateTime? DeletedAt { get; set; }
     virtual public bool IsActivated { get; set; } = true;
     virtual public User? Creator { get; set; } = null!;
+
+    public BaseEntity()
+    {
+    }
+
+    public BaseEntity(User? creator)
+    {
+        Creator = creator;
+    }
 }

@@ -35,5 +35,6 @@ namespace CRM.Core.Business.Repositories
         Task<ICollection<User>> ToogleUsersActivationStatus(ICollection<User> users);
 
         Task<bool> IsActivatedUserAsync(string userName);
+        bool IsAdminUser(User user);
     }
 }
