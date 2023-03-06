@@ -14,6 +14,15 @@ public class User: IdentityUser<Guid>
     public bool IsActivated { get; set; } = true;
 
     public virtual User? Creator { get; set; } = null!;
+    public User? CurrentSupervisor { get
+        {
+            var first = Supervisors?.OrderBy(sp => sp.CreatedAt).Reverse().FirstOrDefault();
+            return first?.Supervisor;
+        } 
+    }
+
+    public virtual ICollection<SupervisionHistory> Supervisees { get; set; } = null!;
+    public virtual ICollection<SupervisionHistory> Supervisors { get; set; } = null!;
     public virtual ICollection<Skill>? Studies { get; set; }
     public virtual ICollection<Skill>? Experiences { get; set; }
     public virtual ICollection<UserRole> UserRoles { get; set; } = null!;

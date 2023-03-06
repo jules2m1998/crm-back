@@ -59,6 +59,7 @@ public class ProductRepository : IProductRepository
     public async Task<Product> PathProductAsync(JsonPatchDocument<Product> pathData, Product product)
     {
         pathData.ApplyTo(product);
+        product.UpdateAt = DateTime.UtcNow;
         await _dbContext.SaveChangesAsync();
         return product;
     }
@@ -91,7 +92,8 @@ public class ProductRepository : IProductRepository
 
     public async Task<Product> UpdateOneAsync(Product product)
     {
-        _products.UpdateRange(product);
+        product.UpdateAt = DateTime.UtcNow;
+        _products.Update(product);
         await _dbContext.SaveChangesAsync();
         _products.Attach(product);
         return product;

@@ -108,6 +108,8 @@ public static class ConfigureServiceCollection
         services.AddScoped<IApplicationDbContext>(provider => provider.GetService<ApplicationDbContext>()!);
         services.AddScoped<ISkillRepository, SkillRepository>();
         services.AddScoped<IProductRepository, ProductRepository>();
+        services.AddScoped<ICompanyRepository, CompanyRepository>();
+        services.AddScoped<ISupervisionHistoryRepository, SupervisionHistoryRepository>();
 
         return services;
     }
@@ -116,7 +118,7 @@ public static class ConfigureServiceCollection
         services.AddMediatR(cfg =>
         {
             cfg.AsScoped();
-        }, Assembly.GetAssembly(typeof(MediatREntryPoint)));
+        }, Assembly.GetAssembly(typeof(MediatREntryPoint))!);
         return services;
     }
     public static IServiceCollection AddCompression(this IServiceCollection services)

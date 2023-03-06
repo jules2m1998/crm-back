@@ -17,14 +17,15 @@ public class UserRepository: IUserRepository
     private readonly UserManager<User> _userManager;
     private readonly RoleManager<Role> _roleManager;
     private readonly IFileHelper _fileHelper;
-    private IIncludableQueryable<User, Role> UserIncluted { get {
+    private IQueryable<User> UserIncluted { get {
             return _userManager
             .Users
             .Include(u => u.Creator)
             .Include(u => u.Experiences)
             .Include(u => u.Studies)
             .Include(u => u.UserRoles)
-            .ThenInclude(ur => ur.Role);
+            .ThenInclude(ur => ur.Role)
+            .Where(u => u.DeletedAt == null);
         } }
     public UserRepository(UserManager<User> userManager, RoleManager<Role> roleManager, IFileHelper fileHelper)
     {
@@ -213,11 +214,11 @@ public class UserRepository: IUserRepository
     }
 
     /// <summary>
-    /// Convert creator to creator model
+    /// Convert creator to creator Model
     /// </summary>
     /// <param name="user"></param>
     /// <param name="roles"></param>
-    /// <returns>User model instance</returns>
+    /// <returns>User Model instance</returns>
     public UserModel UserToUserModel(User user, List<Role> roles)
     {
         return new UserModel(
@@ -235,7 +236,7 @@ public class UserRepository: IUserRepository
     }
 
     /// <summary>
-    /// Add users to database using list of creator csv model and his roles
+    /// Add users to database using list of creator csv Model and his roles
     /// </summary>
     /// <param name="users"></param>
     /// <param name="role"></param>
@@ -318,7 +319,7 @@ public class UserRepository: IUserRepository
                 .Select(u => ConvertUserAndCreator(u, creator)).ToList();
     }
     /// <summary>
-    /// Convert to user and creator model
+    /// Convert to user and creator Model
     /// </summary>
     /// <param name="u"></param>
     /// <param name="creator"></param>
@@ -642,5 +643,106 @@ public class UserRepository: IUserRepository
     public bool IsAdminUser(User user)
     {
         return user.UserRoles.FirstOrDefault(u => u.Role.Name == Roles.ADMIN) != null;
+    }
+
+    public async Task<User?> GetUserAndSupervisedAsync(Guid id)
+    {
+        return await _userManager
+            .Users
+            .Include(u => u.Supervisors)
+            .ThenInclude(sh => sh.Supervised)
+            .Include(u => u.UserRoles)
+            .ThenInclude(ur => ur.Role)
+            .Where(u => u.DeletedAt == null && u.Id == id)
+            .FirstOrDefaultAsync();
+    }
+
+    public async Task<User?> GetUserAndSupervisedAsync(Guid id, string userName)
+    {
+        return await _userManager
+            .Users
+            .Include(u => u.Creator)
+            .Include(u => u.Supervisors)
+            .ThenInclude(sh => sh.Supervised)
+            .Include(u => u.UserRoles)
+            .ThenInclude(ur => ur.Role)
+            .Where(u => u.DeletedAt == null && u.Id == id && u.Creator != null && u.Creator.UserName == userName)
+            .FirstOrDefaultAsync();
+    }
+
+    public async Task<ICollection<User>> GetManyUserAndRoleAsync(ICollection<Guid> userIds)
+    {
+        return await _userManager
+            .Users
+            .Include(u => u.Supervisors)
+            .ThenInclude(sh => sh.Supervisor)
+            .Include(u => u.Supervisors)
+            .Include(u => u.UserRoles)
+            .ThenInclude(ur => ur.Role)
+            .Where(u => u.DeletedAt == null && userIds.Contains(u.Id))
+            .ToListAsync();
+    }
+
+    public async Task<ICollection<User>> GetManyUserAndRoleAsync(ICollection<Guid> userIds, string userName)
+    {
+        return await _userManager
+            .Users
+            .Include(u => u.Creator)
+            .Include(u => u.Supervisors)
+            .ThenInclude(sh => sh.Supervisor)
+            .Include(u => u.Supervisors)
+            .Include(u => u.UserRoles)
+            .ThenInclude(ur => ur.Role)
+            .Where(u => u.DeletedAt == null && userIds.Contains(u.Id) && u.Creator != null && u.Creator.UserName == userName)
+            .ToListAsync();
+    }
+
+    public async Task<User> UpadeteUserAsync(User supervisor)
+    {
+        await _userManager.UpdateAsync(supervisor);
+        return supervisor;
+    }
+
+    public async Task<ICollection<User>> GetManyCCLUserToSupervisionAsync(ICollection<Guid> userIds, Guid supervisorId)
+    {
+        return await _userManager
+            .Users
+            .Include(u => u.UserRoles)
+            .ThenInclude(ur => ur.Role)
+            .Include(u => u.Supervisees)
+            .ThenInclude(s => s.Supervisor)
+            .Where(
+                u => 
+                    u.Supervisees.OrderBy(sp => sp.CreatedAt).Reverse().FirstOrDefault() == null 
+                    || u.Supervisees.OrderBy(sp => sp.CreatedAt).Reverse().FirstOrDefault()!.SupervisorId != supervisorId
+                   )
+            .Where(
+                u => 
+                    userIds.Contains(u.Id) 
+                    && (u.UserRoles.FirstOrDefault(ur => ur.Role.Name == Roles.CCL) != null))
+            .ToListAsync();
+    }
+
+    public async Task<ICollection<User>> GetManyCCLUserToSupervisionAsync(ICollection<Guid> userIds, Guid supervisorId, string userName)
+    {
+        return await _userManager
+            .Users
+            .Include(u => u.Creator)
+            .Include(u => u.Supervisees)
+            .ThenInclude(s => s.Supervisor)
+            .Include(u => u.UserRoles)
+            .ThenInclude(ur => ur.Role)
+            .Where(
+                u =>
+                    u.Supervisees.OrderBy(sp => sp.CreatedAt).Reverse().FirstOrDefault() == null
+                    || u.Supervisees.OrderBy(sp => sp.CreatedAt).Reverse().FirstOrDefault()!.SupervisorId != supervisorId
+                   )
+            .Where(
+                u => 
+                    u.UserRoles.FirstOrDefault(ur => ur.Role.Name == Roles.CCL) != null 
+                    && userIds.Contains(u.Id) 
+                    && u.Creator != null 
+                    && u.Creator.UserName == userName)
+            .ToListAsync();
     }
 }

@@ -22,5 +22,24 @@ public class Company: BaseEntity
     public CompaniesType Size { get; set; }
 
     public virtual ICollection<CompanyContact>? CompanyContacts { get; set; }
-    public virtual ICollection<Prospect>? Prospections { get; set; } 
+    public virtual ICollection<Prospect>? Prospections { get; set; }
+
+    public Company()
+    {
+    }
+
+    public Company(string name, string description, string logo, string cEOPicture, string cEOName, string values, string mission, string concurrent, string location, ActivityArea activityArea, CompaniesType size, User creator): base(creator)
+    {
+        Name = name;
+        Description = description;
+        Logo = logo;
+        CEOPicture = cEOPicture;
+        CEOName = cEOName;
+        Values = values;
+        Mission = mission;
+        Concurrent = concurrent;
+        Location = location;
+        ActivityArea = activityArea;
+        Size = size;
+    }
 }

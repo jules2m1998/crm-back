@@ -36,5 +36,12 @@ namespace CRM.Core.Business.Repositories
 
         Task<bool> IsActivatedUserAsync(string userName);
         bool IsAdminUser(User user);
+        Task<User?> GetUserAndSupervisedAsync(Guid id);
+        Task<User?> GetUserAndSupervisedAsync(Guid id, string userName);
+        Task<ICollection<User>> GetManyUserAndRoleAsync(ICollection<Guid> userIds);
+        Task<ICollection<User>> GetManyUserAndRoleAsync(ICollection<Guid> userIds, string userName);
+        Task<User> UpadeteUserAsync(User supervisor);
+        Task<ICollection<User>> GetManyCCLUserToSupervisionAsync(ICollection<Guid> userIds, Guid supervisorId);
+        Task<ICollection<User>> GetManyCCLUserToSupervisionAsync(ICollection<Guid> userIds, Guid supervisorId, string userName);
     }
 }

@@ -18,6 +18,7 @@ namespace CRM.Infra.Data
         public DbSet<Product> Products { get; set; }
         public DbSet<Prospect> Prospects { get; set; }
         public DbSet<ProspectionHistory> ProspectionHistories { get; set; }
+        public DbSet<SupervisionHistory> SupervisionHistories { get; set; }
 
         public ApplicationDbContext(DbContextOptions dbContextOptions) : base(dbContextOptions) { }
         protected override void OnModelCreating(ModelBuilder builder)
@@ -56,6 +57,23 @@ namespace CRM.Infra.Data
                 .HasMany(u => u.Experiences)
                 .WithOne(u => u.Expert)
                 .OnDelete(DeleteBehavior.ClientCascade);
+
+            builder.Entity<SupervisionHistory>(supervisionHistory =>
+            {
+                supervisionHistory.HasKey(sh => new { sh.SupervisedId, sh.SupervisorId, sh.CreatedAt });
+                supervisionHistory
+                    .HasOne(sh => sh.Supervisor)
+                    .WithMany(u => u.Supervisors)
+                    .HasForeignKey(sh => sh.SupervisorId)
+                    .IsRequired()
+                    .OnDelete(DeleteBehavior.ClientCascade);
+                supervisionHistory
+                    .HasOne(sh => sh.Supervised)
+                    .WithMany(u => u.Supervisees)
+                    .HasForeignKey(u => u.SupervisedId)
+                    .IsRequired()
+                    .OnDelete(DeleteBehavior.ClientCascade);
+            });
 
             // Role foreign keys management
             builder.Entity<UserRole>(userRole =>

@@ -12,6 +12,7 @@ namespace CRM.Infra.Data
         public DbSet<Product> Products { get; set; }
         public DbSet<Prospect> Prospects { get; set; }
         public DbSet<ProspectionHistory> ProspectionHistories { get; set; }
+        public DbSet<SupervisionHistory> SupervisionHistories { get; set; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }

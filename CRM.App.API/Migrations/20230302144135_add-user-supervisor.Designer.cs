@@ -4,6 +4,7 @@ using CRM.Infra.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CRM.App.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230302144135_add-user-supervisor")]
+    partial class addusersupervisor
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -361,27 +364,6 @@ namespace CRM.App.API.Migrations
                     b.ToTable("Skills");
                 });
 
-            modelBuilder.Entity("CRM.Core.Domain.Entities.SupervisionHistory", b =>
-                {
-                    b.Property<Guid>("SupervisedId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("SupervisorId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.HasKey("SupervisedId", "SupervisorId", "CreatedAt");
-
-                    b.HasIndex("SupervisorId");
-
-                    b.ToTable("SupervisionHistories");
-                });
-
             modelBuilder.Entity("CRM.Core.Domain.Entities.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -452,6 +434,9 @@ namespace CRM.App.API.Migrations
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid?>("SupervisorId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
 
@@ -473,6 +458,8 @@ namespace CRM.App.API.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
+
+                    b.HasIndex("SupervisorId");
 
                     b.ToTable("AspNetUsers", (string)null);
                 });
@@ -707,32 +694,19 @@ namespace CRM.App.API.Migrations
                     b.Navigation("Student");
                 });
 
-            modelBuilder.Entity("CRM.Core.Domain.Entities.SupervisionHistory", b =>
-                {
-                    b.HasOne("CRM.Core.Domain.Entities.User", "Supervised")
-                        .WithMany("Supervisees")
-                        .HasForeignKey("SupervisedId")
-                        .OnDelete(DeleteBehavior.ClientCascade)
-                        .IsRequired();
-
-                    b.HasOne("CRM.Core.Domain.Entities.User", "Supervisor")
-                        .WithMany("Supervisors")
-                        .HasForeignKey("SupervisorId")
-                        .OnDelete(DeleteBehavior.ClientCascade)
-                        .IsRequired();
-
-                    b.Navigation("Supervised");
-
-                    b.Navigation("Supervisor");
-                });
-
             modelBuilder.Entity("CRM.Core.Domain.Entities.User", b =>
                 {
                     b.HasOne("CRM.Core.Domain.Entities.User", "Creator")
-                        .WithMany()
+                        .WithMany("UsersCreations")
                         .HasForeignKey("CreatorId");
 
+                    b.HasOne("CRM.Core.Domain.Entities.User", "Supervisor")
+                        .WithMany("UsersSupervised")
+                        .HasForeignKey("SupervisorId");
+
                     b.Navigation("Creator");
+
+                    b.Navigation("Supervisor");
                 });
 
             modelBuilder.Entity("CRM.Core.Domain.Entities.UserRole", b =>
@@ -830,11 +804,11 @@ namespace CRM.App.API.Migrations
 
                     b.Navigation("Studies");
 
-                    b.Navigation("Supervisees");
-
-                    b.Navigation("Supervisors");
-
                     b.Navigation("UserRoles");
+
+                    b.Navigation("UsersCreations");
+
+                    b.Navigation("UsersSupervised");
                 });
 #pragma warning restore 612, 618
         }
