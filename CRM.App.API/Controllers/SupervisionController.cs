@@ -1,5 +1,7 @@
 ﻿using CRM.Core.Business.Models.Supervision;
+using CRM.Core.Business.UseCases.CompanyUseCases.ToggleCompaniesActivation;
 using CRM.Core.Business.UseCases.SupervionUCs.AssignSupervisor;
+using CRM.Core.Business.UseCases.SupervionUCs.ToggleSupervisionState;
 using CRM.Core.Domain.Exceptions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -37,6 +39,35 @@ namespace CRM.App.API.Controllers
                 var result = await _sender.Send(cmd);
                 return Ok(result);
             }catch(NotFoundEntityException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
+            }
+        }
+
+        [HttpPut("ToogleState/{supervisorId:Guid}/{supervisedId:Guid}")]
+        [ProducesResponseType(typeof(SupervisionOutModel), 200)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> ToggleSupervision([FromRoute] Guid supervisorId, [FromRoute] Guid supervisedId)
+        {
+            var cmd = new ToggleSupervisionStateCommand
+            {
+                SupervisedId = supervisedId,
+                SupervisorId = supervisorId,
+                UserName = _username ?? ""
+            };
+
+            try
+            {
+                var result = await _sender.Send(cmd);
+                return Ok(result);
+            }
+            catch (NotFoundEntityException ex)
             {
                 return NotFound(ex.Message);
             }

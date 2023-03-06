@@ -27,4 +27,41 @@ public class SupervisionHistoryRepository : ISupervisionHistoryRepository
         _dbSet.AttachRange(supervisionHistories);
         return supervisionHistories;
     }
+
+    public async Task<SupervisionHistory?> GetSupervisionAsync(Guid supervisorId, Guid supervisedId)
+    {
+        return await _dbSet
+            .Include(sh => sh.Supervisor)
+            .ThenInclude(u => u.UserRoles)
+            .ThenInclude(ur => ur.Role)
+            .Include(sh => sh.Supervised)
+            .ThenInclude(u => u.UserRoles)
+            .ThenInclude(ur => ur.Role)
+            .Where(sh => sh.SupervisorId == supervisorId && sh.SupervisedId == supervisedId)
+            .OrderBy(sh => sh.CreatedAt)
+            .FirstOrDefaultAsync();
+    }
+
+    public async Task<SupervisionHistory?> GetSupervisionAsync(Guid supervisorId, Guid supervisedId, string creatorName)
+    {
+        return await _dbSet
+            .Include(sh => sh.Supervisor)
+            .ThenInclude(u => u.UserRoles)
+            .ThenInclude(ur => ur.Role)
+            .Include(sh => sh.Supervised)
+            .ThenInclude(u => u.UserRoles)
+            .ThenInclude(ur => ur.Role)
+            .Where(sh => sh.SupervisorId == supervisorId && sh.SupervisedId == supervisedId && sh.Supervisor.Creator != null && sh.Supervisor.Creator.UserName == creatorName)
+            .OrderBy(sh => sh.CreatedAt)
+            .FirstOrDefaultAsync();
+    }
+
+    public async Task<SupervisionHistory> UpdateAsync(SupervisionHistory history)
+    {
+        _dbSet.Update(history);
+        await _dbContext.SaveChangesAsync();
+        _dbSet.Attach(history);
+
+        return history;
+    }
 }
