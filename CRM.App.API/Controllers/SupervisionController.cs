@@ -1,6 +1,7 @@
 ﻿using CRM.Core.Business.Models.Supervision;
 using CRM.Core.Business.UseCases.CompanyUseCases.ToggleCompaniesActivation;
 using CRM.Core.Business.UseCases.SupervionUCs.AssignSupervisor;
+using CRM.Core.Business.UseCases.SupervionUCs.GetAllSupervision;
 using CRM.Core.Business.UseCases.SupervionUCs.GetSupervisedByUser;
 using CRM.Core.Business.UseCases.SupervionUCs.GetSuperviseesHistory;
 using CRM.Core.Business.UseCases.SupervionUCs.GetSupervisionHistory;
@@ -110,7 +111,7 @@ namespace CRM.App.API.Controllers
         }
 
         [HttpGet("SupervisedBy/{userId:Guid}")]
-        [ProducesResponseType(typeof(SupervisionOutModel), 200)]
+        [ProducesResponseType(typeof(ICollection<SupervisionOutModel>), 200)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -139,7 +140,7 @@ namespace CRM.App.API.Controllers
 
 
         [HttpGet("SupervisionHistory/{userId:Guid}")]
-        [ProducesResponseType(typeof(SupervisionOutModel), 200)]
+        [ProducesResponseType(typeof(ICollection<SupervisionOutModel>), 200)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -164,7 +165,7 @@ namespace CRM.App.API.Controllers
 
 
         [HttpGet("SuperviseesHistory/{userId:Guid}")]
-        [ProducesResponseType(typeof(SupervisionOutModel), 200)]
+        [ProducesResponseType(typeof(ICollection<SupervisionOutModel>), 200)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -174,6 +175,31 @@ namespace CRM.App.API.Controllers
             try
             {
                 var result = await _sender.Send(cmd);
+                return Ok(result);
+            }
+            catch (NotFoundEntityException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
+            }
+        }
+
+
+
+        [HttpGet]
+        [ProducesResponseType(typeof(ICollection<SupervisionOutModel>), 200)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> GetAll()
+        {
+            var query = new GetAllSupervisionQuery(_username ?? "");
+            try
+            {
+                var result = await _sender.Send(query);
                 return Ok(result);
             }
             catch (NotFoundEntityException ex)

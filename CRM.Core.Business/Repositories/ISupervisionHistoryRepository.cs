@@ -1,4 +1,5 @@
-﻿using CRM.Core.Domain.Entities;
+﻿using CRM.Core.Business.Models.Supervision;
+using CRM.Core.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,7 @@ namespace CRM.Core.Business.Repositories;
 public interface ISupervisionHistoryRepository
 {
     Task<ICollection<SupervisionHistory>> AddRangeAsync(ICollection<SupervisionHistory> supervisionHistories);
+    Task<ICollection<SupervisionHistory>> GetAllActivateSupervisionAsync();
     Task<ICollection<SupervisionHistory>> GetAllSupervisedUserBySupervisorAsync(Guid userId);
     Task<ICollection<SupervisionHistory>> GetAllSupervisedUserBySupervisorAsync(Guid userId, string userName);
     Task<ICollection<SupervisionHistory>> GetSuperviseesHistoryAsync(Guid userId);

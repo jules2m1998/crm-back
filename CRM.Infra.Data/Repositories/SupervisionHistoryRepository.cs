@@ -1,4 +1,5 @@
-﻿using CRM.Core.Business.Repositories;
+﻿using CRM.Core.Business.Models.Supervision;
+using CRM.Core.Business.Repositories;
 using CRM.Core.Domain.Entities;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
@@ -25,6 +26,21 @@ public class SupervisionHistoryRepository : ISupervisionHistoryRepository
         return supervisionHistories;
     }
 
+    public async Task<ICollection<SupervisionHistory>> GetAllActivateSupervisionAsync()
+    {
+
+        return (await _dbSet
+            .Include(sh => sh.Supervisor)
+            .ThenInclude(u => u.UserRoles)
+            .ThenInclude(ur => ur.Role)
+            .Include(sh => sh.Supervised)
+            .ThenInclude(u => u.UserRoles)
+            .ThenInclude(ur => ur.Role)
+            .GroupBy(sh => new { sh.SupervisedId })
+            .Select(rr => rr.OrderByDescending(r => r.CreatedAt).FirstOrDefault())
+            .ToListAsync())!;
+    }
+
     public async Task<ICollection<SupervisionHistory>> GetAllSupervisedUserBySupervisorAsync(Guid userId)
     { 
         var s = await _dbSet
@@ -38,7 +54,7 @@ public class SupervisionHistoryRepository : ISupervisionHistoryRepository
             .Select(rr => rr.OrderByDescending(r => r.CreatedAt).FirstOrDefault())
             .ToListAsync();
 
-        return s.Where(r => r != null && r.SupervisorId == userId).ToList() as ICollection<SupervisionHistory>;
+        return s.Where(r => r != null && r.SupervisorId == userId).ToList()!;
     }
 
     public async Task<ICollection<SupervisionHistory>> GetAllSupervisedUserBySupervisorAsync(Guid userId, string userName)
