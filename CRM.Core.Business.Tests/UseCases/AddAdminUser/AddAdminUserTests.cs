@@ -42,7 +42,7 @@ namespace CRM.Core.Business.Tests.UseCases.AddAdminUser
             Assert.AreEqual(5, result.Errors.Count);
             CollectionAssert.AreEquivalent(new List<string> { "UserName".ToRequiredMsg() }, result.Errors["UserName"]);
             CollectionAssert.AreEquivalent(new List<string> { "Email".ToRequiredMsg() }, result.Errors["Email"]);
-            CollectionAssert.AreEquivalent(new List<string> { "Password".ToRequiredMsg() }, result.Errors["Password"]);
+            CollectionAssert.AreEquivalent(new List<string> { "The field Password must be a string or array type with a minimum length of '8'." }, result.Errors["Password"]);
             CollectionAssert.AreEquivalent(new List<string> { "FirstName".ToRequiredMsg() }, result.Errors["FirstName"]);
             CollectionAssert.AreEquivalent(new List<string> { "LastName".ToRequiredMsg() }, result.Errors["LastName"]);
         }

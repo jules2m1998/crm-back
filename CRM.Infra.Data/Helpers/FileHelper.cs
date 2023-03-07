@@ -25,6 +25,9 @@ namespace CRM.Infra.Data.Helpers
         /// <param name="fileName">Relative file path</param>
         public void DeleteImageToServer(string fileName)
         {
+            var isDefault = fileName.Contains("default\\default");
+            if (isDefault) return;
+
             var fullPath = Path.Combine(_environment.WebRootPath, fileName);
             if(File.Exists(fullPath))
             {
@@ -106,7 +109,7 @@ namespace CRM.Infra.Data.Helpers
             }
         }
 
-        private List<T> GetValidateList<T>(List<T> elements) where T : IFileReadable
+        private static List<T> GetValidateList<T>(List<T> elements) where T : IFileReadable
         {
             foreach(var element in elements)
             {

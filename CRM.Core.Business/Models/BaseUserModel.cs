@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,17 +9,18 @@ namespace CRM.Core.Business.Models
 {
     public class BaseUserModel
     {
-        public Guid Id { get; set; }
-        public string UserName { get; set; } = string.Empty;
-        public string Email { get; set; } = string.Empty;
-        public string FirstName { get; set; } = string.Empty;
-        public string LastName { get; set; } = string.Empty;
-        public List<string> Roles { get; set; } = new List<string>();
-        public string? Picture { get; set; }
-        public string? PhoneNumber { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public DateTime? UpdateAt { get; set; }
-        public DateTime? DeletedAt { get; set; }
+        virtual public Guid Id { get; set; }
+        virtual public string UserName { get; set; } = string.Empty;
+        virtual public string Email { get; set; } = string.Empty;
+        virtual public string FirstName { get; set; } = string.Empty;
+        virtual public string LastName { get; set; } = string.Empty;
+        virtual public List<string> Roles { get; set; } = new List<string>();
+        virtual public string? Picture { get; set; }
+        virtual public string? PhoneNumber { get; set; }
+        virtual public DateTime CreatedAt { get; set; }
+        virtual public DateTime? UpdateAt { get; set; }
+        virtual public DateTime? DeletedAt { get; set; }
+        virtual public bool IsActivated { get; set; } = true;
 
         public BaseUserModel()
         {

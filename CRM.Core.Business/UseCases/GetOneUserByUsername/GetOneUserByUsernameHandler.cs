@@ -20,6 +20,8 @@ namespace CRM.Core.Business.UseCases.GetOneUserByUsername
 
         public async Task<UserModel?> Handle(GetOneUserByUsernameQuery request, CancellationToken cancellationToken)
         {
+            var isActive = await _userRepository.IsActivatedUserAsync(request.UserName);
+            if (!isActive) throw new UnauthorizedAccessException();
             var userRole = await _userRepository.GetUserAndRole(request.UserName);
             if (userRole == null) return null;
             var user = userRole.Item1;

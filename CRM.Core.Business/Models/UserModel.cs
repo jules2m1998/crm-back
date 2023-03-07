@@ -10,6 +10,9 @@ namespace CRM.Core.Business.Models;
 public class UserModel : BaseUserModel
 {
     public string Token { get; set; } = string.Empty;
+    public ICollection<SkillModel>? Studies { get; set; }
+    public ICollection<SkillModel>? Experiences { get; set; }
+
     public UserModel()
     {
     }

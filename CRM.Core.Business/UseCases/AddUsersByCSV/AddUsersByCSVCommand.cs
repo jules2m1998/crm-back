@@ -16,5 +16,7 @@ namespace CRM.Core.Business.UseCases.AddUsersByCSV
         public IFormFile File { get; set; } = null!;
         [Required]
         public string Role { get; set; } = null!;
+        [Required]
+        public string CreatorUsername { get; set; }
     }
 }

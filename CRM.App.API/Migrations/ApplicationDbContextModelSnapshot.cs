@@ -22,6 +22,258 @@ namespace CRM.App.API.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("CRM.Core.Domain.Entities.Company", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("ActivityArea")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CEOName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CEOPicture")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Concurrent")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActivated")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Location")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Logo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Mission")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Size")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdateAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Values")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatorId");
+
+                    b.ToTable("Companies");
+                });
+
+            modelBuilder.Entity("CRM.Core.Domain.Entities.CompanyContact", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CompanyId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActivated")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Job")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Phones")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdateAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CompanyId");
+
+                    b.HasIndex("CreatorId");
+
+                    b.ToTable("CompanyContacts");
+                });
+
+            modelBuilder.Entity("CRM.Core.Domain.Entities.Contract", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActivated")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("UpdateAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatorId");
+
+                    b.ToTable("Contracts");
+                });
+
+            modelBuilder.Entity("CRM.Core.Domain.Entities.Product", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActivated")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Logo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdateAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatorId");
+
+                    b.ToTable("Products");
+                });
+
+            modelBuilder.Entity("CRM.Core.Domain.Entities.Prospect", b =>
+                {
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CompanyId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AgentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("ProductId", "CompanyId");
+
+                    b.HasIndex("AgentId");
+
+                    b.HasIndex("CompanyId");
+
+                    b.HasIndex("CreatorId");
+
+                    b.ToTable("Prospects");
+                });
+
+            modelBuilder.Entity("CRM.Core.Domain.Entities.ProspectionHistory", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("ProspectCompanyId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ProspectProductId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("UpdatedById")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UpdatedById");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("ProspectProductId", "ProspectCompanyId");
+
+                    b.ToTable("ProspectionHistories");
+                });
+
             modelBuilder.Entity("CRM.Core.Domain.Entities.Role", b =>
                 {
                     b.Property<Guid>("Id")
@@ -30,6 +282,10 @@ namespace CRM.App.API.Migrations
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Label")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
@@ -50,6 +306,82 @@ namespace CRM.App.API.Migrations
                     b.ToTable("AspNetRoles", (string)null);
                 });
 
+            modelBuilder.Entity("CRM.Core.Domain.Entities.Skill", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("ExpertId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsActivated")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsCurrent")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Place")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("StudentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("UpdateAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatorId");
+
+                    b.HasIndex("ExpertId");
+
+                    b.HasIndex("StudentId");
+
+                    b.ToTable("Skills");
+                });
+
+            modelBuilder.Entity("CRM.Core.Domain.Entities.SupervisionHistory", b =>
+                {
+                    b.Property<Guid>("SupervisedId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("SupervisorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.HasKey("SupervisedId", "SupervisorId", "CreatedAt");
+
+                    b.HasIndex("SupervisorId");
+
+                    b.ToTable("SupervisionHistories");
+                });
+
             modelBuilder.Entity("CRM.Core.Domain.Entities.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -66,6 +398,9 @@ namespace CRM.App.API.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
 
@@ -79,6 +414,9 @@ namespace CRM.App.API.Migrations
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActivated")
+                        .HasColumnType("bit");
 
                     b.Property<string>("LastName")
                         .IsRequired()
@@ -126,6 +464,8 @@ namespace CRM.App.API.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CreatorId");
+
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
 
@@ -135,6 +475,21 @@ namespace CRM.App.API.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("CRM.Core.Domain.Entities.UserRole", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("UserId", "RoleId");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetUserRoles", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -206,21 +561,6 @@ namespace CRM.App.API.Migrations
                     b.ToTable("AspNetUserLogins", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
-                {
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("RoleId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("UserId", "RoleId");
-
-                    b.HasIndex("RoleId");
-
-                    b.ToTable("AspNetUserRoles", (string)null);
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
                 {
                     b.Property<Guid>("UserId")
@@ -238,6 +578,180 @@ namespace CRM.App.API.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("CRM.Core.Domain.Entities.Company", b =>
+                {
+                    b.HasOne("CRM.Core.Domain.Entities.User", "Creator")
+                        .WithMany("CreatedCompanies")
+                        .HasForeignKey("CreatorId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Creator");
+                });
+
+            modelBuilder.Entity("CRM.Core.Domain.Entities.CompanyContact", b =>
+                {
+                    b.HasOne("CRM.Core.Domain.Entities.Company", "Company")
+                        .WithMany("CompanyContacts")
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CRM.Core.Domain.Entities.User", "Creator")
+                        .WithMany("CreatedCompanyContacts")
+                        .HasForeignKey("CreatorId");
+
+                    b.Navigation("Company");
+
+                    b.Navigation("Creator");
+                });
+
+            modelBuilder.Entity("CRM.Core.Domain.Entities.Contract", b =>
+                {
+                    b.HasOne("CRM.Core.Domain.Entities.User", "Creator")
+                        .WithMany()
+                        .HasForeignKey("CreatorId");
+
+                    b.Navigation("Creator");
+                });
+
+            modelBuilder.Entity("CRM.Core.Domain.Entities.Product", b =>
+                {
+                    b.HasOne("CRM.Core.Domain.Entities.User", "Creator")
+                        .WithMany()
+                        .HasForeignKey("CreatorId");
+
+                    b.Navigation("Creator");
+                });
+
+            modelBuilder.Entity("CRM.Core.Domain.Entities.Prospect", b =>
+                {
+                    b.HasOne("CRM.Core.Domain.Entities.User", "Agent")
+                        .WithMany("Prospects")
+                        .HasForeignKey("AgentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CRM.Core.Domain.Entities.Company", "Company")
+                        .WithMany("Prospections")
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CRM.Core.Domain.Entities.User", "Creator")
+                        .WithMany("ProspectionCreated")
+                        .HasForeignKey("CreatorId");
+
+                    b.HasOne("CRM.Core.Domain.Entities.Product", "Product")
+                        .WithMany("Prospections")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Agent");
+
+                    b.Navigation("Company");
+
+                    b.Navigation("Creator");
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("CRM.Core.Domain.Entities.ProspectionHistory", b =>
+                {
+                    b.HasOne("CRM.Core.Domain.Entities.User", "UpdatedBy")
+                        .WithMany("Reattributions")
+                        .HasForeignKey("UpdatedById")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("CRM.Core.Domain.Entities.User", "User")
+                        .WithMany("ProspectionsHistories")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .IsRequired();
+
+                    b.HasOne("CRM.Core.Domain.Entities.Prospect", "Prospect")
+                        .WithMany("History")
+                        .HasForeignKey("ProspectProductId", "ProspectCompanyId")
+                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .IsRequired();
+
+                    b.Navigation("Prospect");
+
+                    b.Navigation("UpdatedBy");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("CRM.Core.Domain.Entities.Skill", b =>
+                {
+                    b.HasOne("CRM.Core.Domain.Entities.User", "Creator")
+                        .WithMany()
+                        .HasForeignKey("CreatorId");
+
+                    b.HasOne("CRM.Core.Domain.Entities.User", "Expert")
+                        .WithMany("Experiences")
+                        .HasForeignKey("ExpertId")
+                        .OnDelete(DeleteBehavior.ClientCascade);
+
+                    b.HasOne("CRM.Core.Domain.Entities.User", "Student")
+                        .WithMany("Studies")
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.ClientCascade);
+
+                    b.Navigation("Creator");
+
+                    b.Navigation("Expert");
+
+                    b.Navigation("Student");
+                });
+
+            modelBuilder.Entity("CRM.Core.Domain.Entities.SupervisionHistory", b =>
+                {
+                    b.HasOne("CRM.Core.Domain.Entities.User", "Supervised")
+                        .WithMany("Supervisees")
+                        .HasForeignKey("SupervisedId")
+                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .IsRequired();
+
+                    b.HasOne("CRM.Core.Domain.Entities.User", "Supervisor")
+                        .WithMany("Supervisors")
+                        .HasForeignKey("SupervisorId")
+                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .IsRequired();
+
+                    b.Navigation("Supervised");
+
+                    b.Navigation("Supervisor");
+                });
+
+            modelBuilder.Entity("CRM.Core.Domain.Entities.User", b =>
+                {
+                    b.HasOne("CRM.Core.Domain.Entities.User", "Creator")
+                        .WithMany()
+                        .HasForeignKey("CreatorId");
+
+                    b.Navigation("Creator");
+                });
+
+            modelBuilder.Entity("CRM.Core.Domain.Entities.UserRole", b =>
+                {
+                    b.HasOne("CRM.Core.Domain.Entities.Role", "Role")
+                        .WithMany("UserRoles")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CRM.Core.Domain.Entities.User", "User")
+                        .WithMany("UserRoles")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Role");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -267,21 +781,6 @@ namespace CRM.App.API.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
-                {
-                    b.HasOne("CRM.Core.Domain.Entities.Role", null)
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("CRM.Core.Domain.Entities.User", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
                 {
                     b.HasOne("CRM.Core.Domain.Entities.User", null)
@@ -289,6 +788,53 @@ namespace CRM.App.API.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("CRM.Core.Domain.Entities.Company", b =>
+                {
+                    b.Navigation("CompanyContacts");
+
+                    b.Navigation("Prospections");
+                });
+
+            modelBuilder.Entity("CRM.Core.Domain.Entities.Product", b =>
+                {
+                    b.Navigation("Prospections");
+                });
+
+            modelBuilder.Entity("CRM.Core.Domain.Entities.Prospect", b =>
+                {
+                    b.Navigation("History");
+                });
+
+            modelBuilder.Entity("CRM.Core.Domain.Entities.Role", b =>
+                {
+                    b.Navigation("UserRoles");
+                });
+
+            modelBuilder.Entity("CRM.Core.Domain.Entities.User", b =>
+                {
+                    b.Navigation("CreatedCompanies");
+
+                    b.Navigation("CreatedCompanyContacts");
+
+                    b.Navigation("Experiences");
+
+                    b.Navigation("ProspectionCreated");
+
+                    b.Navigation("ProspectionsHistories");
+
+                    b.Navigation("Prospects");
+
+                    b.Navigation("Reattributions");
+
+                    b.Navigation("Studies");
+
+                    b.Navigation("Supervisees");
+
+                    b.Navigation("Supervisors");
+
+                    b.Navigation("UserRoles");
                 });
 #pragma warning restore 612, 618
         }

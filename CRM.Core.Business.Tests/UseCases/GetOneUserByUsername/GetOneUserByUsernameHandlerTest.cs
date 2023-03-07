@@ -14,6 +14,7 @@ namespace CRM.Core.Business.Tests.UseCases.GetOneUserByUsername
         public GetOneUserByUsernameHandlerTest()
         {
             _handler = new(_userRepository.Object);
+            _userRepository.Setup(u => u.IsActivatedUserAsync(It.IsAny<string>())).ReturnsAsync(true);
         }
 
         [TestMethod]

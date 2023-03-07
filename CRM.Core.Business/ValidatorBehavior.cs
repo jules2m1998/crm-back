@@ -11,7 +11,7 @@ namespace CRM.Core.Business
     public class ValidatorBehavior<T> where T : notnull
     {
         /// <summary>
-        /// Check if model is valid
+        /// Check if Model is valid
         /// </summary>
         /// <param name="toValidate"></param>
         /// <exception cref="BaseException"></exception>
