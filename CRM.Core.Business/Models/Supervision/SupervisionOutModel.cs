@@ -11,11 +11,13 @@ public class SupervisionOutModel
     public UserModel Supervised { get; set; }
     public UserModel Supervisor { get; set; }
     public bool IsActive { get; set; }
+    public DateTime CreatedAt { get; set; }
 
-    public SupervisionOutModel(UserModel supervised, UserModel supervisor, bool isActive)
+    public SupervisionOutModel(UserModel supervised, UserModel supervisor, bool isActive, DateTime createdAt)
     {
         Supervised = supervised;
         Supervisor = supervisor;
         IsActive = isActive;
+        CreatedAt = createdAt;
     }
 }

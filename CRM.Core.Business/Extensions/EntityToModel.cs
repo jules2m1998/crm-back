@@ -26,6 +26,6 @@ public static class EntityToModel
 
     public static SupervisionOutModel SupervisionHistoryToModel(this SupervisionHistory history)
     {
-        return new SupervisionOutModel(history.Supervised.ToUserModel(), history.Supervisor.ToUserModel(), history.IsActive);
+        return new SupervisionOutModel(history.Supervised.ToUserModel(), history.Supervisor.ToUserModel(), history.IsActive, history.CreatedAt);
     }
 }

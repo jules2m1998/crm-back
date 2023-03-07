@@ -14,4 +14,18 @@ public class SupervisionHistory
     public User Supervised { get; set; } = null!;
     public User Supervisor { get; set; } = null!;
     public bool IsActive { get; set; } = true;
+
+    public SupervisionHistory()
+    {
+    }
+
+    public SupervisionHistory(Guid supervisedId, Guid supervisorId, DateTime createdAt, User supervised, User supervisor, bool isActive)
+    {
+        SupervisedId = supervisedId;
+        SupervisorId = supervisorId;
+        CreatedAt = createdAt;
+        Supervised = supervised;
+        Supervisor = supervisor;
+        IsActive = isActive;
+    }
 }
