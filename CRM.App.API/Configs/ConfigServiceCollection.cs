@@ -110,6 +110,7 @@ public static class ConfigureServiceCollection
         services.AddScoped<IProductRepository, ProductRepository>();
         services.AddScoped<ICompanyRepository, CompanyRepository>();
         services.AddScoped<ISupervisionHistoryRepository, SupervisionHistoryRepository>();
+        services.AddScoped<IProspectionRepository, ProspectionRepository>();
 
         return services;
     }

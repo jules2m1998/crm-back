@@ -1,5 +1,6 @@
 ﻿using CRM.Core.Business.Models.Company;
 using CRM.Core.Business.Models.Product;
+using CRM.Core.Business.Models.Prospect;
 using CRM.Core.Business.Models.Supervision;
 using CRM.Core.Domain.Entities;
 using System;
@@ -27,5 +28,17 @@ public static class EntityToModel
     public static SupervisionOutModel SupervisionHistoryToModel(this SupervisionHistory history)
     {
         return new SupervisionOutModel(history.Supervised.ToUserModel(), history.Supervisor.ToUserModel(), history.IsActive, history.CreatedAt);
+    }
+
+    public static ProspectionOutModel ToModel(this Prospect p)
+    {
+        return new ProspectionOutModel(
+            p.CreatedAt,
+            p.Product.ToProductOutModel(),
+            p.Company.ToCompanyOutModel(),
+            p.Agent.ToUserModel(), 
+            p.Creator?.ToUserModel(),
+            p.UpdatedAt,
+            p.IsActivated);
     }
 }

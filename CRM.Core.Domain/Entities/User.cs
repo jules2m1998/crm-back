@@ -25,11 +25,9 @@ public class User: IdentityUser<Guid>
     public virtual ICollection<SupervisionHistory> Supervisors { get; set; } = null!;
     public virtual ICollection<Skill>? Studies { get; set; }
     public virtual ICollection<Skill>? Experiences { get; set; }
-    public virtual ICollection<UserRole> UserRoles { get; set; } = null!;
+    public virtual ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
     public virtual ICollection<Prospect>? Prospects { get; set; }
     public virtual ICollection<Prospect>? ProspectionCreated { get; set; }
-    public virtual ICollection<ProspectionHistory>? ProspectionsHistories { get; set; }
-    public virtual ICollection<ProspectionHistory>? Reattributions { get; set; }
     public virtual ICollection<CompanyContact>? CreatedCompanyContacts { get; set; }
     public virtual ICollection<Company>? CreatedCompanies { get; set; }
 }

@@ -17,7 +17,6 @@ namespace CRM.Infra.Data
         public DbSet<Contract> Contracts { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<Prospect> Prospects { get; set; }
-        public DbSet<ProspectionHistory> ProspectionHistories { get; set; }
         public DbSet<SupervisionHistory> SupervisionHistories { get; set; }
 
         public ApplicationDbContext(DbContextOptions dbContextOptions) : base(dbContextOptions) { }
@@ -36,16 +35,6 @@ namespace CRM.Infra.Data
                 .HasMany(u => u.Prospects)
                 .WithOne(p => p.Agent)
                 .OnDelete(DeleteBehavior.Cascade);
-
-            builder.Entity<User>()
-                .HasMany(u => u.ProspectionsHistories)
-                .WithOne(p => p.User) 
-                .OnDelete(DeleteBehavior.ClientCascade);
-
-            builder.Entity<User>()
-                .HasMany(u => u.Reattributions)
-                .WithOne(r => r.UpdatedBy)
-                .OnDelete(DeleteBehavior.SetNull);
 
 
             builder.Entity<User>()
@@ -111,13 +100,6 @@ namespace CRM.Infra.Data
                 .HasOne(c => c.Creator)
                 .WithMany(cr => cr.CreatedCompanies)
                 .OnDelete(DeleteBehavior.SetNull);
-
-            builder.Entity<ProspectionHistory>(phistory =>
-            {
-                phistory.HasOne(ph => ph.Prospect)
-                    .WithMany(p => p.History)
-                    .OnDelete(DeleteBehavior.ClientCascade);
-            });
         }
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

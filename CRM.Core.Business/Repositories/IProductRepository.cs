@@ -1,4 +1,5 @@
 ﻿using CRM.Core.Business.Models.Product;
+using CRM.Core.Business.Models.Prospect;
 using CRM.Core.Domain.Entities;
 using Microsoft.AspNetCore.JsonPatch;
 using System;

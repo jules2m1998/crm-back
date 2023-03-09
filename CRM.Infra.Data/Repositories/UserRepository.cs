@@ -745,4 +745,11 @@ public class UserRepository: IUserRepository
                     && u.Creator.UserName == userName)
             .ToListAsync();
     }
+
+    public async Task<User?> GetUserByRoleAsync(Guid userId, string role)
+    {
+        return await UserIncluted
+            .Where(u => u.UserRoles.FirstOrDefault(ur => ur.Role.Name == role) != null && u.Id == userId)
+            .FirstOrDefaultAsync();
+    }
 }
