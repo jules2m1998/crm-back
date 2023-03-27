@@ -227,6 +227,7 @@ public class UserRepository: IUserRepository
             user.Email ?? "",
             user.FirstName,
             user.LastName,
+            user.IsActivated,
             roles.Select(r => r.Name!).ToList(),
             user.Picture,
             user.PhoneNumber,
@@ -345,6 +346,7 @@ public class UserRepository: IUserRepository
             u.Email!,
             u.FirstName,
             u.LastName,
+            u.IsActivated,
             new List<string>(),
             u.Picture,
             u.PhoneNumber,
@@ -357,6 +359,7 @@ public class UserRepository: IUserRepository
                 creator.Email!,
                 creator.FirstName,
                 creator.LastName,
+                creator.IsActivated,
                 new List<string>(),
                 creator.Picture,
                 creator.PhoneNumber,
@@ -751,5 +754,19 @@ public class UserRepository: IUserRepository
         return await UserIncluted
             .Where(u => u.UserRoles.FirstOrDefault(ur => ur.Role.Name == role) != null && u.Id == userId)
             .FirstOrDefaultAsync();
+    }
+
+    public async Task<ICollection<User>> GetUserByRoleAsync(string role)
+    {
+        return await UserIncluted.Where(u => u.UserRoles.FirstOrDefault(ur => ur.Role.Name == role) != null).ToListAsync();
+    }
+
+    public async Task<ICollection<User>> GetUserByRoleAsync(string role, string userName)
+    {
+        return 
+            await UserIncluted
+            .Where(
+                u =>
+                    u.UserRoles.FirstOrDefault(ur => ur.Role.Name == role && ur.Role.Name != Roles.ADMIN) != null && u.Creator != null && u.Creator.UserName == userName).ToListAsync();
     }
 }

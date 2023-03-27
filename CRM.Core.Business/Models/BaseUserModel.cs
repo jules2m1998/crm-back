@@ -27,7 +27,7 @@ namespace CRM.Core.Business.Models
 
         }
 
-        public BaseUserModel(Guid id, string userName, string email, string firstName, string lastName, List<string> roles, string? picture, string? phoneNumber, DateTime createdAt, DateTime? updateAt, DateTime? deletedAt)
+        public BaseUserModel(Guid id, string userName, string email, string firstName, string lastName, bool isActivated, List<string> roles, string? picture, string? phoneNumber, DateTime createdAt, DateTime? updateAt, DateTime? deletedAt)
         {
             Id = id;
             UserName = userName;
@@ -40,6 +40,7 @@ namespace CRM.Core.Business.Models
             CreatedAt = createdAt;
             UpdateAt = updateAt;
             DeletedAt = deletedAt;
+            IsActivated = isActivated;
         }
     }
 }

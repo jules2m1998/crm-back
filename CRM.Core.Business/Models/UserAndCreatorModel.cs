@@ -16,6 +16,7 @@ public class UserAndCreatorModel: BaseUserModel
         string email,
         string firstName,
         string lastName,
+        bool isActivated,
         List<string> roles,
         string? picture, 
         string? phoneNumber,
@@ -23,7 +24,7 @@ public class UserAndCreatorModel: BaseUserModel
         DateTime? updateAt, 
         DateTime? deletedAt, 
         BaseUserModel creator
-        ): base(id, userName, email, firstName, lastName, roles, picture, phoneNumber, createdAt, updateAt, deletedAt)
+        ): base(id, userName, email, firstName, lastName, isActivated, roles, picture, phoneNumber, createdAt, updateAt, deletedAt)
     {
         Creator = creator;
     }

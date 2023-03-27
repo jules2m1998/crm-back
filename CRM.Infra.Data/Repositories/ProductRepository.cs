@@ -98,4 +98,10 @@ public class ProductRepository : IProductRepository
         _products.Attach(product);
         return product;
     }
+
+    public async Task<Product?> GetByNameAsync(string name)
+    {
+        return await _includeCreator
+            .FirstOrDefaultAsync(p => p.Name.ToLower() == name.ToLower());
+    }
 }

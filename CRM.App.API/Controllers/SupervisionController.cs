@@ -53,7 +53,7 @@ namespace CRM.App.API.Controllers
             }
         }
 
-        [HttpPut("ToogleState/{supervisorId:Guid}/{supervisedId:Guid}")]
+        [HttpPut("ToggleState/{supervisorId:Guid}/{supervisedId:Guid}")]
         [ProducesResponseType(typeof(SupervisionOutModel), 200)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

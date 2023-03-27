@@ -4,9 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CRM.Core.Business
+namespace CRM.Core.Business;
+
+public class MediatREntryPoint
 {
-    public class MediatREntryPoint
-    {
-    }
 }

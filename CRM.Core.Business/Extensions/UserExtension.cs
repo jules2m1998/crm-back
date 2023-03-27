@@ -13,7 +13,7 @@ public static class UserExtension
 {
     public static UserModel ToUserModel(this User user)
     {
-        return new UserModel(user.Id, user.UserName ?? "", user.Email ?? "", user.FirstName, user.LastName, user.UserRoles.Select(ur => ur.Role.Name ?? "").ToList(), user.Picture, user.PhoneNumber, user.CreatedAt, user.UpdateAt, user.DeletedAt);
+        return new UserModel(user.Id, user.UserName ?? "", user.Email ?? "", user.FirstName, user.LastName, user.IsActivated, user.UserRoles.Select(ur => ur.Role.Name ?? "").ToList(), user.Picture, user.PhoneNumber, user.CreatedAt, user.UpdateAt, user.DeletedAt);
     }
 
     private static SkillModel SkillToSkillModel(Skill st)

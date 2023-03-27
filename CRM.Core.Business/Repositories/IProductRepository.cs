@@ -16,6 +16,7 @@ public interface IProductRepository
     Task DeleteManyAsync(ICollection<Product> products);
     Task<ICollection<Product>> GetAllAsync();
     Task<ICollection<Product>> GetAllByCreator(string userName);
+    Task<Product?> GetByNameAsync(string name);
     Task<ICollection<Product>> GetManyByIdsAsync(ICollection<Guid> ids);
     Task<ICollection<Product>> GetManyByIdsAsync(ICollection<Guid> ids, string userName);
     Task<Product?> GetProductByIdAndCreatorAsync(Guid id, string userName);

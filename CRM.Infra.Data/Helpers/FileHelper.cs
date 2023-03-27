@@ -3,7 +3,6 @@ using CRM.Core.Business.Helpers;
 using CRM.Core.Domain.Exceptions;
 using CsvHelper;
 using CsvHelper.Configuration;
-using CsvHelper.TypeConversion;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using System.Globalization;
@@ -37,7 +36,7 @@ namespace CRM.Infra.Data.Helpers
 
         public string GetUniqueFileName(string fileName)
         {
-            fileName = Path.GetFileName(fileName);
+            fileName = Path.GetFileName(fileName).Replace(' ', '_');
 
             return string.Concat(Path.GetFileNameWithoutExtension(fileName)
                                 , "_"

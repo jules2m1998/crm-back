@@ -4,6 +4,7 @@ using CRM.Core.Business.Models.Product;
 using CRM.Core.Business.Repositories;
 using CRM.Core.Domain;
 using CRM.Core.Domain.Entities;
+using CRM.Core.Domain.Exceptions;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -15,13 +16,13 @@ namespace CRM.Core.Business.UseCases.Product.AddProduct;
 
 public class AddProductHandler : IRequestHandler<AddProductCommand, ProductOutModel>
 {
-    private readonly IProductRepository _product;
+    private readonly IProductRepository _repo;
     private readonly IUserRepository _userRepository;
     private readonly IFileHelper _fileHelper;
 
     public AddProductHandler(IProductRepository product, IUserRepository userRepository, IFileHelper fileHelper)
     {
-        _product = product;
+        _repo = product;
         _userRepository = userRepository;
         _fileHelper = fileHelper;
     }
@@ -34,6 +35,8 @@ public class AddProductHandler : IRequestHandler<AddProductCommand, ProductOutMo
         var productModel = request.Product;
         ValidatorBehavior<ProductInModel>.Validate(productModel);
         string logo = null!;
+        Domain.Entities.Product? existing = await _repo.GetByNameAsync(productModel.Name);
+        if (existing != null) throw new BaseException(new Dictionary<string, List<string>> { { "name", new List<string> { "This name is already taken !"} } });
         if(productModel.Logo is not null)
         {
             var fileSave = await _fileHelper.SaveImageToServerAsync(productModel.Logo, new[] { "img", "products", "logo" });
@@ -47,7 +50,7 @@ public class AddProductHandler : IRequestHandler<AddProductCommand, ProductOutMo
             logo = DefaultParams.defaultProduct;
         }
         var product = new Domain.Entities.Product(productModel.Name, logo, productModel.Description, user);
-        Domain.Entities.Product result = await _product.CreateOneAsync(product);
+        Domain.Entities.Product result = await _repo.CreateOneAsync(product);
         return result.ToProductOutModel();
     }
 }

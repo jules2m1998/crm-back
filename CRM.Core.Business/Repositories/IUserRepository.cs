@@ -44,5 +44,7 @@ namespace CRM.Core.Business.Repositories
         Task<ICollection<User>> GetManyCCLUserToSupervisionAsync(ICollection<Guid> userIds, Guid supervisorId);
         Task<ICollection<User>> GetManyCCLUserToSupervisionAsync(ICollection<Guid> userIds, Guid supervisorId, string userName);
         Task<User?> GetUserByRoleAsync(Guid userId, string role);
+        Task<ICollection<User>> GetUserByRoleAsync(string role);
+        Task<ICollection<User>> GetUserByRoleAsync(string role, string userName);
     }
 }

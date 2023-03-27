@@ -34,11 +34,12 @@ namespace CRM.Core.Business.UseCases.Login
 
             return new UserModel(
                 user.Id,
-                user.UserName,
-                user.Email,
+                user.UserName ?? "",
+                user.Email ?? "",
                 user.FirstName,
                 user.LastName,
-                roles.Select(r => r.Name).ToList<string>(),
+                user.IsActivated,
+                roles.Select(r => r.Name!)?.ToList<string>() ?? new List<string>(),
                 user.Picture, 
                 user.PhoneNumber, 
                 user.CreatedAt, 

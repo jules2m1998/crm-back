@@ -3,6 +3,7 @@ using CRM.Core.Business.UseCases.AddOtherUser;
 using CRM.Core.Business.UseCases.AddUser;
 using CRM.Core.Business.UseCases.AddUsersByCSV;
 using CRM.Core.Business.UseCases.GetOneUserById;
+using CRM.Core.Business.UseCases.GetUserByRole;
 using CRM.Core.Business.UseCases.GetUsersByCreator;
 using CRM.Core.Business.UseCases.MarkAsDeletedRange;
 using CRM.Core.Business.UseCases.ResetPassword;
@@ -198,6 +199,27 @@ namespace CRM.App.API.Controllers
                 return Unauthorized();
             }
         }
+
+
+
+        [HttpGet("{role}"), Authorize]
+        [ProducesResponseType(typeof(ICollection<UserModel>), 200)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> GetUserByRole([FromRoute] string role)
+        {
+            var query = new GetUserByRoleQuery(role, _username ?? "");
+            try
+            {
+                var result = await _sender.Send(query);
+                return Ok(result);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
+            }
+        }
+
 
         /// <summary>
         /// Deserialize skills and add them to the user request

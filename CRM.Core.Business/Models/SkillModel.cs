@@ -36,5 +36,10 @@ namespace CRM.Core.Business.Models
                    StartDate == model.StartDate &&
                    EndDate == model.EndDate;
         }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Name, Place, IsCurrent, StartDate, EndDate);
+        }
     }
 }

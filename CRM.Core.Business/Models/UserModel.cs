@@ -17,7 +17,7 @@ public class UserModel : BaseUserModel
     {
     }
 
-    public UserModel(Guid id, string userName, string email, string firstName, string lastName, List<string> roles, string? picture, string? phoneNumber, DateTime createdAt, DateTime? updateAt, DateTime? deletedAt, string token = ""): base(id, userName, email, firstName, lastName, roles, picture, phoneNumber, createdAt, updateAt, deletedAt)
+    public UserModel(Guid id, string userName, string email, string firstName, string lastName, bool isActivated, List<string> roles, string? picture, string? phoneNumber, DateTime createdAt, DateTime? updateAt, DateTime? deletedAt, string token = ""): base(id, userName, email, firstName, lastName, isActivated, roles, picture, phoneNumber, createdAt, updateAt, deletedAt)
     {
         Token = token;
     }

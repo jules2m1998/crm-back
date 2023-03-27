@@ -54,7 +54,11 @@ public class SupervisionHistoryRepository : ISupervisionHistoryRepository
             .Select(rr => rr.OrderByDescending(r => r.CreatedAt).FirstOrDefault())
             .ToListAsync();
 
-        return s.Where(r => r != null && r.SupervisorId == userId).ToList()!;
+        return s.Where(
+                r => 
+                    r != null 
+                    && r.SupervisorId == userId
+                ).ToList()!;
     }
 
     public async Task<ICollection<SupervisionHistory>> GetAllSupervisedUserBySupervisorAsync(Guid userId, string userName)
@@ -70,7 +74,14 @@ public class SupervisionHistoryRepository : ISupervisionHistoryRepository
             .Select(rr => rr.OrderByDescending(r => r.CreatedAt).FirstOrDefault())
             .ToListAsync();
 
-        return s.Where(r => r != null && r.SupervisorId == userId && r.Supervisor.Creator != null && r.Supervisor.Creator.UserName == userName).ToList() as ICollection<SupervisionHistory>;
+        return s
+            .Where(
+                r =>
+                    r != null 
+                    && r.SupervisorId == userId
+                    && r.Supervisor.Creator != null
+                    && r.Supervisor.Creator.UserName == userName
+                ).ToList() as ICollection<SupervisionHistory>;
     }
 
     public async Task<ICollection<SupervisionHistory>> GetSuperviseesHistoryAsync(Guid userId)
@@ -97,7 +108,12 @@ public class SupervisionHistoryRepository : ISupervisionHistoryRepository
             .ThenInclude(ur => ur.Role)
             .Include(sh => sh.Supervisor)
             .ThenInclude(u => u.Creator)
-            .Where(sh => sh.SupervisorId == userId && sh.Supervisor.Creator != null && sh.Supervisor.Creator.UserName == userName)
+            .Where(
+                sh => 
+                    sh.SupervisorId == userId 
+                    && sh.Supervisor.Creator != null
+                    && sh.Supervisor.Creator.UserName == userName
+                )
             .ToListAsync();
     }
 
@@ -125,7 +141,13 @@ public class SupervisionHistoryRepository : ISupervisionHistoryRepository
             .Include(sh => sh.Supervised)
             .ThenInclude(u => u.UserRoles)
             .ThenInclude(ur => ur.Role)
-            .Where(sh => sh.SupervisorId == supervisorId && sh.SupervisedId == supervisedId && sh.Supervisor.Creator != null && sh.Supervisor.Creator.UserName == creatorName)
+            .Where(
+                sh => 
+                    sh.SupervisorId == supervisorId 
+                    && sh.SupervisedId == supervisedId 
+                    && sh.Supervisor.Creator != null 
+                    && sh.Supervisor.Creator.UserName == creatorName
+                )
             .OrderBy(sh => sh.CreatedAt)
             .Reverse()
             .FirstOrDefaultAsync();
@@ -155,7 +177,12 @@ public class SupervisionHistoryRepository : ISupervisionHistoryRepository
             .ThenInclude(ur => ur.Role)
             .Include(sh => sh.Supervisor)
             .ThenInclude(u => u.Creator)
-            .Where(sh => sh.SupervisorId == userId && sh.Supervisor.Creator != null && sh.Supervisor.Creator.UserName == userName)
+            .Where(
+                sh => 
+                    sh.SupervisorId == userId 
+                    && sh.Supervisor.Creator != null 
+                    && sh.Supervisor.Creator.UserName == userName
+                )
             .ToListAsync();
     }
 
