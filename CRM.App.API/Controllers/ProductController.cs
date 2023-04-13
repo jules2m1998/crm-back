@@ -89,7 +89,7 @@ namespace CRM.App.API.Controllers
             }
         }
 
-        [HttpDelete]
+        [HttpPost("Delete")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]

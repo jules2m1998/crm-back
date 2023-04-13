@@ -43,7 +43,7 @@ namespace CRM.Core.Business.Tests.UseCases.GetUsersByCreator
             // Arrange
             var rlist = new List<UserAndCreatorModel>()
             {
-                new(Guid.NewGuid(), "Test", "test", "test", "test", new List<string>{"test"}, null, null, DateTime.UtcNow, null, null, new())
+                new(Guid.NewGuid(), "Test", "test", "test", "test",true, new List<string>{"test"}, null, null, DateTime.UtcNow, null, null, new())
             };
             var cmd = new GetUsersByCreatorQuery { CreatorUserName = "test" };
             _userRepositoryMock

@@ -139,12 +139,13 @@ namespace CRM.App.API.Controllers
             }
         }
 
-        [HttpPut("ToggleActivation")]
+        [HttpPut("ToggleActivation/{id:Guid}")]
         [ProducesResponseType(typeof(CompanyOutModel), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> ToggleActivation([FromBody] List<Guid> ids)
+        public async Task<IActionResult> ToggleActivation([FromRoute] Guid id)
         {
+            var ids = new Guid[] { id };
             var cmd = new ToggleCompaniesActivationCommand(ids, _username ?? "");
             try
             {
@@ -161,13 +162,13 @@ namespace CRM.App.API.Controllers
             }
         }
 
-        [HttpDelete]
+        [HttpDelete("{id:Guid}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Delete([FromBody] ICollection<Guid> ids)
+        public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
-            var cmd = new DeleteManyCompaniesCommand(ids, _username ?? "");
+            var cmd = new DeleteManyCompaniesCommand(new Guid[] {id}, _username ?? "");
 
             try
             {

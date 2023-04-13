@@ -11,8 +11,8 @@ public class Company: BaseEntity
 {
     public string Name { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
-    public string Logo { get; set; } = string.Empty;
-    public string CEOPicture { get; set; } = string.Empty;
+    public string Logo { get; set; } = DefaultParams.defaultCompanyPicture;
+    public string CEOPicture { get; set; } = DefaultParams.defaultCEOPicture;
     public string CEOName { get; set; } = string.Empty;
     public string Values { get; set; } = string.Empty;
     public string Mission { get; set; } = string.Empty;
@@ -28,12 +28,10 @@ public class Company: BaseEntity
     {
     }
 
-    public Company(string name, string description, string logo, string cEOPicture, string cEOName, string values, string mission, string concurrent, string location, ActivityArea activityArea, CompaniesType size, User creator): base(creator)
+    public Company(string name, string description, string cEOName, string values, string mission, string concurrent, string location, ActivityArea activityArea, CompaniesType size, User creator): base(creator)
     {
         Name = name;
         Description = description;
-        Logo = logo;
-        CEOPicture = cEOPicture;
         CEOName = cEOName;
         Values = values;
         Mission = mission;

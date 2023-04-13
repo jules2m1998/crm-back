@@ -39,19 +39,23 @@ public class AddCompanyHandler : IRequestHandler<AddCompanyCommand, CompanyOutMo
 
         var companyDto = request.Company;
         ValidatorBehavior<CompanyInModel>.Validate(companyDto);
-        string logo = DefaultParams.defaultProduct;
+        string? logo = null;
         if(companyDto.Logo!= null)
         {
             var imgs = await _fileHelper.SaveImageToServerAsync(companyDto.Logo, new[] { "img", "company", "logo" });
             logo = imgs.Item1;
         }
-        string ceoPic = DefaultParams.defaultCEOPicture;
+        string? ceoPic = null;
         if(companyDto.CEOPicture is not null)
         {
             var imgs = await _fileHelper.SaveImageToServerAsync(companyDto.CEOPicture, new[] { "img", "company", "CEO" });
             ceoPic = imgs.Item1;
         }
-        var company = new Company(companyDto.Name, companyDto.Description, logo, ceoPic, companyDto.CEOName, companyDto.Values, companyDto.Mission, companyDto.Concurrent, companyDto.Location, companyDto.ActivityArea, companyDto.Size, user);
+        var company = new Company(
+            companyDto.Name, 
+            companyDto.Description, companyDto.CEOName, companyDto.Values, companyDto.Mission, companyDto.Concurrent, companyDto.Location, companyDto.ActivityArea, companyDto.Size, user);
+        if (logo is not null) company.Logo = logo;
+        if (ceoPic is not null) company.CEOPicture = ceoPic;
         Company result = await _repo.AddOneAsync(company);
         return result.ToCompanyOutModel();
     }
