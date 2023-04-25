@@ -22,15 +22,7 @@ public class GetAllCompaniesHandler : IRequestHandler<GetAllCompaniesQuery, ICol
         _userRepo = userRepo;
     }
 
-    public async Task<ICollection<CompanyOutModel>> Handle(GetAllCompaniesQuery request, CancellationToken cancellationToken)
-    {
-        var user = await _userRepo.GetUserAndRolesAsync(request.UserName);
-        if (user == null) throw new UnauthorizedAccessException();
-        var isAdmin = _userRepo.IsAdminUser(user);
-        ICollection<Company> companies = null!;
-        if (isAdmin) companies = await _repo.GetAllAsync();
-        else companies = await _repo.GetAllAsync(request.UserName);
-
-        return companies.Select(c => c.ToCompanyOutModel()).ToList();
-    }
+    public async Task<ICollection<CompanyOutModel>> Handle(GetAllCompaniesQuery request, CancellationToken cancellationToken) =>
+        (await _repo.GetAllAsync()).Select(c => c.ToCompanyOutModel()).ToList();
+    
 }

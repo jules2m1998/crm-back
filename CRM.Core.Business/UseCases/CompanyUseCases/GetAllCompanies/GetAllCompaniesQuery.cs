@@ -8,7 +8,4 @@ using System.Threading.Tasks;
 
 namespace CRM.Core.Business.UseCases.CompanyUseCases.GetAllCompanies;
 
-public class GetAllCompaniesQuery: IRequest<ICollection<CompanyOutModel>>
-{
-    public string UserName { get; set; } = string.Empty;
-}
+public record GetAllCompaniesQuery(): IRequest<ICollection<CompanyOutModel>>;

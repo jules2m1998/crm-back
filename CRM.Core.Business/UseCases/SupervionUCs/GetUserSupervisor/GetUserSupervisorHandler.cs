@@ -33,8 +33,6 @@ public class GetUserSupervisorHandler : IRequestHandler<GetUserSupervisorCommand
             isAdmin 
             ? await _repo.GetUserSupervisor(request.UserId) 
             : await _repo.GetUserSupervisor(request.UserId, request.UserName);
-        if(supervision is null) 
-            throw new NotFoundEntityException("Supervised not found !");
-        return supervision.SupervisionHistoryToModel();
+        return supervision is null ? throw new NotFoundEntityException("Supervised not found !") : supervision.SupervisionHistoryToModel();
     }
 }

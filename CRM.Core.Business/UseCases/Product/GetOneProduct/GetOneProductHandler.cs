@@ -11,14 +11,12 @@ using System.Threading.Tasks;
 
 namespace CRM.Core.Business.UseCases.Product.GetOneProduct;
 
-public class GetOneProductHandler : IRequestHandler<GetOneProductQuery, ProductOutModel>
+public class GetOneProductHandler : IRequestHandler<GetOneProductQuery, ProductOutModel?>
 {
-    private readonly IUserRepository _userRepository;
     private readonly IProductRepository _repo;
 
-    public GetOneProductHandler(IUserRepository userRepository, IProductRepository repo)
+    public GetOneProductHandler(IProductRepository repo)
     {
-        _userRepository = userRepository;
         _repo = repo;
     }
 
@@ -30,16 +28,7 @@ public class GetOneProductHandler : IRequestHandler<GetOneProductQuery, ProductO
     /// <returns></returns>
     /// <exception cref="UnauthorizedAccessException"></exception>
     /// <exception cref="NotFoundEntityException"></exception>
-    public async Task<ProductOutModel> Handle(GetOneProductQuery request, CancellationToken cancellationToken)
-    {
-        var user = await _userRepository.GetUserAndRolesAsync(request.UserName);
-        if (user is null) throw new UnauthorizedAccessException();
-        var isAdmin = _userRepository.IsAdminUser(user);
-        Domain.Entities.Product? product = null!;
-        if (isAdmin) product = await _repo.GetProductByIdAsync(request.Id);
-        else product = await _repo.GetProductByIdAndCreatorAsync(request.Id, request.UserName);
-        if (product is null) throw new NotFoundEntityException("This product not found !");
-
-        return product.ToProductOutModel();
-    }
+    public async Task<ProductOutModel?> Handle(GetOneProductQuery request, CancellationToken cancellationToken) =>
+        (await _repo.GetProductByIdAsync(request.Id))?
+        .ToProductOutModel();
 }

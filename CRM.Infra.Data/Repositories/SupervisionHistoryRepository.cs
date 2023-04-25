@@ -84,6 +84,22 @@ public class SupervisionHistoryRepository : ISupervisionHistoryRepository
                 ).ToList() as ICollection<SupervisionHistory>;
     }
 
+    public async Task<ICollection<SupervisionHistory>> GetAllSupervisedUserBySupervisorAsync(string supervisorUserName)
+    {
+        var s = await _dbSet
+            .Include(sh => sh.Supervisor)
+            .ThenInclude(u => u.UserRoles)
+            .ThenInclude(ur => ur.Role)
+            .Include(sh => sh.Supervised)
+            .ThenInclude(u => u.UserRoles)
+            .ThenInclude(ur => ur.Role)
+            .GroupBy(sh => new { sh.SupervisedId })
+            .Select(rr => rr.OrderByDescending(r => r.CreatedAt).FirstOrDefault())
+            .ToListAsync();
+
+        return s.Where(r => r != null && r.Supervisor.UserName == supervisorUserName).ToList() as ICollection<SupervisionHistory>;
+    }
+
     public async Task<ICollection<SupervisionHistory>> GetSuperviseesHistoryAsync(Guid userId)
     {
         return await _dbSet
@@ -217,6 +233,21 @@ public class SupervisionHistoryRepository : ISupervisionHistoryRepository
             .Reverse()
             .FirstOrDefaultAsync();
     }
+
+    public async Task<SupervisionHistory?> GetUserSupervisor(string userName) =>
+        await _dbSet
+            .Include(sh => sh.Supervisor)
+            .ThenInclude(u => u.UserRoles)
+            .ThenInclude(ur => ur.Role)
+            .Include(sh => sh.Supervised)
+            .ThenInclude(u => u.UserRoles)
+            .ThenInclude(ur => ur.Role)
+            .Include(sh => sh.Supervisor)
+            .ThenInclude(u => u.Creator)
+            .Where(s => s.Supervised.UserName == userName)
+            .OrderBy(sh => sh.CreatedAt)
+            .Reverse()
+            .FirstOrDefaultAsync();
 
     public async Task<SupervisionHistory> UpdateAsync(SupervisionHistory history)
     {

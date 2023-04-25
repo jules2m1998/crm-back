@@ -38,16 +38,11 @@ public class AttributeProspectionHandler : IRequestHandler<AttributeProspectionC
 
     public async Task<ProspectionOutModel> Handle(AttributeProspectionCommand request, CancellationToken cancellationToken)
     {
-        var user = await _userRepo.GetUserAndRolesAsync(request.UserName);
-        if (user == null) throw new UnauthorizedAccessException();
+        var user = await _userRepo.GetUserAndRolesAsync(request.UserName) ?? throw new UnauthorizedAccessException();
         var isAdmin = _userRepo.IsAdminUser(user);
 
-        var product = await _productRepo.GetProductByIdAsync(request.Model.ProductId);
-        if (product == null) throw new NotFoundEntityException("Product not found");
-
-        var company = await _companyRepo.GetOneAsync(request.Model.CompanyId);
-        if (company == null) throw new NotFoundEntityException("Company not found");
-
+        var product = await _productRepo.GetProductByIdAsync(request.Model.ProductId) ?? throw new NotFoundEntityException("Product not found");
+        var company = await _companyRepo.GetOneAsync(request.Model.CompanyId) ?? throw new NotFoundEntityException("Company not found");
         var supervisionHistory = await _supervisorHistoryRepo.GetUserSupervisor(request.Model.AgentId);
         var agent = supervisionHistory?.Supervised;
 

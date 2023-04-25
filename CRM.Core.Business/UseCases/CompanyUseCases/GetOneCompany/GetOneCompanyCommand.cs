@@ -8,8 +8,7 @@ using System.Threading.Tasks;
 
 namespace CRM.Core.Business.UseCases.CompanyUseCases.GetOneCompany;
 
-public class GetOneCompanyCommand: IRequest<CompanyOutModel>
+public class GetOneCompanyCommand : IRequest<CompanyOutModel?>
 {
     public Guid Id { get; set; }
-    public string UserName { get; set; } = string.Empty;
 }

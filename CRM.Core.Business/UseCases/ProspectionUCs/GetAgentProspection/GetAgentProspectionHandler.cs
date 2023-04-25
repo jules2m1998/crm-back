@@ -33,6 +33,8 @@ public class GetAgentProspectionHandler : IRequestHandler<GetAgentProspectionQue
             ? await _repo.GetProspectionByAgent(request.AgentId) 
             : await _repo.GetProspectionByAgent(request.AgentId, request.UserName);
 
-        return prospection.Select(pr => pr.ToModel()).ToList();
+        return prospection
+            .Select(pr => pr.ToModel())
+            .ToList();
     }
 }

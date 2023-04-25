@@ -1,12 +1,16 @@
 ﻿using CRM.Core.Business.Models.Prospect;
 using CRM.Core.Business.UseCases.ProspectionUCs.AttributeProspection;
+using CRM.Core.Business.UseCases.ProspectionUCs.DeleteProspection;
 using CRM.Core.Business.UseCases.ProspectionUCs.GetAgentProspection;
+using CRM.Core.Business.UseCases.ProspectionUCs.GetAllProspection;
 using CRM.Core.Business.UseCases.ProspectionUCs.GetCompanyProspections;
 using CRM.Core.Business.UseCases.ProspectionUCs.GetOneProspection;
 using CRM.Core.Business.UseCases.ProspectionUCs.GetProspectionByProduct;
 using CRM.Core.Business.UseCases.ProspectionUCs.ToggleProspectionsActivationState;
+using CRM.Core.Domain;
 using CRM.Core.Domain.Exceptions;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -16,6 +20,7 @@ namespace CRM.App.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ProspectController : ControllerBase
     {
         private readonly ISender _sender;
@@ -25,7 +30,23 @@ namespace CRM.App.API.Controllers
             _sender = sender;
         }
 
-        private string? _username { get { return User.FindFirstValue(ClaimTypes.Name); } }
+        private string? Username { get { return User.FindFirstValue(ClaimTypes.Name); } }
+
+        [HttpGet]
+        [ProducesResponseType(typeof(ICollection<ProspectionOutModel>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> Get()
+        {
+            try
+            {
+                var result = await _sender.Send(new GetAllProspectionQuery(Username ?? ""));
+                return Ok(result);
+            }
+            catch
+            {
+                return BadRequest();
+            }
+        }
 
         [HttpPost]
         [ProducesResponseType(typeof(ProspectionOutModel), StatusCodes.Status201Created)]
@@ -33,7 +54,7 @@ namespace CRM.App.API.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> CreateOne([FromBody] ProspectionInModel model)
         {
-            var cmd = new AttributeProspectionCommand(model, _username ?? "");
+            var cmd = new AttributeProspectionCommand(model, Username ?? "");
 
             try
             {
@@ -50,14 +71,14 @@ namespace CRM.App.API.Controllers
             }
         }
 
-        [HttpGet("{productId:Guid}/{companyId:Guid}/{agentId:Guid}/")]
+        [HttpGet("{productId:Guid}/{companyId:Guid}/{agentId:Guid}")]
         [ProducesResponseType(typeof(ICollection<ProspectionOutModel>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> GetOne([FromRoute] Guid productId, [FromRoute] Guid companyId, [FromRoute] Guid agentId)
         {
             var model = new ProspectionInModel(productId, companyId, agentId);
-            var query = new GetOneProspectionQuery(model, _username ?? "");
+            var query = new GetOneProspectionQuery(model, Username ?? "");
             var result = await _sender.Send(query);
 
             if (result is null) return NotFound();
@@ -70,7 +91,7 @@ namespace CRM.App.API.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> AgentProspections([FromRoute] Guid agentId)
         {
-            var query = new GetAgentProspectionQuery(agentId, _username ?? "");
+            var query = new GetAgentProspectionQuery(agentId, Username ?? "");
 
             try
             {
@@ -93,7 +114,7 @@ namespace CRM.App.API.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> CompanyProspections([FromRoute] Guid companyId)
         {
-            var query = new GetCompanyProspectionsQuery(companyId, _username ?? "");
+            var query = new GetCompanyProspectionsQuery(companyId, Username ?? "");
 
             try
             {
@@ -118,7 +139,7 @@ namespace CRM.App.API.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> ProductProspections([FromRoute] Guid productId)
         {
-            var query = new GetProspectionByProductQuery(productId, _username ?? "");
+            var query = new GetProspectionByProductQuery(productId, Username ?? "");
 
             try
             {
@@ -141,7 +162,7 @@ namespace CRM.App.API.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> ToggleState([FromBody] ICollection<ProspectionInModel> models)
         {
-            var cmd = new ToggleProspectionsActivationStateCommand(models, _username ?? "");
+            var cmd = new ToggleProspectionsActivationStateCommand(models, Username ?? "");
 
             try
             {
@@ -157,5 +178,29 @@ namespace CRM.App.API.Controllers
                 return Unauthorized();
             }
         }
+
+        [HttpDelete("{productId:Guid}/{companyId:Guid}/{agentId:Guid}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> Delete([FromRoute] Guid productId, [FromRoute] Guid companyId, [FromRoute] Guid agentId)
+        {
+            var cmd = new DeleteProspectionCommand(productId, companyId, agentId, Username ?? "");
+
+            try
+            {
+                var result = await _sender.Send(cmd);
+                return Ok(result);
+            }
+            catch (NotFoundEntityException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
+            }
+        }
+
     }
 }

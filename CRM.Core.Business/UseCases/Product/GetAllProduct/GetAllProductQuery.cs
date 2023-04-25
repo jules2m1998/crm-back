@@ -8,4 +8,4 @@ using System.Threading.Tasks;
 
 namespace CRM.Core.Business.UseCases.Product.GetAllProduct;
 
-public record GetAllProductQuery(string UserName) : IRequest<ICollection<ProductOutModel>>;
+public record GetAllProductQuery() : IRequest<ICollection<ProductOutModel>>;

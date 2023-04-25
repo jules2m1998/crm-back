@@ -29,7 +29,7 @@ namespace CRM.App.API.Controllers
             _sender = sender;
         }
 
-        private string? _username { get { return User.FindFirstValue(ClaimTypes.Name); } }
+        private string? Username { get { return User.FindFirstValue(ClaimTypes.Name); } }
 
         [HttpPost, Authorize(Roles =Roles.ADMIN)]
         [ProducesResponseType(typeof(ProductOutModel), 201)]
@@ -37,7 +37,7 @@ namespace CRM.App.API.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> CreateProduct([FromForm] ProductInModel product)
         {
-            var cmd = new AddProductCommand(product, _username ?? "");
+            var cmd = new AddProductCommand(product, Username ?? "");
             try
             {
                 var result = await _sender.Send(cmd);
@@ -54,7 +54,7 @@ namespace CRM.App.API.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> GetAll()
         {
-            var cmd = new GetAllProductQuery(_username ?? "");
+            var cmd = new GetAllProductQuery();
             try
             {
                 var results = await _sender.Send(cmd);
@@ -73,7 +73,7 @@ namespace CRM.App.API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetOne([FromRoute] Guid id)
         {
-            var query = new GetOneProductQuery(_username ?? "", id);
+            var query = new GetOneProductQuery(id);
             try
             {
                 var result = await _sender.Send(query);
@@ -96,7 +96,7 @@ namespace CRM.App.API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Delete([FromBody] List<Guid> ids)
         {
-            var cmd = new DeleteManyProductsCommand(ids, _username ?? "");
+            var cmd = new DeleteManyProductsCommand(ids, Username ?? "");
             try
             {
                 var result = await _sender.Send(cmd);
@@ -125,7 +125,7 @@ namespace CRM.App.API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Patch([FromRoute] Guid id, [FromBody] JsonPatchDocument<Product> product)
         {
-            var cmd = new UpdateProductCommand(product, id, _username ?? "");
+            var cmd = new UpdateProductCommand(product, id, Username ?? "");
             try
             {
                 var result = await _sender.Send(cmd);
@@ -147,7 +147,7 @@ namespace CRM.App.API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> UpdateLogo([FromRoute] Guid id, [Required] IFormFile logo)
         {
-            var cmd = new UpdateProductLogoCommand(logo, id, _username ?? "");
+            var cmd = new UpdateProductLogoCommand(logo, id, Username ?? "");
             try
             {
                 var result = await _sender.Send(cmd);

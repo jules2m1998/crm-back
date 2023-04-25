@@ -57,7 +57,7 @@ namespace CRM.App.API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetOne([FromRoute] Guid id)
         {
-            var query = new GetOneCompanyCommand { Id = id, UserName = _username ?? "" };
+            var query = new GetOneCompanyCommand { Id = id };
 
             try
             {
@@ -80,10 +80,9 @@ namespace CRM.App.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetAll()
         {
-            var cmd = new GetAllCompaniesQuery { UserName = _username ?? "" };
             try
             {
-                var result = await _sender.Send(cmd);
+                var result = await _sender.Send(new GetAllCompaniesQuery());
                 return Ok(result);
             }
             catch (UnauthorizedAccessException)

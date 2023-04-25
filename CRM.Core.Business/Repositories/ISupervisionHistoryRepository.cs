@@ -1,4 +1,5 @@
-﻿using CRM.Core.Business.Models.Supervision;
+﻿using CRM.Core.Business.Models.Prospect;
+using CRM.Core.Business.Models.Supervision;
 using CRM.Core.Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,7 @@ public interface ISupervisionHistoryRepository
     Task<ICollection<SupervisionHistory>> GetAllActivateSupervisionAsync();
     Task<ICollection<SupervisionHistory>> GetAllSupervisedUserBySupervisorAsync(Guid userId);
     Task<ICollection<SupervisionHistory>> GetAllSupervisedUserBySupervisorAsync(Guid userId, string userName);
+    Task<ICollection<SupervisionHistory>> GetAllSupervisedUserBySupervisorAsync(string supervisorUserName);
     Task<ICollection<SupervisionHistory>> GetSuperviseesHistoryAsync(Guid userId);
     Task<ICollection<SupervisionHistory>> GetSuperviseesHistoryAsync(Guid userId, string userName);
     Task<SupervisionHistory?> GetSupervisionAsync(Guid supervisorId, Guid supervisedId);
@@ -22,5 +24,6 @@ public interface ISupervisionHistoryRepository
     Task<ICollection<SupervisionHistory>> GetSupervisionHistory(Guid userId, string userName);
     Task<SupervisionHistory?> GetUserSupervisor(Guid userId);
     Task<SupervisionHistory?> GetUserSupervisor(Guid userId, string userName);
+    Task<SupervisionHistory?> GetUserSupervisor(string userName);
     Task<SupervisionHistory> UpdateAsync(SupervisionHistory history);
 }

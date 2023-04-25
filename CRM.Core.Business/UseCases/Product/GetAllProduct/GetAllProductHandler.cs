@@ -20,14 +20,8 @@ public class GetAllProductHandler : IRequestHandler<GetAllProductQuery, ICollect
         _userRepository = userRepository;
     }
 
-    public async Task<ICollection<ProductOutModel>> Handle(GetAllProductQuery request, CancellationToken cancellationToken)
-    {
-        var user = await _userRepository.GetUserAndRolesAsync(request.UserName);
-        if (user is null) throw new UnauthorizedAccessException();
-        bool isAdmin = _userRepository.IsAdminUser(user);
-        ICollection<Domain.Entities.Product> result = null!;
-        if (isAdmin) result = await _repository.GetAllAsync();
-        else result = await _repository.GetAllByCreator(request.UserName);
-        return result.Select(p => p.ToProductOutModel()).ToList();
-    }
+    public async Task<ICollection<ProductOutModel>> Handle(GetAllProductQuery request, CancellationToken cancellationToken) =>
+        (await _repository.GetAllAsync())
+        .Select(p => p.ToProductOutModel())
+        .ToList();
 }

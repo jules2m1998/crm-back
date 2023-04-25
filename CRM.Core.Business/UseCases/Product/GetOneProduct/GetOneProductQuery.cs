@@ -8,14 +8,12 @@ using System.Threading.Tasks;
 
 namespace CRM.Core.Business.UseCases.Product.GetOneProduct;
 
-public class GetOneProductQuery: IRequest<ProductOutModel>
+public class GetOneProductQuery: IRequest<ProductOutModel?>
 {
-    public string UserName { get; set; }
     public Guid Id { get; set; }
 
-    public GetOneProductQuery(string userName, Guid id)
+    public GetOneProductQuery(Guid id)
     {
-        UserName = userName;
         Id = id;
     }
 }

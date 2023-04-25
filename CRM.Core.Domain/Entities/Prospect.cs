@@ -12,6 +12,7 @@ public class Prospect
     public Guid CompanyId { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? UpdatedAt { get; set; }
+    public DateTime? DeletedAt { get; set; }
 
     public bool IsActivated { get; set; } = true;
     public virtual Product Product { get; set; } = null!;

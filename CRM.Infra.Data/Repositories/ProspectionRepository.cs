@@ -19,7 +19,8 @@ public class ProspectionRepository : IProspectionRepository
             .Include(pr => pr.Creator)
             .Include(pr => pr.Company)
             .Include(pr => pr.Product)
-            .Include(pr => pr.Agent);
+            .Include(pr => pr.Agent)
+            .Where(pr => pr.DeletedAt == null);
         } }
 
     private IQueryable<Prospect?> _eachProspect { get
@@ -137,6 +138,11 @@ public class ProspectionRepository : IProspectionRepository
         return await _included.ToListAsync();
     }
 
+    public async Task<ICollection<Prospect>> GetAllAsync(string userName) =>
+        await _included
+        .Where(pr => pr.Creator != null && pr.Creator.UserName == userName)
+        .ToListAsync();
+
     public async Task<Prospect?> GetOneAsync(Guid agentId, Guid productId, Guid companyId)
     {
         return await _included.FirstOrDefaultAsync(ps => ps.Agent.Id == agentId && ps.ProductId == productId && ps.CompanyId == companyId);
@@ -145,5 +151,17 @@ public class ProspectionRepository : IProspectionRepository
     public async Task<Prospect?> GetOneAsync(Guid agentId, Guid productId, Guid companyId, string creatorUserName)
     {
         return await _included.FirstOrDefaultAsync(ps => ps.Agent.Id == agentId && ps.ProductId == productId && ps.CompanyId == companyId && ps.Creator != null && ps.Creator.UserName == creatorUserName);
+    }
+
+    public async Task DeleteAsync(Prospect prospection)
+    {
+        _dbSet.Remove(prospection);
+        await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task UpdateAsync(Prospect prospection)
+    {
+        _dbSet.Update(prospection);
+        await _dbContext.SaveChangesAsync();
     }
 }

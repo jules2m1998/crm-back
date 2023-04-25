@@ -12,6 +12,7 @@ public interface IProspectionRepository
 {
     Task<ICollection<Prospect>> GetManyAsync(ICollection<ProspectionInModel> models);
     Task<ICollection<Prospect>> GetAllAsync();
+    Task<ICollection<Prospect>> GetAllAsync(string userName);
     Task<ICollection<Prospect>> GetManyAsync(ICollection<ProspectionInModel> models, string userName);
     Task<ICollection<Prospect>> GetProspectionByAgent(Guid agentId);
     Task<ICollection<Prospect>> GetProspectionByAgent(Guid agentId, string userName);
@@ -24,4 +25,6 @@ public interface IProspectionRepository
     Task<ICollection<Prospect>> UpdateAsync(ICollection<Prospect> prospections);
     Task<Prospect?> GetOneAsync(Guid agentId, Guid productId, Guid companyId);
     Task<Prospect?> GetOneAsync(Guid agentId, Guid productId, Guid companyId, string creatorUserName);
+    Task DeleteAsync(Prospect prospection);
+    Task UpdateAsync(Prospect prospection);
 }
