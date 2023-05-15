@@ -54,10 +54,13 @@ public class AttributeProspectionHandler : IRequestHandler<AttributeProspectionC
             ) throw new UnauthorizedAccessException();
 
         Prospect? current = await _repo.GetTheCurrentAsync(request.Model.ProductId, request.Model.CompanyId);
-        if (current is not null && current.Agent.Id == request.Model.AgentId) throw new BaseException(new Dictionary<string, List<string>>()
-        {
-            {"AgentId", new List<string>(){"This assignation already exist !"} }
-        });
+        var errors = new Dictionary<string, List<string>>();
+        if (current is not null && current.Agent.Id == request.Model.AgentId)
+            errors.Add("AgentId", new List<string>() { "This assignation already exist !" });
+        if (current is not null)
+            errors.Add("ProductId", new List<string>() { "this company is already prospected for this product !" });
+
+        if (current is not null) throw new BaseException(errors);
 
         if (agent == null && isAdmin)
         {
@@ -69,6 +72,5 @@ public class AttributeProspectionHandler : IRequestHandler<AttributeProspectionC
         Prospect p = await _repo.SaveAsync(prospect);
 
         return p.ToModel();
-        throw new NotImplementedException();
     }
 }

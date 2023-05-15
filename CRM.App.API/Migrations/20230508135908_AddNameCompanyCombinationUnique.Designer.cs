@@ -4,6 +4,7 @@ using CRM.Infra.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CRM.App.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230508135908_AddNameCompanyCombinationUnique")]
+    partial class AddNameCompanyCombinationUnique
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -125,6 +128,10 @@ namespace CRM.App.API.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("Phones")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime?>("UpdateAt")
                         .HasColumnType("datetime2");
 
@@ -169,24 +176,6 @@ namespace CRM.App.API.Migrations
                     b.HasIndex("CreatorId");
 
                     b.ToTable("Contracts");
-                });
-
-            modelBuilder.Entity("CRM.Core.Domain.Entities.PhoneNumber", b =>
-                {
-                    b.Property<string>("Value")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<Guid>("ContactId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Value");
-
-                    b.HasIndex("ContactId");
-
-                    b.ToTable("phoneNumbers");
                 });
 
             modelBuilder.Entity("CRM.Core.Domain.Entities.Product", b =>
@@ -623,17 +612,6 @@ namespace CRM.App.API.Migrations
                     b.Navigation("Creator");
                 });
 
-            modelBuilder.Entity("CRM.Core.Domain.Entities.PhoneNumber", b =>
-                {
-                    b.HasOne("CRM.Core.Domain.Entities.Contact", "Contact")
-                        .WithMany("Phones")
-                        .HasForeignKey("ContactId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Contact");
-                });
-
             modelBuilder.Entity("CRM.Core.Domain.Entities.Product", b =>
                 {
                     b.HasOne("CRM.Core.Domain.Entities.User", "Creator")
@@ -802,11 +780,6 @@ namespace CRM.App.API.Migrations
                     b.Navigation("Contacts");
 
                     b.Navigation("Prospections");
-                });
-
-            modelBuilder.Entity("CRM.Core.Domain.Entities.Contact", b =>
-                {
-                    b.Navigation("Phones");
                 });
 
             modelBuilder.Entity("CRM.Core.Domain.Entities.Product", b =>

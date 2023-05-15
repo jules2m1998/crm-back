@@ -9,7 +9,9 @@ using CRM.Core.Business.UseCases.MarkAsDeletedRange;
 using CRM.Core.Business.UseCases.ResetPassword;
 using CRM.Core.Business.UseCases.ToogleAccountActiveted;
 using CRM.Core.Business.UseCases.UpdateUser;
+using CRM.Core.Business.UseCases.UserUcs.GetAllUsers;
 using CRM.Core.Domain;
+using CRM.Core.Domain.Exceptions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -175,6 +177,28 @@ namespace CRM.App.API.Controllers
             var result = await _sender.Send(cmd); 
             if (result is null) return NotFound();
             return Ok(result);
+        }
+
+        [HttpGet, Authorize]
+        [ProducesResponseType(typeof(UserModel), 200)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> GetAll()
+        {
+            var query = new GetAllUsersQuery();
+            try
+            {
+                var result = await _sender.Send(query);
+                return Ok(result);
+            }
+            catch (NotFoundEntityException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
+            }
         }
 
         [HttpPut, Authorize]

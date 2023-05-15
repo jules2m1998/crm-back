@@ -1,4 +1,5 @@
 ﻿using CRM.Core.Domain.Entities;
+using CRM.Infra.Data.Configurations;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -13,23 +14,22 @@ namespace CRM.Infra.Data
     {
         public DbSet<Skill> Skills { get; set; }
         public DbSet<Company> Companies { get; set; }
-        public DbSet<CompanyContact> CompanyContacts { get; set; }
         public DbSet<Contract> Contracts { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<Prospect> Prospects { get; set; }
         public DbSet<SupervisionHistory> SupervisionHistories { get; set; }
+        public DbSet<Contact> Contacts { get; set; }
+        public DbSet<PhoneNumber> PhoneNumbers { get; set; }
 
         public ApplicationDbContext(DbContextOptions dbContextOptions) : base(dbContextOptions) { }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
 
+            builder.ApplyConfiguration(new ContactConfiguration());
+            builder.ApplyConfiguration(new PhoneNumberConfiguration());
+
             // User foreign keys management
-            builder.Entity<CompanyContact>()
-                .Property(p => p.Phones)
-                .HasConversion(
-                    from => string.Join(';', from),
-                    to => string.IsNullOrEmpty(to) ? new List<string>() : to.Split(';', StringSplitOptions.RemoveEmptyEntries).ToList());
 
             builder.Entity<User>()
                 .HasMany(u => u.Prospects)

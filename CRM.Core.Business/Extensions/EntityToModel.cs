@@ -1,4 +1,6 @@
 ﻿using CRM.Core.Business.Models.Company;
+using CRM.Core.Business.Models.Contact;
+using CRM.Core.Business.Models.PhoneNumber;
 using CRM.Core.Business.Models.Product;
 using CRM.Core.Business.Models.Prospect;
 using CRM.Core.Business.Models.Supervision;
@@ -40,5 +42,29 @@ public static class EntityToModel
             p.Creator?.ToUserModel(),
             p.UpdatedAt,
             p.IsActivated);
+    }
+
+    public static ContactOutModel ToModel(this Contact contact)
+    {
+        return new ContactOutModel
+        {
+            Id = contact.Id,
+            Name = contact.Name,
+            Email = contact.Email,
+            Job = contact.Job,
+            Phones = contact.Phones.Select(p => p.ToModelWithoutContact()).ToList(),
+            Visibility = contact.Visibility,
+            SharedTo = contact.SharedTo.Select(u => u.ToUserModel()).ToList(),
+            Company = contact.Company.ToCompanyOutModel()
+        };
+    }
+
+    public static PhoneOutWithoutContact ToModelWithoutContact(this PhoneNumber phone)
+    {
+        return new PhoneOutWithoutContact
+        {
+            Value = phone.Value,
+            CreatedAt = phone.CreatedAt
+        };
     }
 }

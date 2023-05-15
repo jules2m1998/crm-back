@@ -14,12 +14,6 @@ public class User: IdentityUser<Guid>
     public bool IsActivated { get; set; } = true;
 
     public virtual User? Creator { get; set; } = null!;
-    public User? CurrentSupervisor { get
-        {
-            var first = Supervisors?.OrderBy(sp => sp.CreatedAt).Reverse().FirstOrDefault();
-            return first?.Supervisor;
-        } 
-    }
 
     public virtual ICollection<SupervisionHistory> Supervisees { get; set; } = null!;
     public virtual ICollection<SupervisionHistory> Supervisors { get; set; } = null!;
@@ -28,6 +22,8 @@ public class User: IdentityUser<Guid>
     public virtual ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
     public virtual ICollection<Prospect>? Prospects { get; set; }
     public virtual ICollection<Prospect>? ProspectionCreated { get; set; }
-    public virtual ICollection<CompanyContact>? CreatedCompanyContacts { get; set; }
     public virtual ICollection<Company>? CreatedCompanies { get; set; }
+    public virtual ICollection<Contact> Contacts { get; set; } = new List<Contact>();
+    public virtual ICollection<Contact> CreatedContacts { get; set; } = new List<Contact>();
+
 }

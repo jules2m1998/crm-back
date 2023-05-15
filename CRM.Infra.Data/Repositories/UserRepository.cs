@@ -769,4 +769,13 @@ public class UserRepository: IUserRepository
                 u =>
                     u.UserRoles.FirstOrDefault(ur => ur.Role.Name == role && ur.Role.Name != Roles.ADMIN) != null && u.Creator != null && u.Creator.UserName == userName).ToListAsync();
     }
+
+    public async Task<ICollection<User>?> GetUsers(ICollection<Guid> ids) =>
+        await _userManager.Users.Where(u => ids.Contains(u.Id)).ToListAsync();
+
+    public async Task<ICollection<User>> GetAllAsync() =>
+        await _userManager
+        .Users
+        .Where(u => !u.UserRoles.Any(r => r.Role.Name == Roles.ADMIN))
+        .ToListAsync();
 }

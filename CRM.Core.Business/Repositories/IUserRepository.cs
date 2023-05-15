@@ -46,5 +46,7 @@ namespace CRM.Core.Business.Repositories
         Task<User?> GetUserByRoleAsync(Guid userId, string role);
         Task<ICollection<User>> GetUserByRoleAsync(string role);
         Task<ICollection<User>> GetUserByRoleAsync(string role, string userName);
+        Task<ICollection<User>?> GetUsers(ICollection<Guid> ids);
+        Task<ICollection<User>> GetAllAsync();
     }
 }

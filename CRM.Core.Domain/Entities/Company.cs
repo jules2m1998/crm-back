@@ -21,8 +21,8 @@ public class Company: BaseEntity
     public ActivityArea ActivityArea { get; set; }
     public CompaniesType Size { get; set; }
 
-    public virtual ICollection<CompanyContact>? CompanyContacts { get; set; }
     public virtual ICollection<Prospect>? Prospections { get; set; }
+    public virtual ICollection<Contact> Contacts { get; set; } = new List<Contact>();
 
     public Company()
     {

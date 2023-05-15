@@ -111,6 +111,8 @@ public static class ConfigureServiceCollection
         services.AddScoped<ICompanyRepository, CompanyRepository>();
         services.AddScoped<ISupervisionHistoryRepository, SupervisionHistoryRepository>();
         services.AddScoped<IProspectionRepository, ProspectionRepository>();
+        services.AddScoped<IContactRepository, ContactRepository>();
+        services.AddScoped<IPhoneRepository, PhoneRepository>();
 
         return services;
     }

@@ -1,9 +1,7 @@
 ﻿using CRM.Core.Business.Models.Supervision;
 using CRM.Core.Business.Repositories;
 using CRM.Core.Domain.Entities;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
 
 namespace CRM.Infra.Data.Repositories;
 
