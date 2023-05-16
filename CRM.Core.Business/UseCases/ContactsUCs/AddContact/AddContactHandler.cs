@@ -30,7 +30,7 @@ public class AddContactHandler : IRequestHandler<AddContactCommand, ContactOutMo
     public async Task<ContactOutModel> Handle(AddContactCommand request, CancellationToken cancellationToken)
     {
         Contact? existing = await _repo.GetAsync(request.Name, request.CompanyId, cancellationToken);
-        if (existing != null) throw new BaseException(new Dictionary<string, List<string>> { { "Name", new List<string>() { "This contact already exist !"} }, { "CompanyId", new List<string>() { "This contact already exist !" } } });
+        if (existing != null) throw new BaseException(new Dictionary<string, List<string>> { { "Name", new List<string>() { "This contact already exist !"} }, { "CompanyId", new List<string>() { "This contact already exist is this company !" } } });
 
         var creator = await _userRepo.GetUserAndRolesAsync(request.UserName) ?? throw new UnauthorizedAccessException();
         var company = await _companyRepo.GetOneAsync(request.CompanyId) ?? throw new NotFoundEntityException("Company not found !");

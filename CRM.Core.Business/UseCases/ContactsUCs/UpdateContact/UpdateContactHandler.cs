@@ -36,7 +36,7 @@ public class UpdateContactHandler : IRequestHandler<UpdateContactCommand, Contac
             ? await _repo.GetOneAsync(id: request.Id, cancellationToken)
             : await _repo.GetOneAsync(id: request.Id, user.Id, cancellationToken)) ?? throw new NotFoundEntityException("This contact doesn't exist !");
         Contact? existing = await _repo.GetAsync(request.Model.Name, request.Model.CompanyId, cancellationToken);
-        if (existing != null) throw new BaseException(new Dictionary<string, List<string>> { { "Name", new List<string>() { "This contact already exist !" } }, { "CompanyId", new List<string>() { "This contact already exist !" } } });
+        if (existing != null && existing.Id != request.Id) throw new BaseException(new Dictionary<string, List<string>> { { "Name", new List<string>() { "This contact already exist !" } }, { "CompanyId", new List<string>() { "This contact already exist !" } } });
 
         if (contact.Company.Id != request.Model.CompanyId)
         {
@@ -45,8 +45,6 @@ public class UpdateContactHandler : IRequestHandler<UpdateContactCommand, Contac
                 ?? throw new NotFoundEntityException("This company doesn't exist !");
             contact.Company = newCompany;
         }
-        IEnumerable<User> shared = await _uRepo.GetUsers(request.Model.SharedTo ?? new List<Guid>());
-        contact.SharedTo = shared.ToList();
 
         IEnumerable<PhoneNumber> phones = request.Model.Phones.Select(p => new PhoneNumber
         {
@@ -57,6 +55,14 @@ public class UpdateContactHandler : IRequestHandler<UpdateContactCommand, Contac
         contact.Name = request.Model.Name;
         contact.Email = request.Model.Email;
         contact.Job = request.Model.Job;
+        contact.Visibility = request.Model.Visibility;
+        if(request.Model.Visibility != Domain.Types.ContactVisibility.Restrict) 
+            contact.SharedTo = new List<User>();
+        else
+        {
+            IEnumerable<User> shared = (await _uRepo.GetUsers(request.Model.SharedTo ?? new List<Guid>())) ?? new List<User>();
+            contact.SharedTo = shared!.ToList();
+        }
 
         await _repo.UpdateAsync(contact);
 

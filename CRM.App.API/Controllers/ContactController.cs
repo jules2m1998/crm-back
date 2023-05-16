@@ -114,6 +114,7 @@ public class ContactController : BaseController
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> Update([FromBody] ContactInModel model, [FromRoute] Guid id)
     {
+        model.Phones = new HashSet<string>(model.Phones);
         var contact = new UpdateContactCommand(id, Username ?? "", model);
         return await GetAction(async () => await _sender.Send(contact));
     }
