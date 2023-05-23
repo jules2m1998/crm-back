@@ -778,4 +778,7 @@ public class UserRepository: IUserRepository
         .Users
         .Where(u => !u.UserRoles.Any(r => r.Role.Name == Roles.ADMIN))
         .ToListAsync();
+
+    public async Task<User?> GetUserByIdAsync(Guid id) =>
+        await _userManager.Users.FirstOrDefaultAsync(u => u.Id == id);
 }

@@ -20,6 +20,7 @@ namespace CRM.Infra.Data
         public DbSet<SupervisionHistory> SupervisionHistories { get; set; }
         public DbSet<Contact> Contacts { get; set; }
         public DbSet<PhoneNumber> PhoneNumbers { get; set; }
+        public DbSet<Event> Events { get; set; }
 
         public ApplicationDbContext(DbContextOptions dbContextOptions) : base(dbContextOptions) { }
         protected override void OnModelCreating(ModelBuilder builder)
@@ -28,6 +29,7 @@ namespace CRM.Infra.Data
 
             builder.ApplyConfiguration(new ContactConfiguration());
             builder.ApplyConfiguration(new PhoneNumberConfiguration());
+            builder.ApplyConfiguration(new EventConfiguration());
 
             // User foreign keys management
 

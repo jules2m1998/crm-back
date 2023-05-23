@@ -1,5 +1,6 @@
 ﻿using CRM.Core.Business.Models.Company;
 using CRM.Core.Business.Models.Contact;
+using CRM.Core.Business.Models.Event;
 using CRM.Core.Business.Models.PhoneNumber;
 using CRM.Core.Business.Models.Product;
 using CRM.Core.Business.Models.Prospect;
@@ -67,4 +68,18 @@ public static class EntityToModel
             CreatedAt = phone.CreatedAt
         };
     }
+
+    public static EventOutModel ToModel(this Event evnt) => new()
+    {
+        Id = evnt.Id,
+        StartDate = evnt.StartDate,
+        EndDate = evnt.EndDate,
+        Description = evnt.Description,
+        Name = evnt.Name,
+
+        Prospection = evnt.Prospect?.ToModel(),
+        Creator = evnt.Creator?.ToUserModel(),
+        Owner = evnt.Owner.ToUserModel(),
+        Contacts = evnt.Contact?.Select(c => c.ToModel()).ToList()
+    };
 }

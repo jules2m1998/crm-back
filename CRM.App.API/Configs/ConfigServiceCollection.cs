@@ -113,6 +113,7 @@ public static class ConfigureServiceCollection
         services.AddScoped<IProspectionRepository, ProspectionRepository>();
         services.AddScoped<IContactRepository, ContactRepository>();
         services.AddScoped<IPhoneRepository, PhoneRepository>();
+        services.AddScoped<IEventRepository, EventRepository>();
 
         return services;
     }

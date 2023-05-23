@@ -13,6 +13,7 @@ namespace CRM.Infra.Data
         public DbSet<SupervisionHistory> SupervisionHistories { get; set; }
         public DbSet<Contact> Contacts { get; set; }
         public DbSet<PhoneNumber> PhoneNumbers { get; set; }
+        public DbSet<Event> Events { get; set; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }

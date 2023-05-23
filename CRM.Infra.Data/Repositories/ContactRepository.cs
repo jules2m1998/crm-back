@@ -73,4 +73,14 @@ public class ContactRepository : IContactRepository
         await _context.SaveChangesAsync();
         _contacts.Attach(contact);
     }
+
+    public async Task<ICollection<Contact>?> GetContactByUserAsync(ICollection<Guid> contactIds, string userName) =>
+        await _contacts
+            .AsNoTracking()
+            .Where(c =>
+            contactIds.Contains(c.Id) &&
+            (c.Creator != null && c.Creator.UserName == userName)
+            || c.SharedTo.FirstOrDefault(s => s.UserName == userName) != null
+            || c.Visibility == Core.Domain.Types.ContactVisibility.Public
+            ).ToListAsync();
 }

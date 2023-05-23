@@ -4,6 +4,7 @@ using CRM.Infra.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CRM.App.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230522080844_AddEventEntity")]
+    partial class AddEventEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -205,13 +208,10 @@ namespace CRM.App.API.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("OwnerId")
+                    b.Property<Guid>("ProspectCompanyId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("ProspectCompanyId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("ProspectProductId")
+                    b.Property<Guid>("ProspectProductId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("StartDate")
@@ -223,8 +223,6 @@ namespace CRM.App.API.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CreatorId");
-
-                    b.HasIndex("OwnerId");
 
                     b.HasIndex("ProspectProductId", "ProspectCompanyId");
 
@@ -693,19 +691,13 @@ namespace CRM.App.API.Migrations
                         .WithMany()
                         .HasForeignKey("CreatorId");
 
-                    b.HasOne("CRM.Core.Domain.Entities.User", "Owner")
+                    b.HasOne("CRM.Core.Domain.Entities.Prospect", "Prospect")
                         .WithMany()
-                        .HasForeignKey("OwnerId")
+                        .HasForeignKey("ProspectProductId", "ProspectCompanyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("CRM.Core.Domain.Entities.Prospect", "Prospect")
-                        .WithMany()
-                        .HasForeignKey("ProspectProductId", "ProspectCompanyId");
-
                     b.Navigation("Creator");
-
-                    b.Navigation("Owner");
 
                     b.Navigation("Prospect");
                 });

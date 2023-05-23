@@ -12,6 +12,7 @@ public interface IContactRepository
     Task AddAsync(Contact contact, CancellationToken cancellationToken);
     Task<ICollection<Contact>> GetAsync();
     Task<Contact?> GetAsync(string name, Guid companyId, CancellationToken cancellationToken);
+    Task<ICollection<Contact>?> GetContactByUserAsync(ICollection<Guid> contactIds, string userName);
     Task<ICollection<Contact>> GetMineAsync(Guid userId);
     Task<Contact?> GetOneAsync(Guid id, CancellationToken cancellationToken);
     Task<Contact?> GetOneAsync(Guid id, Guid userId, CancellationToken cancellationToken);
