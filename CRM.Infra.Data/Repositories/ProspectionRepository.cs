@@ -120,7 +120,7 @@ public class ProspectionRepository : IProspectionRepository
             .ToListAsync();
     }
 
-    public async Task<ICollection<Prospect>> UpdateAsync(ICollection<Prospect> prospections)
+    async Task<ICollection<Prospect>> IProspectionRepository.UpdateAsync(ICollection<Prospect> prospections)
     {
         foreach(var prospect in prospections)
         {

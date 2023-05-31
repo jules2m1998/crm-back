@@ -8,7 +8,7 @@ namespace CRM.App.API.Controllers;
 
 public class BaseController : ControllerBase
 {
-    public string? Username { get { return User.FindFirstValue(ClaimTypes.Name); } }
+    public string Username => User.FindFirstValue(ClaimTypes.Name) ?? "";
 
     [NonAction]
     public async Task<IActionResult> GetAction(Func<Task<object>> action)

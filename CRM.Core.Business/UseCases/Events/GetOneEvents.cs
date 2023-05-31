@@ -19,7 +19,7 @@ public static class GetOneEvents
             _repo = repo;
         }
 
-        public async Task<EventOutModel?> Handle(Query request, CancellationToken cancellationToken)
+        public async Task<EventOutModel> Handle(Query request, CancellationToken cancellationToken)
         {
             var e = (await _repo.GetAsync(request.Id, request.UserName)) ?? throw new NotFoundEntityException("This event doesn't exist !");
             return e.ToModel();

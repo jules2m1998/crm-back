@@ -40,4 +40,9 @@ public class EventRepository : IEventRepository
     public async Task<Event?> GetAsync(Guid id, string userName) =>
         await Included
         .FirstOrDefaultAsync(e => (e.Owner.UserName == userName || (e.Creator != null && e.Creator.UserName == userName)) && e.Id == id);
+
+    public Task<Event?> GetAsync(Guid id)
+    {
+        throw new NotImplementedException();
+    }
 }

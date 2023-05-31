@@ -12,5 +12,6 @@ public interface IEventRepository
     Task AddAsync(Event e);
     Task<Event?> GetAsync(Guid id, string userName);
     Task<Event?> GetAsync(Guid id);
+    Task<ICollection<Event>> GetAsync();
     Task<ICollection<Event>> GetByUserAsync(string userName);
 }
