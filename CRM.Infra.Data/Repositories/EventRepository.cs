@@ -13,7 +13,21 @@ public class EventRepository : IEventRepository
     private IQueryable<Event> Included => 
         _events
         .Include(e => e.Creator)
-        .Include(e => e.Prospect)
+        .Include(e => e.Prospect).ThenInclude(p => p.Product)
+        .Include(e => e.Prospect).ThenInclude(p => p.Company).ThenInclude(c => c.Creator)
+        .Include(e => e.Prospect).ThenInclude(p => p.Agent)
+        .Include(e => e.Prospect).ThenInclude(p => p.Creator)
+        .Include(e => e.Contact).ThenInclude(c => c.Company)
+        .Include(e => e.Creator)
+        .Include(e => e.Owner);
+
+    private IQueryable<Event> Simple =>
+        _events
+        .Include(e => e.Creator)
+        .Include(e => e.Prospect).ThenInclude(p => p.Product)
+        .Include(e => e.Prospect).ThenInclude(p => p.Company)
+        .Include(e => e.Prospect).ThenInclude(p => p.Agent)
+        .Include(e => e.Prospect).ThenInclude(p => p.Creator)
         .Include(e => e.Contact)
         .Include(e => e.Creator)
         .Include(e => e.Owner);
@@ -27,13 +41,14 @@ public class EventRepository : IEventRepository
     {
         _events.Add(e);
         await _context.SaveChangesAsync();
+        _events.Attach(e);
     }
 
     public async Task<ICollection<Event>> GetAsync() =>
-        await Included.ToListAsync();
+        await Simple.ToListAsync();
 
     public async Task<ICollection<Event>> GetByUserAsync(string userName) => 
-        await Included
+        await Simple
         .Where(e => e.Owner.UserName == userName || (e.Creator != null && e.Creator.UserName == userName))
         .ToListAsync();
 
@@ -41,8 +56,19 @@ public class EventRepository : IEventRepository
         await Included
         .FirstOrDefaultAsync(e => (e.Owner.UserName == userName || (e.Creator != null && e.Creator.UserName == userName)) && e.Id == id);
 
-    public Task<Event?> GetAsync(Guid id)
+    public async Task<Event?> GetAsync(Guid id) => 
+        await Included.FirstOrDefaultAsync(e => e.Id == id);
+
+    public async Task UpdateAsync(Event e)
     {
-        throw new NotImplementedException();
+        _events.Update(e);
+        await _context.SaveChangesAsync();
+
+    }
+
+    public async Task DeleteAsync(Event e)
+    {
+        _events.Remove(e);
+        await _context.SaveChangesAsync();
     }
 }

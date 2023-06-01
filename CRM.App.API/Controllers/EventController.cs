@@ -2,13 +2,14 @@
 using CRM.Core.Business.Models.Event;
 using CRM.Core.Business.UseCases.Events;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
 namespace CRM.App.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]"), Authorize]
     [ApiController]
     public class EventController : BaseController
     {
@@ -29,6 +30,39 @@ namespace CRM.App.API.Controllers
             return await GetAction(async () => await _sender.Send(cmd));
         }
 
+        [HttpPut("{id:Guid}")]
+        [ProducesResponseType(typeof(EventOutModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Dictionary<string, string>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] EventInModel model)
+        {
+            var command = new EditEvent.Command(id, model);
+            model.UserName = Username;
+
+            return await GetAction(async () => await _sender.Send(command));
+        }
+
+        [HttpDelete("{id:Guid}")]
+        [ProducesResponseType(typeof(Dictionary<string, string>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> Delete([FromRoute] Guid id)
+        {
+            var command = new DeleteEvent.Command(id, Username);
+            return await GetAction(async () => await _sender.Send(command));
+        }
+
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+
+        [HttpGet]
+        [ProducesResponseType(typeof(ICollection<EventOutModel>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> Get()
+        {
+            var query = new GetEvents.Query(Username);
+            return await GetAction(async () => await _sender.Send(query));
+        }
+
+
         [HttpPost]
         [ProducesResponseType(typeof(EventOutModel), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(Dictionary<string, ICollection<string>>), StatusCodes.Status400BadRequest)]
@@ -36,7 +70,21 @@ namespace CRM.App.API.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> Add([FromBody] EventInWithoutUserName newEvent)
         {
-            EventInModel model = (EventInModel)newEvent;
+            EventInModel model = new()
+            {
+                UserName = Username,
+
+                ProductId = newEvent.ProductId,
+                CompanyId = newEvent.CompanyId,
+                AgentId = newEvent.AgentId,
+                OwnerId = newEvent.OwnerId,
+
+                StartDate = newEvent.StartDate,
+                EndDate = newEvent.EndDate,
+                Description = newEvent.Description,
+                Name = newEvent.Name,
+                ContactIds = newEvent.ContactIds
+            };
             var query = new AddEvent.Command(model);
 
             try

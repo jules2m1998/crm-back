@@ -32,7 +32,7 @@ public static class GetEvents
                 : await _repo.GetByUserAsync(request.UserName);
 
             return events
-                .Select(e => e.ToModel())
+                .Select(e => e.ToSimpleModel())
                 .ToList();
         }
     }

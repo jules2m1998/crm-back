@@ -46,7 +46,12 @@ public static class AddEvent
 
             if(model.AgentId != null && model.ProductId != null && model.CompanyId != null)
             {
-                prospection = await _propectionRepo.GetOneAsync((Guid)model.AgentId!, (Guid)model.ProductId!, (Guid)model.CompanyId!) ?? throw new NotFoundEntityException("This prospection doesn't exist !");
+                Guid agenId = model.AgentId ?? Guid.Empty;
+                Guid productId = model.ProductId ?? Guid.Empty;
+                Guid companyId = model.CompanyId ?? Guid.Empty;
+                prospection = 
+                    await _propectionRepo.GetOneAsync(agenId, productId, companyId) 
+                    ?? throw new NotFoundEntityException("This prospection doesn't exist !");
             }
 
             if(model.ContactIds != null && model.ContactIds.Any())
@@ -68,13 +73,16 @@ public static class AddEvent
 
                 Prospect = prospection,
                 Owner = owner ?? user,
-                Contact = contacts,
-                Creator = user
+                Creator = user,
+                Contact = new List<Contact>()
             };
 
             await _repo.AddAsync(e);
 
-            return e.ToModel();
+            e.Contact = contacts;
+            await _repo.UpdateAsync(e);
+
+            return e.ToSimpleModel();
         }
     }
 }

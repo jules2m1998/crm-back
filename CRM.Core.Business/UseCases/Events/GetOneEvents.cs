@@ -8,9 +8,9 @@ namespace CRM.Core.Business.UseCases.Events;
 
 public static class GetOneEvents
 {
-    public record Query(Guid Id, string UserName): IRequest<EventOutModel?>;
+    public record Query(Guid Id, string UserName): IRequest<EventOutModel>;
 
-    public class Handler : IRequestHandler<Query, EventOutModel?>
+    public class Handler : IRequestHandler<Query, EventOutModel>
     {
         private readonly IEventRepository _repo;
 

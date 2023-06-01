@@ -16,6 +16,8 @@ public class BaseController : ControllerBase
         try
         {
             var result = await action();
+            if (result is Unit)
+                return NoContent();
             return Ok(result);
         }
         catch (NotFoundEntityException ex)

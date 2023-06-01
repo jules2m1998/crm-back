@@ -4,6 +4,7 @@ using CRM.Infra.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CRM.App.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230531135513_SetContactEventRelation")]
+    partial class SetContactEventRelation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -114,6 +117,9 @@ namespace CRM.App.API.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid?>("EventId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<bool>("IsActivated")
                         .HasColumnType("bit");
 
@@ -136,6 +142,8 @@ namespace CRM.App.API.Migrations
                     b.HasIndex("CompanyId");
 
                     b.HasIndex("CreatorId");
+
+                    b.HasIndex("EventId");
 
                     b.HasIndex("Name", "CompanyId")
                         .IsUnique();
@@ -539,21 +547,6 @@ namespace CRM.App.API.Migrations
                     b.ToTable("AspNetUserRoles", (string)null);
                 });
 
-            modelBuilder.Entity("ContactEvent", b =>
-                {
-                    b.Property<Guid>("ContactId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("EventsId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("ContactId", "EventsId");
-
-                    b.HasIndex("EventsId");
-
-                    b.ToTable("ContactEvent");
-                });
-
             modelBuilder.Entity("ContactUser", b =>
                 {
                     b.Property<Guid>("ContactsId")
@@ -678,6 +671,10 @@ namespace CRM.App.API.Migrations
                     b.HasOne("CRM.Core.Domain.Entities.User", "Creator")
                         .WithMany("CreatedContacts")
                         .HasForeignKey("CreatorId");
+
+                    b.HasOne("CRM.Core.Domain.Entities.Event", null)
+                        .WithMany("Contact")
+                        .HasForeignKey("EventId");
 
                     b.Navigation("Company");
 
@@ -839,21 +836,6 @@ namespace CRM.App.API.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("ContactEvent", b =>
-                {
-                    b.HasOne("CRM.Core.Domain.Entities.Contact", null)
-                        .WithMany()
-                        .HasForeignKey("ContactId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("CRM.Core.Domain.Entities.Event", null)
-                        .WithMany()
-                        .HasForeignKey("EventsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("ContactUser", b =>
                 {
                     b.HasOne("CRM.Core.Domain.Entities.Contact", null)
@@ -915,6 +897,11 @@ namespace CRM.App.API.Migrations
             modelBuilder.Entity("CRM.Core.Domain.Entities.Contact", b =>
                 {
                     b.Navigation("Phones");
+                });
+
+            modelBuilder.Entity("CRM.Core.Domain.Entities.Event", b =>
+                {
+                    b.Navigation("Contact");
                 });
 
             modelBuilder.Entity("CRM.Core.Domain.Entities.Product", b =>

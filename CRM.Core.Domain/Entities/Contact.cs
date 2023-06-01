@@ -12,4 +12,5 @@ public class Contact: BaseEntity
     public virtual ICollection<User> SharedTo { get; set; } = new List<User>();
     public virtual Company Company { get; set; } = null!;
     public virtual ICollection<PhoneNumber> Phones { get; set; } = new List<PhoneNumber>();
+    public virtual ICollection<Event> Events { get; set; } = new List<Event>();
 }
