@@ -2,10 +2,12 @@
 using CRM.Core.Business.Authentication;
 using CRM.Core.Business.Helpers;
 using CRM.Core.Business.Repositories;
+using CRM.Core.Business.Services;
 using CRM.Core.Domain.Entities;
 using CRM.Infra.Data;
 using CRM.Infra.Data.Helpers;
 using CRM.Infra.Data.Repositories;
+using CRM.Infra.Data.Services;
 using CRM.Infra.Services;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -114,6 +116,7 @@ public static class ConfigureServiceCollection
         services.AddScoped<IContactRepository, ContactRepository>();
         services.AddScoped<IPhoneRepository, PhoneRepository>();
         services.AddScoped<IEventRepository, EventRepository>();
+        services.AddScoped<IEmailService, EmailService>();
 
         return services;
     }

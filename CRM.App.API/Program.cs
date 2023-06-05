@@ -1,4 +1,5 @@
 using CRM.App.API.Configs;
+using CRM.Core.Business.Settings;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +17,8 @@ builder.Services
     .AddCompression();
 
 builder.Services.AddCors();
+
+builder.Services.Configure<SmtpSetting>(builder.Configuration.GetSection("SmtpSettings")); // crm.globalasset@gmail.com // +e$7^UZ-X2Nd_n=5
 
 
 var app = builder.Build();

@@ -16,4 +16,5 @@ public class Event: BaseEntity
     public virtual Prospect? Prospect { get; set; } = null!;
     public virtual User Owner { get; set; } = null!;
     public virtual ICollection<Contact>? Contact { get; set; }
+    public virtual ICollection<Email> Emails { get; set; } = new List<Email>();
 }

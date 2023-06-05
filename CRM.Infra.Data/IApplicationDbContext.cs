@@ -14,6 +14,7 @@ namespace CRM.Infra.Data
         public DbSet<Contact> Contacts { get; set; }
         public DbSet<PhoneNumber> PhoneNumbers { get; set; }
         public DbSet<Event> Events { get; set; }
+        public DbSet<Email> Emails { get; set; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }
