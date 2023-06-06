@@ -8,12 +8,14 @@ using CRM.Infra.Data;
 using CRM.Infra.Data.Helpers;
 using CRM.Infra.Data.Repositories;
 using CRM.Infra.Data.Services;
+using CRM.Infra.Data.Services.BackgroundTasks;
 using CRM.Infra.Services;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.IO.Compression;
@@ -117,6 +119,8 @@ public static class ConfigureServiceCollection
         services.AddScoped<IPhoneRepository, PhoneRepository>();
         services.AddScoped<IEventRepository, EventRepository>();
         services.AddScoped<IEmailService, EmailService>();
+        services.AddScoped<IEmailRepository, EmailRepository>();
+
 
         return services;
     }

@@ -83,7 +83,8 @@ namespace CRM.App.API.Controllers
                 EndDate = newEvent.EndDate,
                 Description = newEvent.Description,
                 Name = newEvent.Name,
-                ContactIds = newEvent.ContactIds
+                ContactIds = newEvent.ContactIds,
+                Topic = newEvent.Topic
             };
             var query = new AddEvent.Command(model);
 

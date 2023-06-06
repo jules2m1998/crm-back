@@ -1,6 +1,7 @@
 ﻿using CRM.Core.Business.Extensions;
 using CRM.Core.Business.Models.Event;
 using CRM.Core.Business.Repositories;
+using CRM.Core.Business.Services;
 using CRM.Core.Domain.Entities;
 using CRM.Core.Domain.Exceptions;
 using MediatR;
@@ -22,13 +23,24 @@ public static class AddEvent
         private readonly IUserRepository _userRepo;
         private readonly IProspectionRepository _propectionRepo;
         private readonly IContactRepository _contactRepo;
+        private readonly IEmailService _emailService;
+        private readonly IEmailRepository _emailRepository;
 
-        public Handler(IEventRepository repo, IUserRepository userRepository, IProspectionRepository prospectionRepository, IContactRepository contactRepository)
+        public Handler(
+            IEventRepository repo,
+            IUserRepository userRepository,
+            IProspectionRepository prospectionRepository,
+            IContactRepository contactRepository,
+            IEmailService emailService,
+            IEmailRepository emailRepository
+            )
         {
             _repo = repo;
             _userRepo = userRepository;
             _propectionRepo = prospectionRepository;
             _contactRepo = contactRepository;
+            _emailService = emailService;
+            _emailRepository = emailRepository;
         }
 
         public async Task<EventOutModel> Handle(Command request, CancellationToken cancellationToken)
@@ -70,6 +82,7 @@ public static class AddEvent
                 EndDate = model.EndDate,
                 Description = model.Description,
                 Name = model.Name,
+                Topic = model.Topic,
 
                 Prospect = prospection,
                 Owner = owner ?? user,
@@ -81,6 +94,8 @@ public static class AddEvent
 
             e.Contact = contacts;
             await _repo.UpdateAsync(e);
+
+            await _emailRepository.AddAsync(e);
 
             return e.ToSimpleModel();
         }

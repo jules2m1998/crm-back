@@ -76,6 +76,7 @@ public static class EntityToModel
         EndDate = evnt.EndDate,
         Description = evnt.Description,
         Name = evnt.Name,
+        Topic = evnt.Topic,
 
         Prospection = evnt.Prospect?.ToModel(),
         Creator = evnt.Creator?.ToUserModel(),

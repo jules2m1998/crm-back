@@ -67,6 +67,7 @@ public static class EditEvent
             e.Prospect = prospection;
             e.Contact = contacts;
             e.Owner = owner;
+            e.Topic = model.Topic;
 
             await _repo.UpdateAsync(e);
 

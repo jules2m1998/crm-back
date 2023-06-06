@@ -16,6 +16,7 @@ public class EventOutModel
     public DateTime EndDate { get; set; }
     public string Description { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
+    public string Topic { get; set; } = string.Empty;
 
     public ProspectionOutModel? Prospection { get; set; }
     public UserModel? Creator { get; set; }

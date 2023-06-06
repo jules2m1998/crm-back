@@ -4,6 +4,7 @@ using CRM.Infra.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CRM.App.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230606080749_AddTopicToEvent")]
+    partial class AddTopicToEvent
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -195,8 +198,8 @@ namespace CRM.App.API.Migrations
                     b.Property<bool>("IsActivated")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsSend")
-                        .HasColumnType("bit");
+                    b.Property<DateTime>("ToSendThe")
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("UpdateAt")
                         .HasColumnType("datetime2");

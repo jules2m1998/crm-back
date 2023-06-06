@@ -12,6 +12,7 @@ public class Event: BaseEntity
     public DateTime EndDate { get; set; }
     public string Description { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
+    public string Topic { get; set; } = string.Empty;
 
     public virtual Prospect? Prospect { get; set; } = null!;
     public virtual User Owner { get; set; } = null!;

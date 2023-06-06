@@ -10,4 +10,7 @@ namespace CRM.Core.Business.Services;
 public interface IEmailService
 {
     Task SendAsync(string subject, string body, string receiverEmail);
+    Task SendAsync(Event e);
+    Task SendLastAsync(Event e);
+    Task SendSecondAsync(Event e);
 }

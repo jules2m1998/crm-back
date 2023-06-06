@@ -1,5 +1,8 @@
 using CRM.App.API.Configs;
+using CRM.Core.Business.Repositories;
+using CRM.Core.Business.Services;
 using CRM.Core.Business.Settings;
+using CRM.Infra.Data.Services.BackgroundTasks;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +18,8 @@ builder.Services
     .AddMediaRConfig()
     .AddDependencies()
     .AddCompression();
+
+builder.Services.AddHostedService<SendEmailService>();
 
 builder.Services.AddCors();
 
