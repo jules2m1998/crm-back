@@ -21,6 +21,7 @@ public interface IProductRepository
     Task<ICollection<Product>> GetManyByIdsAsync(ICollection<Guid> ids, string userName);
     Task<Product?> GetProductByIdAndCreatorAsync(Guid id, string userName);
     Task<Product?> GetProductByIdAsync(Guid id);
+    Task<Product?> GetWithStageAsync(Guid productId);
     Task MarkAsDeletedAsync(ICollection<Product> products);
     Task<Product> PathProductAsync(JsonPatchDocument<Product> pathData, Product product);
     Task<Product> UpdateOneAsync(Product product);

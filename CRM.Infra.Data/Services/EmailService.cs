@@ -54,8 +54,7 @@ public class EmailService : IEmailService
 
         foreach(var contact in e.Contact)
         {
-            var emailHtml = contact.ToEmailString(e);
-            await SendAsync($"Appointment relative to : {e.Topic}", emailHtml, contact.Email);
+            await SendAsync($"Appointment relative to : {e.Topic}", e.Description, contact.Email);
         }
     }
 

@@ -1,4 +1,5 @@
-﻿using CRM.Core.Business.Models.Company;
+﻿using CRM.Core.Business.Models;
+using CRM.Core.Business.Models.Company;
 using CRM.Core.Business.Models.Contact;
 using CRM.Core.Business.Models.Event;
 using CRM.Core.Business.Models.PhoneNumber;
@@ -118,4 +119,12 @@ public static class EntityToModel
             }).ToList()
         };
     }
+    public static ProductStageModel.Out ToModel(this ProductStage model) => new()
+    {
+        Name = model.Name,
+        IsDone = model.IsDone,
+        IsFirst = model.IsFirst,
+        Id = model.Id,
+        IsActivated = model.IsActivated
+    };
 }

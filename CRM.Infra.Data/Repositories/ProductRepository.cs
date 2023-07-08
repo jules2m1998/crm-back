@@ -104,4 +104,7 @@ public class ProductRepository : IProductRepository
         return await _includeCreator
             .FirstOrDefaultAsync(p => p.Name.ToLower() == name.ToLower());
     }
+
+    public async Task<Product?> GetWithStageAsync(Guid productId) =>
+        await _products.Include(p => p.FirstStage).FirstOrDefaultAsync(p => p.Id == productId);
 }

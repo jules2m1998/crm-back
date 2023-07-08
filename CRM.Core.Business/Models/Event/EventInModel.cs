@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,9 +21,9 @@ public class EventInWithoutUserName
 
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
-    public string Description { get; set; } = string.Empty;
+    public string Description { get; set; } = null!;
     public string Name { get; set; } = string.Empty;
-    public string Topic { get; set; } = string.Empty;
+    public string Topic { get; set; } = null!;
 
-    public ICollection<Guid>? ContactIds { get; set; }
+    public ICollection<Guid> ContactIds { get; set; } = null!;
 }

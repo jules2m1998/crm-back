@@ -2,6 +2,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Drawing.Drawing2D;
 using System.Security.Claims;
 
 namespace CRM.App.API.Controllers;

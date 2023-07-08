@@ -22,6 +22,9 @@ namespace CRM.Infra.Data
         public DbSet<PhoneNumber> PhoneNumbers { get; set; }
         public DbSet<Event> Events { get; set; }
         public DbSet<Email> Emails { get; set; }
+        public DbSet<ProductStage> ProductStages { get; set; }
+        public DbSet<StageQuetion> StageQuetions { get; set; }
+        public DbSet<StageResponse> StageResponses { get; set; }
 
         public ApplicationDbContext(DbContextOptions dbContextOptions) : base(dbContextOptions) { }
         protected override void OnModelCreating(ModelBuilder builder)
