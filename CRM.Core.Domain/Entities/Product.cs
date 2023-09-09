@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace CRM.Core.Domain.Entities;
+﻿namespace CRM.Core.Domain.Entities;
 
 public class Product: BaseEntity
 {
@@ -13,7 +7,7 @@ public class Product: BaseEntity
     public string Description { get; set; } = string.Empty;
 
     public virtual ICollection<Prospect>? Prospections { get; set; }
-    public virtual ProductStage? FirstStage { get; set; }
+    public virtual IEnumerable<ProductStage> Stages { get; set; } = new List<ProductStage>();
 
     public Product()
     {

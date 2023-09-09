@@ -1,14 +1,17 @@
 using CRM.App.API.Configs;
-using CRM.Core.Business.Repositories;
-using CRM.Core.Business.Services;
 using CRM.Core.Business.Settings;
-using CRM.Infra.Data.Services.BackgroundTasks;
+using CRM.Core.Business.Mappers;
+using Newtonsoft.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers().AddNewtonsoftJson();
+builder.Services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
+builder.Services.AddControllers().AddNewtonsoftJson(options =>
+{
+    options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+});
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
@@ -19,7 +22,7 @@ builder.Services
     .AddDependencies()
     .AddCompression();
 
-builder.Services.AddHostedService<SendEmailService>();
+//builder.Services.AddHostedService<SendEmailService>();
 
 builder.Services.AddCors();
 

@@ -36,7 +36,6 @@ public class ProspectController : ControllerBase
     private string? Username { get { return User.FindFirstValue(ClaimTypes.Name); } }
 
     [HttpGet]
-    [ProducesResponseType(typeof(ICollection<ProspectionOutModel>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> Get()
     {
@@ -52,7 +51,6 @@ public class ProspectController : ControllerBase
     }
 
     [HttpPost]
-    [ProducesResponseType(typeof(ProspectionOutModel), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> CreateOne([FromBody] ProspectionInModel model)
@@ -75,7 +73,6 @@ public class ProspectController : ControllerBase
     }
 
     [HttpGet("{productId:Guid}/{companyId:Guid}/{agentId:Guid}")]
-    [ProducesResponseType(typeof(ProspectionOutModel), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetOne([FromRoute] Guid productId, [FromRoute] Guid companyId, [FromRoute] Guid agentId)
@@ -89,7 +86,6 @@ public class ProspectController : ControllerBase
     }
 
     [HttpGet("AgentProspections/{agentId:Guid}")]
-    [ProducesResponseType(typeof(ICollection<ProspectionOutModel>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> AgentProspections([FromRoute] Guid agentId)
@@ -112,7 +108,6 @@ public class ProspectController : ControllerBase
     }
 
     [HttpGet("ByCompany/{companyId:Guid}")]
-    [ProducesResponseType(typeof(ICollection<ProspectionOutModel>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> CompanyProspections([FromRoute] Guid companyId)
@@ -137,7 +132,6 @@ public class ProspectController : ControllerBase
 
 
     [HttpGet("ByProduct/{productId:Guid}")]
-    [ProducesResponseType(typeof(ICollection<ProspectionOutModel>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> ProductProspections([FromRoute] Guid productId)
@@ -160,7 +154,6 @@ public class ProspectController : ControllerBase
     }
 
     [HttpPut("ToggleActivationState")]
-    [ProducesResponseType(typeof(ICollection<ProspectionOutModel>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> ToggleState([FromBody] ICollection<ProspectionInModel> models)
@@ -207,7 +200,6 @@ public class ProspectController : ControllerBase
     }
 
     [HttpPut]
-    [ProducesResponseType(typeof(ProspectionOutModel), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> Update([FromBody] ProspectionInUpdateModel body)

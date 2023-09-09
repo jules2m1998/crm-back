@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace CRM.Core.Business.Models.Product; 
+﻿namespace CRM.Core.Business.Models.Product; 
 public class ProductOutModel
 {
     public Guid Id { get; set; }
@@ -14,6 +8,11 @@ public class ProductOutModel
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
     public UserModel? Creator { get; set; }
+    public ICollection<ProductStageModel.Out> Stages { get; set; } = null!;
+
+    public ProductOutModel()
+    {
+    }
 
     public ProductOutModel(Guid id, string name, string? logo, string description, DateTime createdAt, DateTime? updatedAt, UserModel? creator)
     {

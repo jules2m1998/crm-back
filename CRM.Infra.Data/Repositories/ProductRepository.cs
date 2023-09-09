@@ -17,7 +17,7 @@ public class ProductRepository : IProductRepository
     private readonly IApplicationDbContext _dbContext;
     private readonly DbSet<Product> _products;
 
-    private IQueryable<Product> _includeCreator { get { return _products.Include(p => p.Creator).Where(p => p.DeletedAt == null); } }
+    private IQueryable<Product> _includeCreator => _products.Include(p => p.Creator).Include(x => x.Stages).Where(p => p.DeletedAt == null);
 
     public ProductRepository(IApplicationDbContext dbContext)
     {
@@ -106,5 +106,5 @@ public class ProductRepository : IProductRepository
     }
 
     public async Task<Product?> GetWithStageAsync(Guid productId) =>
-        await _products.Include(p => p.FirstStage).FirstOrDefaultAsync(p => p.Id == productId);
+        await _products.FirstOrDefaultAsync(p => p.Id == productId);
 }

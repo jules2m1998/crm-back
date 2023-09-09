@@ -1,4 +1,5 @@
-﻿using CRM.Core.Business.Repositories;
+﻿using CRM.Core.Business.Models;
+using CRM.Core.Business.Repositories;
 using CRM.Core.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -41,11 +42,23 @@ public class ProductStageRepository : IProductStageRepository
 
     public async Task DeleteAsync(ProductStage item)
     {
-        var data = await _context.Products.Include(p => p.FirstStage).FirstOrDefaultAsync(p => p.FirstStage != null && p.FirstStage.Id == item.Id);
+        var data = await _context.Products.FirstOrDefaultAsync();
         if (data == null) return;
-        data.FirstStage = null;
         await _context.SaveChangesAsync();
         Table.Remove(item);
         await _context.SaveChangesAsync();
     }
+
+    public async Task AddRangeAsync(IEnumerable<ProductStage> stages)
+    {
+        await Table.AddRangeAsync(stages);
+        await _context.SaveChangesAsync();
+        Table.AttachRange(stages);
+    }
+
+    public async Task<IEnumerable<ProductStage>> GetByProductAsync(Guid productId) => 
+        await Table.Include(x => x.Responses).Where(x => x.ProductId == productId).ToListAsync();
+
+    public async Task<ProductStage?> GetFirstByProductAsync(Guid productId, CancellationToken cancellationToken) =>
+        await Table.Include(x => x.Responses).Where(x => x.ProductId == productId).OrderBy(x => x.StageLevel).FirstOrDefaultAsync(cancellationToken);
 }

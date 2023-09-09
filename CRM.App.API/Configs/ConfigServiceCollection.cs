@@ -121,6 +121,9 @@ public static class ConfigureServiceCollection
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<IEmailRepository, EmailRepository>();
         services.AddScoped<IProductStageRepository, ProductStageRepository>();
+        services.AddScoped<IStageResponseRepository, StageResponseRepository>();
+        services.AddScoped<ICommitRepository, CommitRepository>();
+        services.AddScoped<IHeadProspectionRepository, HeadProspectionRepository>();
 
 
         return services;

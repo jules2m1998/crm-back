@@ -1,4 +1,5 @@
-﻿using CRM.Core.Business.Extensions;
+﻿using AutoMapper;
+using CRM.Core.Business.Extensions;
 using CRM.Core.Business.Models;
 using CRM.Core.Business.Repositories;
 using CRM.Core.Domain.Exceptions;
@@ -17,10 +18,12 @@ public static class GetProductStage
     public class Handler : IRequestHandler<Query, ProductStageModel.Out>
     {
         private readonly IProductStageRepository _repo;
+        private readonly IMapper mapper;
 
-        public Handler(IProductStageRepository repo)
+        public Handler(IProductStageRepository repo, IMapper mapper)
         {
             _repo = repo;
+            this.mapper = mapper;
         }
 
         public async Task<ProductStageModel.Out> Handle(Query request, CancellationToken cancellationToken)
@@ -28,7 +31,7 @@ public static class GetProductStage
             Domain.Entities.ProductStage item =
                 await _repo.GetOneAsync(request.Id) ??
                 throw new NotFoundEntityException("This stage don't exist !");
-            return item.ToModel();
+            return mapper.Map<ProductStageModel.Out>(item);
         }
     }
 }

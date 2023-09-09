@@ -1,4 +1,5 @@
-﻿using CRM.Core.Business.Extensions;
+﻿using AutoMapper;
+using CRM.Core.Business.Extensions;
 using CRM.Core.Business.Models;
 using CRM.Core.Business.Repositories;
 using MediatR;
@@ -16,16 +17,18 @@ public static class GetAllProductStage
     public class Handler : IRequestHandler<Query, ICollection<ProductStageModel.Out>>
     {
         private readonly IProductStageRepository _repo;
+        private readonly IMapper mapper;
 
-        public Handler(IProductStageRepository repo)
+        public Handler(IProductStageRepository repo, IMapper mapper)
         {
             _repo = repo;
+            this.mapper = mapper;
         }
 
         public async Task<ICollection<ProductStageModel.Out>> Handle(Query request, CancellationToken cancellationToken)
         {
             ICollection<Domain.Entities.ProductStage> data = await _repo.GetAllAsync();
-            return data.Select(d => d.ToModel()).ToList();
+            return mapper.Map<ICollection<ProductStageModel.Out>>(data);
         }
     }
 }

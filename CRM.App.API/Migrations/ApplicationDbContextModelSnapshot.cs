@@ -22,6 +22,48 @@ namespace CRM.App.API.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("CRM.Core.Domain.Entities.Commit", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActivated")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("ParentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("ResponseId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("UpdateAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatorId");
+
+                    b.HasIndex("ParentId");
+
+                    b.HasIndex("ResponseId");
+
+                    b.ToTable("Commits");
+                });
+
             modelBuilder.Entity("CRM.Core.Domain.Entities.Company", b =>
                 {
                     b.Property<Guid>("Id")
@@ -89,7 +131,7 @@ namespace CRM.App.API.Migrations
 
                     b.HasIndex("CreatorId");
 
-                    b.ToTable("Companies", (string)null);
+                    b.ToTable("Companies");
                 });
 
             modelBuilder.Entity("CRM.Core.Domain.Entities.Contact", b =>
@@ -140,7 +182,7 @@ namespace CRM.App.API.Migrations
                     b.HasIndex("Name", "CompanyId")
                         .IsUnique();
 
-                    b.ToTable("Contacts", (string)null);
+                    b.ToTable("Contacts");
                 });
 
             modelBuilder.Entity("CRM.Core.Domain.Entities.Contract", b =>
@@ -168,7 +210,7 @@ namespace CRM.App.API.Migrations
 
                     b.HasIndex("CreatorId");
 
-                    b.ToTable("Contracts", (string)null);
+                    b.ToTable("Contracts");
                 });
 
             modelBuilder.Entity("CRM.Core.Domain.Entities.Email", b =>
@@ -207,7 +249,7 @@ namespace CRM.App.API.Migrations
 
                     b.HasIndex("EventId");
 
-                    b.ToTable("Emails", (string)null);
+                    b.ToTable("Emails");
                 });
 
             modelBuilder.Entity("CRM.Core.Domain.Entities.Event", b =>
@@ -266,7 +308,56 @@ namespace CRM.App.API.Migrations
 
                     b.HasIndex("ProspectProductId", "ProspectCompanyId");
 
-                    b.ToTable("Events", (string)null);
+                    b.ToTable("Events");
+                });
+
+            modelBuilder.Entity("CRM.Core.Domain.Entities.HeadProspection", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AgentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CommitId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CompanyId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActivated")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("UpdateAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CommitId");
+
+                    b.HasIndex("CompanyId");
+
+                    b.HasIndex("CreatorId");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("AgentId", "ProductId", "CompanyId")
+                        .IsUnique();
+
+                    b.ToTable("HeadProspections");
                 });
 
             modelBuilder.Entity("CRM.Core.Domain.Entities.PhoneNumber", b =>
@@ -284,7 +375,7 @@ namespace CRM.App.API.Migrations
 
                     b.HasIndex("ContactId");
 
-                    b.ToTable("PhoneNumbers", (string)null);
+                    b.ToTable("PhoneNumbers");
                 });
 
             modelBuilder.Entity("CRM.Core.Domain.Entities.Product", b =>
@@ -306,9 +397,6 @@ namespace CRM.App.API.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("FirstStageId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<bool>("IsActivated")
                         .HasColumnType("bit");
 
@@ -327,9 +415,7 @@ namespace CRM.App.API.Migrations
 
                     b.HasIndex("CreatorId");
 
-                    b.HasIndex("FirstStageId");
-
-                    b.ToTable("Products", (string)null);
+                    b.ToTable("Products");
                 });
 
             modelBuilder.Entity("CRM.Core.Domain.Entities.ProductStage", b =>
@@ -350,15 +436,19 @@ namespace CRM.App.API.Migrations
                     b.Property<bool>("IsActivated")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsDone")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsFirst")
-                        .HasColumnType("bit");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Question")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("StageLevel")
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("UpdateAt")
                         .HasColumnType("datetime2");
@@ -367,7 +457,9 @@ namespace CRM.App.API.Migrations
 
                     b.HasIndex("CreatorId");
 
-                    b.ToTable("ProductStages", (string)null);
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("ProductStages");
                 });
 
             modelBuilder.Entity("CRM.Core.Domain.Entities.Prospect", b =>
@@ -404,7 +496,7 @@ namespace CRM.App.API.Migrations
 
                     b.HasIndex("CreatorId");
 
-                    b.ToTable("Prospects", (string)null);
+                    b.ToTable("Prospects");
                 });
 
             modelBuilder.Entity("CRM.Core.Domain.Entities.Role", b =>
@@ -491,44 +583,7 @@ namespace CRM.App.API.Migrations
 
                     b.HasIndex("StudentId");
 
-                    b.ToTable("Skills", (string)null);
-                });
-
-            modelBuilder.Entity("CRM.Core.Domain.Entities.StageQuetion", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsActivated")
-                        .HasColumnType("bit");
-
-                    b.Property<Guid>("QuetionId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("UpdateAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatorId");
-
-                    b.HasIndex("QuetionId");
-
-                    b.ToTable("StageQuetions", (string)null);
+                    b.ToTable("Skills");
                 });
 
             modelBuilder.Entity("CRM.Core.Domain.Entities.StageResponse", b =>
@@ -552,12 +607,12 @@ namespace CRM.App.API.Migrations
                     b.Property<Guid?>("NextStageId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("QuetionId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("Response")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("StageId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("UpdateAt")
                         .HasColumnType("datetime2");
@@ -568,9 +623,9 @@ namespace CRM.App.API.Migrations
 
                     b.HasIndex("NextStageId");
 
-                    b.HasIndex("QuetionId");
+                    b.HasIndex("StageId");
 
-                    b.ToTable("StageResponses", (string)null);
+                    b.ToTable("StageResponses");
                 });
 
             modelBuilder.Entity("CRM.Core.Domain.Entities.SupervisionHistory", b =>
@@ -591,7 +646,7 @@ namespace CRM.App.API.Migrations
 
                     b.HasIndex("SupervisorId");
 
-                    b.ToTable("SupervisionHistories", (string)null);
+                    b.ToTable("SupervisionHistories");
                 });
 
             modelBuilder.Entity("CRM.Core.Domain.Entities.User", b =>
@@ -716,7 +771,7 @@ namespace CRM.App.API.Migrations
 
                     b.HasIndex("EventsId");
 
-                    b.ToTable("ContactEvent", (string)null);
+                    b.ToTable("ContactEvent");
                 });
 
             modelBuilder.Entity("ContactUser", b =>
@@ -731,7 +786,7 @@ namespace CRM.App.API.Migrations
 
                     b.HasIndex("SharedToId");
 
-                    b.ToTable("ContactUser", (string)null);
+                    b.ToTable("ContactUser");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -822,6 +877,27 @@ namespace CRM.App.API.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("CRM.Core.Domain.Entities.Commit", b =>
+                {
+                    b.HasOne("CRM.Core.Domain.Entities.User", "Creator")
+                        .WithMany()
+                        .HasForeignKey("CreatorId");
+
+                    b.HasOne("CRM.Core.Domain.Entities.Commit", "Parent")
+                        .WithMany()
+                        .HasForeignKey("ParentId");
+
+                    b.HasOne("CRM.Core.Domain.Entities.StageResponse", "Response")
+                        .WithMany()
+                        .HasForeignKey("ResponseId");
+
+                    b.Navigation("Creator");
+
+                    b.Navigation("Parent");
+
+                    b.Navigation("Response");
+                });
+
             modelBuilder.Entity("CRM.Core.Domain.Entities.Company", b =>
                 {
                     b.HasOne("CRM.Core.Domain.Entities.User", "Creator")
@@ -898,6 +974,47 @@ namespace CRM.App.API.Migrations
                     b.Navigation("Prospect");
                 });
 
+            modelBuilder.Entity("CRM.Core.Domain.Entities.HeadProspection", b =>
+                {
+                    b.HasOne("CRM.Core.Domain.Entities.User", "Agent")
+                        .WithMany()
+                        .HasForeignKey("AgentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CRM.Core.Domain.Entities.Commit", "Commit")
+                        .WithMany()
+                        .HasForeignKey("CommitId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CRM.Core.Domain.Entities.Company", "Company")
+                        .WithMany()
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CRM.Core.Domain.Entities.User", "Creator")
+                        .WithMany()
+                        .HasForeignKey("CreatorId");
+
+                    b.HasOne("CRM.Core.Domain.Entities.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Agent");
+
+                    b.Navigation("Commit");
+
+                    b.Navigation("Company");
+
+                    b.Navigation("Creator");
+
+                    b.Navigation("Product");
+                });
+
             modelBuilder.Entity("CRM.Core.Domain.Entities.PhoneNumber", b =>
                 {
                     b.HasOne("CRM.Core.Domain.Entities.Contact", "Contact")
@@ -915,13 +1032,7 @@ namespace CRM.App.API.Migrations
                         .WithMany()
                         .HasForeignKey("CreatorId");
 
-                    b.HasOne("CRM.Core.Domain.Entities.ProductStage", "FirstStage")
-                        .WithMany()
-                        .HasForeignKey("FirstStageId");
-
                     b.Navigation("Creator");
-
-                    b.Navigation("FirstStage");
                 });
 
             modelBuilder.Entity("CRM.Core.Domain.Entities.ProductStage", b =>
@@ -930,7 +1041,15 @@ namespace CRM.App.API.Migrations
                         .WithMany()
                         .HasForeignKey("CreatorId");
 
+                    b.HasOne("CRM.Core.Domain.Entities.Product", "Product")
+                        .WithMany("Stages")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Creator");
+
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("CRM.Core.Domain.Entities.Prospect", b =>
@@ -989,23 +1108,6 @@ namespace CRM.App.API.Migrations
                     b.Navigation("Student");
                 });
 
-            modelBuilder.Entity("CRM.Core.Domain.Entities.StageQuetion", b =>
-                {
-                    b.HasOne("CRM.Core.Domain.Entities.User", "Creator")
-                        .WithMany()
-                        .HasForeignKey("CreatorId");
-
-                    b.HasOne("CRM.Core.Domain.Entities.ProductStage", "Quetion")
-                        .WithMany("Quetions")
-                        .HasForeignKey("QuetionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Creator");
-
-                    b.Navigation("Quetion");
-                });
-
             modelBuilder.Entity("CRM.Core.Domain.Entities.StageResponse", b =>
                 {
                     b.HasOne("CRM.Core.Domain.Entities.User", "Creator")
@@ -1016,9 +1118,9 @@ namespace CRM.App.API.Migrations
                         .WithMany()
                         .HasForeignKey("NextStageId");
 
-                    b.HasOne("CRM.Core.Domain.Entities.StageQuetion", "Quetion")
+                    b.HasOne("CRM.Core.Domain.Entities.ProductStage", "Stage")
                         .WithMany("Responses")
-                        .HasForeignKey("QuetionId")
+                        .HasForeignKey("StageId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1026,7 +1128,7 @@ namespace CRM.App.API.Migrations
 
                     b.Navigation("NextStage");
 
-                    b.Navigation("Quetion");
+                    b.Navigation("Stage");
                 });
 
             modelBuilder.Entity("CRM.Core.Domain.Entities.SupervisionHistory", b =>
@@ -1162,21 +1264,18 @@ namespace CRM.App.API.Migrations
             modelBuilder.Entity("CRM.Core.Domain.Entities.Product", b =>
                 {
                     b.Navigation("Prospections");
+
+                    b.Navigation("Stages");
                 });
 
             modelBuilder.Entity("CRM.Core.Domain.Entities.ProductStage", b =>
                 {
-                    b.Navigation("Quetions");
+                    b.Navigation("Responses");
                 });
 
             modelBuilder.Entity("CRM.Core.Domain.Entities.Role", b =>
                 {
                     b.Navigation("UserRoles");
-                });
-
-            modelBuilder.Entity("CRM.Core.Domain.Entities.StageQuetion", b =>
-                {
-                    b.Navigation("Responses");
                 });
 
             modelBuilder.Entity("CRM.Core.Domain.Entities.User", b =>

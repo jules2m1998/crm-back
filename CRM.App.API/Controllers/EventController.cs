@@ -21,7 +21,6 @@ namespace CRM.App.API.Controllers
         }
 
         [HttpGet("{id:Guid}")]
-        [ProducesResponseType(typeof(EventOutModel), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Dictionary<string, string>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> GetOne([FromRoute] Guid id)
@@ -31,7 +30,6 @@ namespace CRM.App.API.Controllers
         }
 
         [HttpPut("{id:Guid}")]
-        [ProducesResponseType(typeof(EventOutModel), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Dictionary<string, string>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] EventInModel model)
@@ -54,7 +52,6 @@ namespace CRM.App.API.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
 
         [HttpGet]
-        [ProducesResponseType(typeof(ICollection<EventOutModel>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> Get()
         {
@@ -64,7 +61,6 @@ namespace CRM.App.API.Controllers
 
 
         [HttpPost]
-        [ProducesResponseType(typeof(EventOutModel), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(Dictionary<string, ICollection<string>>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(Dictionary<string, string>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]

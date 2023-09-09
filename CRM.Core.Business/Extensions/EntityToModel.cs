@@ -122,9 +122,8 @@ public static class EntityToModel
     public static ProductStageModel.Out ToModel(this ProductStage model) => new()
     {
         Name = model.Name,
-        IsDone = model.IsDone,
-        IsFirst = model.IsFirst,
         Id = model.Id,
-        IsActivated = model.IsActivated
+        IsActivated = model.IsActivated,
+        StageLevel = model.StageLevel
     };
 }

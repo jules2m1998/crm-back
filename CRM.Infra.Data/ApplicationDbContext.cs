@@ -23,8 +23,9 @@ namespace CRM.Infra.Data
         public DbSet<Event> Events { get; set; }
         public DbSet<Email> Emails { get; set; }
         public DbSet<ProductStage> ProductStages { get; set; }
-        public DbSet<StageQuetion> StageQuetions { get; set; }
         public DbSet<StageResponse> StageResponses { get; set; }
+        public DbSet<Commit> Commits { get; set; }
+        public DbSet<HeadProspection> HeadProspections { get; set; }
 
         public ApplicationDbContext(DbContextOptions dbContextOptions) : base(dbContextOptions) { }
         protected override void OnModelCreating(ModelBuilder builder)
@@ -34,6 +35,9 @@ namespace CRM.Infra.Data
             builder.ApplyConfiguration(new ContactConfiguration());
             builder.ApplyConfiguration(new PhoneNumberConfiguration());
             builder.ApplyConfiguration(new EventConfiguration());
+            builder.ApplyConfiguration(new StageResponseConfiguration());
+            builder.ApplyConfiguration(new HeadProspectionConfiguration());
+            builder.ApplyConfiguration(new CommitConfigruration());
 
             // User foreign keys management
 

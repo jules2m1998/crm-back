@@ -1,53 +1,41 @@
-﻿using CRM.Core.Business.Extensions;
+﻿using AutoMapper;
 using CRM.Core.Business.Models;
 using CRM.Core.Business.Repositories;
 using CRM.Core.Domain;
-using CRM.Core.Domain.Exceptions;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CRM.Core.Business.UseCases.ProductStage;
 
 public static class AddProductStage
 {
-    public record Command(ProductStageModel.In Model, string UserName): IRequest<ProductStageModel.Out>;
+    public record Command(IEnumerable<ProductStageModel.In> Model, string UserName): IRequest<IEnumerable<ProductStageModel.Out>>;
 
-    public class Handler : IRequestHandler<Command, ProductStageModel.Out>
+    public class Handler : IRequestHandler<Command, IEnumerable<ProductStageModel.Out>>
     {
-        private readonly IProductRepository _productRepo;
         private readonly IUserRepository _userRepo;
         private readonly IProductStageRepository _repo;
+        private readonly IMapper mapper;
 
-        public Handler(IProductRepository productRepo, IUserRepository userRepo, IProductStageRepository repo)
+        public Handler(IUserRepository userRepo, IProductStageRepository repo, IMapper mapper)
         {
-            _productRepo = productRepo;
             _userRepo = userRepo;
             _repo = repo;
+            this.mapper = mapper;
         }
 
-        public async Task<ProductStageModel.Out> Handle(Command request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<ProductStageModel.Out>> Handle(Command request, CancellationToken cancellationToken)
         {
             var user = await _userRepo.GetUserAndRolesAsync(request.UserName);
             if (user == null || user.UserRoles.FirstOrDefault(u => u.Role.Name == Roles.ADMIN) == null)
                 throw new UnauthorizedAccessException();
 
-            var model = request.Model;
-            Domain.Entities.Product product = await _productRepo.GetWithStageAsync(model.ProductId) ?? throw new NotFoundEntityException("This product doesn't exist !");
-            if (product.FirstStage != null) throw new BaseException(new Dictionary<string, List<string>>() { { "ProductId", new List<string>() { "This product already has a fir stage entry !"} } });
-            var stage = new Domain.Entities.ProductStage
+            var stage = mapper.Map<IEnumerable<Domain.Entities.ProductStage>>(request.Model).Select(x =>
             {
-                Name = model.Name,
-                IsFirst = model.IsFirst,
-                Creator = user
-            };
-            await _repo.CreateAsync(stage);
-            product.FirstStage = stage;
-            await _productRepo.UpdateOneAsync(product);
-            return stage.ToModel();
+                x.Creator = user;
+                return x;
+            });
+            await _repo.AddRangeAsync(stage);
+            return mapper.Map<IEnumerable<ProductStageModel.Out>>(stage);
         }
     }
 }

@@ -32,7 +32,6 @@ namespace CRM.App.API.Controllers
         private string? Username { get { return User.FindFirstValue(ClaimTypes.Name); } }
 
         [HttpPost, Authorize(Roles =Roles.ADMIN)]
-        [ProducesResponseType(typeof(ProductOutModel), 201)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> CreateProduct([FromForm] ProductInModel product)
@@ -49,7 +48,6 @@ namespace CRM.App.API.Controllers
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(ICollection<ProductOutModel>), 200)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> GetAll()
@@ -67,7 +65,6 @@ namespace CRM.App.API.Controllers
         }
 
         [HttpGet("{id:Guid}")]
-        [ProducesResponseType(typeof(ProductOutModel), 200)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -119,7 +116,6 @@ namespace CRM.App.API.Controllers
             ]
          */
         [HttpPatch("{id:Guid}")]
-        [ProducesResponseType(typeof(ProductOutModel), 200)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -141,7 +137,6 @@ namespace CRM.App.API.Controllers
         }
 
         [HttpPut("Logo/{id:Guid}")]
-        [ProducesResponseType(typeof(ProductOutModel), 200)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

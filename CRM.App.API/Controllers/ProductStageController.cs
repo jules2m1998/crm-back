@@ -1,9 +1,9 @@
 ﻿using CRM.Core.Business.Models;
 using CRM.Core.Business.UseCases.ProductStage;
+using CRM.Core.Business.UseCases.StageResponseUCs;
 using CRM.Core.Domain.Exceptions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CRM.App.API.Controllers;
@@ -20,17 +20,13 @@ public class ProductStageController : BaseController
     }
 
     [HttpPost]
-    [ProducesResponseType(typeof(ProductStageModel.Out), StatusCodes.Status201Created)]
-    [ProducesResponseType(typeof(Dictionary<string, ICollection<string>>), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<IActionResult> Create([FromBody] ProductStageModel.In data)
+    public async Task<IActionResult> Create([FromBody] IEnumerable<ProductStageModel.In> data)
     {
         var command = new AddProductStage.Command(data, Username);
         try
         {
             var result = await _send.Send(command);
-            return CreatedAtAction(nameof(GetOne), new { result.Id }, result);
+            return Ok(result);
         }catch(NotFoundEntityException ex)
         {
             return NotFound(ex.Message);
@@ -41,9 +37,6 @@ public class ProductStageController : BaseController
     }
 
     [HttpGet("{id:Guid}")]
-    [ProducesResponseType(typeof(ProductStageModel.Out), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(Dictionary<string, string>), StatusCodes.Status404NotFound)]
-    [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetOne([FromRoute] Guid id)
     {
         var query = new GetProductStage.Query(id);
@@ -51,9 +44,23 @@ public class ProductStageController : BaseController
     }
 
     [HttpGet]
-    [ProducesResponseType(typeof(ProductStageModel.Out), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(Dictionary<string, string>), StatusCodes.Status404NotFound)]
-    [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
+    [Route("Product/{id:Guid}")]
+    public async Task<IActionResult> GetOneByProduct([FromRoute] Guid id)
+    {
+        var query = new GetProductStageByProduct.Query(id);
+        return await GetAction(async () => await _send.Send(query));
+    }
+
+    [HttpGet]
+    [Route("First/{productId:Guid}")]
+    public async Task<IActionResult> GetFirstByProduct([FromRoute] Guid productId)
+    {
+        var query = new GetFirstStageByProduct.Query(productId);
+        return await GetAction(async () => await _send.Send(query));
+    }
+
+
+    [HttpGet]
     public async Task<IActionResult> GetAll()
     {
         var query = new GetAllProductStage.Query();
@@ -61,8 +68,6 @@ public class ProductStageController : BaseController
     }
 
     [HttpPut("{id:Guid}")]
-    [ProducesResponseType(typeof(ProductStageModel.Out), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] ProductStageModel.In model)
     {
         var command = new UpdateProductStage.Command(id, model);
@@ -70,13 +75,9 @@ public class ProductStageController : BaseController
     }
 
     [HttpDelete("{id:Guid}")]
-    [ProducesResponseType(typeof(ProductStageModel.Out), StatusCodes.Status204NoContent)]
-    [ProducesResponseType(typeof(Dictionary<string, string>), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(Guid id)
     {
         var command = new DeleteProductStage.Command(id);
         return await GetAction(async () => await _send.Send(command));
     }
-
-
 }
