@@ -95,7 +95,7 @@ public class ContactController : BaseController
         var cmd = new DeleteContactCommand(id, Username ?? "");
         try
         {
-            var result = await _sender.Send(cmd);
+            await _sender.Send(cmd);
             return NoContent();
         }
         catch (NotFoundEntityException ex)

@@ -1,13 +1,6 @@
-﻿using CRM.Core.Business.Models;
-using CRM.Core.Business.Repositories;
-using CRM.Core.Domain.Exceptions;
+﻿using CRM.Core.Business.Repositories;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+using ProductStage = CRM.Core.Domain.Entities.ProductStage;
 namespace CRM.Core.Business.UseCases.ProductStage;
 
 public static class DeleteProductStage
@@ -15,20 +8,16 @@ public static class DeleteProductStage
     public record Command(Guid Id): IRequest;
     public class Handler : IRequestHandler<Command>
     {
-        private readonly IProductStageRepository _repo;
+        private readonly IStageRepository _repo;
 
-        public Handler(IProductStageRepository repo)
+        public Handler(IStageRepository repo)
         {
             _repo = repo;
         }
 
-        public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
+        public async Task Handle(Command request, CancellationToken cancellationToken)
         {
-            var item =
-                await _repo.GetOneAsync(request.Id)
-                ?? throw new NotFoundEntityException("This stage don't exist !");
-            await _repo.DeleteAsync(item);
-            return new Unit();
+            await _repo.DeleteStageAsync(request.Id);
         }
     }
 }

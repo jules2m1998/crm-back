@@ -225,6 +225,7 @@ public class ProspectController : ControllerBase
     {
         string text = "Hello World";
         byte[] byteArray = Encoding.ASCII.GetBytes(text);
+        await Task.CompletedTask;
 
         return File(byteArray, "text/plain", "test.txt");
     }

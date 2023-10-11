@@ -104,38 +104,6 @@ public static class ConfigureServiceCollection
 
         return services;
     }
-    public static IServiceCollection AddDependencies(this IServiceCollection services)
-    {
-        services.AddScoped<IJWTService, JWTService>();
-        services.AddScoped<IUserRepository, UserRepository>();
-        services.AddScoped<IFileHelper, FileHelper>();
-        services.AddScoped<IApplicationDbContext>(provider => provider.GetService<ApplicationDbContext>()!);
-        services.AddScoped<ISkillRepository, SkillRepository>();
-        services.AddScoped<IProductRepository, ProductRepository>();
-        services.AddScoped<ICompanyRepository, CompanyRepository>();
-        services.AddScoped<ISupervisionHistoryRepository, SupervisionHistoryRepository>();
-        services.AddScoped<IProspectionRepository, ProspectionRepository>();
-        services.AddScoped<IContactRepository, ContactRepository>();
-        services.AddScoped<IPhoneRepository, PhoneRepository>();
-        services.AddScoped<IEventRepository, EventRepository>();
-        services.AddScoped<IEmailService, EmailService>();
-        services.AddScoped<IEmailRepository, EmailRepository>();
-        services.AddScoped<IProductStageRepository, ProductStageRepository>();
-        services.AddScoped<IStageResponseRepository, StageResponseRepository>();
-        services.AddScoped<ICommitRepository, CommitRepository>();
-        services.AddScoped<IHeadProspectionRepository, HeadProspectionRepository>();
-
-
-        return services;
-    }
-    public static IServiceCollection AddMediaRConfig(this IServiceCollection services)
-    {
-        services.AddMediatR(cfg =>
-        {
-            cfg.AsScoped();
-        }, Assembly.GetAssembly(typeof(MediatREntryPoint))!);
-        return services;
-    }
     public static IServiceCollection AddCompression(this IServiceCollection services)
     {
         // compression algorithm config
@@ -152,5 +120,24 @@ public static class ConfigureServiceCollection
             options.Level = CompressionLevel.SmallestSize;
         });
         return services;
+    }
+    public async static Task<WebApplication> ManageApp(this WebApplication @this)
+    {
+        using var scope = @this.Services.CreateScope();
+        try
+        {
+            var context = scope.ServiceProvider.GetService<ApplicationDbContext>();
+            if (context != null)
+            {
+                await context.Database.MigrateAsync();
+                await context.Database.EnsureCreatedAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            var logger = scope.ServiceProvider.GetRequiredService<ILogger>();
+            logger.LogError(ex, "An error occurred while migrating the database.");
+        }
+        return @this;
     }
 }

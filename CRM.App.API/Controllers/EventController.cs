@@ -46,7 +46,11 @@ namespace CRM.App.API.Controllers
         public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
             var command = new DeleteEvent.Command(id, Username);
-            return await GetAction(async () => await _sender.Send(command));
+            return await GetAction(async () =>
+            {
+                await _sender.Send(command);
+                return new {};
+            });
         }
 
         [ProducesResponseType(StatusCodes.Status204NoContent)]

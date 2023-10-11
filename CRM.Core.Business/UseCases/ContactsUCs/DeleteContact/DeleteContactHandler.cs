@@ -33,4 +33,9 @@ public class DeleteContactHandler : IRequestHandler<DeleteContactCommand>
 
         return new Unit();
     }
+
+    Task IRequestHandler<DeleteContactCommand>.Handle(DeleteContactCommand request, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
 }

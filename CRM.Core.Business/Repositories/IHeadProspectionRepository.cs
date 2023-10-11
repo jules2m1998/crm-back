@@ -14,5 +14,6 @@ public interface IHeadProspectionRepository
     Task<int> DeleteAsync(HeadProspection data, CancellationToken cancellationToken);
     Task<ICollection<HeadProspection>> GetAllAsync(CancellationToken cancellationToken);
     Task<HeadProspection?> GetByIndexAsync(Guid productId, Guid companyId, Guid agentId, CancellationToken cancellationToken);
+    Task<HeadProspection?> GetWithParentByIndexAsync(Guid productId, Guid companyId, Guid agentId, CancellationToken cancellationToken);
     Task UpdateAsync(HeadProspection data, CancellationToken cancellationToken);
 }

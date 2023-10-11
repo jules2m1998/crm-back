@@ -33,5 +33,10 @@ public static class DeleteEvent
             await _repo.DeleteAsync(e);
             return Unit.Value;
         }
+
+        Task IRequestHandler<Command>.Handle(Command request, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

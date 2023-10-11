@@ -4,6 +4,7 @@ using CRM.Core.Business.Models.Company;
 using CRM.Core.Business.Models.HeadProspectionModel;
 using CRM.Core.Business.Models.Product;
 using CRM.Core.Business.UseCases.CommitUcs;
+using CRM.Core.Business.UseCases.HeadProspectionUcs.Commands.MoveHead;
 using CRM.Core.Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -33,6 +34,8 @@ namespace CRM.Core.Business.Mappers
 
             CreateMap<Product, ProductOutModel>().ReverseMap();
             CreateMap<Company, CompanyOutModel>().ReverseMap();
+
+            CreateMap<HeadProspection, MoveHeadDto>();
         }
     }
 }

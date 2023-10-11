@@ -84,8 +84,7 @@ public class StageResponseController : BaseController
     public async Task<IActionResult> Delete([FromRoute] Guid id)
     {
         var command = new DeleteStageResponse.Command(id);
-        var data = await sender.Send(command);
-        if (data == null) return NotFound();
+        _ = await sender.Send(command);
         return NoContent();
     }
 

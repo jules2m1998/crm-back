@@ -16,20 +16,20 @@ public static class DeleteStageResponse
     public record Command(Guid Id): IRequest<StageResponseModel.Out?>;
     public class Handler : IRequestHandler<Command, StageResponseModel.Out?>
     {
-        private readonly IStageResponseRepository repo;
-        private readonly IMapper mapper;
+        private readonly IResponseRepository _repo;
+        private readonly IMapper _mapper;
 
-        public Handler(IStageResponseRepository repo, IMapper mapper)
+        public Handler(IResponseRepository repo, IMapper mapper)
         {
-            this.repo = repo;
-            this.mapper = mapper;
+            _repo = repo;
+            _mapper = mapper;
         }
+
 
         public async Task<StageResponseModel.Out?> Handle(Command request, CancellationToken cancellationToken)
         {
-            StageResponse? stageResponse = await repo.DeleteAsync(request.Id);
-            if (stageResponse == null) return null;
-            return mapper.Map<StageResponseModel.Out>(stageResponse);
+            await _repo.DeleteReponseWithCommitAsync(request.Id);
+            return null;
         }
     }
 }

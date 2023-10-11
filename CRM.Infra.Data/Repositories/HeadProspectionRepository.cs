@@ -50,9 +50,17 @@ public class HeadProspectionRepository : IHeadProspectionRepository
         return await Included.FirstOrDefaultAsync(x => x.ProductId == productId && x.CompanyId == companyId && x.AgentId == agentId, cancellationToken);
     }
 
+
+    public async Task<HeadProspection?> GetWithParentByIndexAsync(Guid productId, Guid companyId, Guid agentId, CancellationToken cancellationToken)
+        => await Included
+            .Include(x => x.Commit)
+            .ThenInclude(x => x.Parent)
+            .FirstOrDefaultAsync(x => x.ProductId == productId && x.CompanyId == companyId && x.AgentId == agentId, cancellationToken);
+
     public async Task UpdateAsync(HeadProspection data, CancellationToken cancellationToken)
     {
         HeadProspections.Update(data);
         await dbContext.SaveChangesAsync(cancellationToken);
     }
+
 }

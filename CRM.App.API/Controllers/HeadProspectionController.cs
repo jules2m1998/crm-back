@@ -1,5 +1,6 @@
 ﻿using CRM.Core.Business.Models.HeadProspectionModel;
 using CRM.Core.Business.UseCases.HeadProspectionUcs;
+using CRM.Core.Business.UseCases.HeadProspectionUcs.Commands.MoveHead;
 using CRM.Core.Domain.Exceptions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -123,6 +124,15 @@ namespace CRM.App.API.Controllers
             {
                 return Unauthorized();
             }
+        }
+
+        [HttpPost]
+        [Route("Move")]
+        [ProducesResponseType(typeof(MoveHeadResponse), StatusCodes.Status200OK)]
+        public async Task<IActionResult> Move([FromBody] MoveHeadCommand command)
+        {
+            var result = await sender.Send(command);
+            return Ok(result);
         }
     }
 }

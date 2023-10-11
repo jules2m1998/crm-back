@@ -1,6 +1,8 @@
 using CRM.App.API.Configs;
 using CRM.Core.Business.Settings;
+using CRM.Core.Business;
 using CRM.Core.Business.Mappers;
+using CRM.Infra.Data;
 using Newtonsoft.Json;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,9 +20,11 @@ builder.Services.AddEndpointsApiExplorer();
 // Add security, mediar, all dependencies and compression
 builder.Services
     .AddSecurity(builder.Configuration)
-    .AddMediaRConfig()
-    .AddDependencies()
     .AddCompression();
+
+builder.Services
+    .AddInfrastructureServices()
+    .AddBusinessServices();
 
 //builder.Services.AddHostedService<SendEmailService>();
 
@@ -60,5 +64,7 @@ app.UseAuthorization();
 app.UseResponseCompression();
 
 app.MapControllers();
+
+await app.ManageApp();
 
 app.Run();

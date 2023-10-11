@@ -78,6 +78,10 @@ public class ProductStageController : BaseController
     public async Task<IActionResult> Delete(Guid id)
     {
         var command = new DeleteProductStage.Command(id);
-        return await GetAction(async () => await _send.Send(command));
+        return await GetAction(async () =>
+        {
+            await _send.Send(command);
+            return new { };
+        });
     }
 }
