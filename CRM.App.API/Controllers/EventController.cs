@@ -1,104 +1,77 @@
-﻿using CRM.Core.Business.Models.Contact;
-using CRM.Core.Business.Models.Event;
-using CRM.Core.Business.UseCases.Events;
+﻿using CRM.Core.Business.UseCases.EventsUcs.Commands.AddEvent;
+using CRM.Core.Business.UseCases.EventsUcs.Commands.DeleteEvent;
+using CRM.Core.Business.UseCases.EventsUcs.Commands.UpdateEvent;
+using CRM.Core.Business.UseCases.EventsUcs.Queries.GetEventById;
+using CRM.Core.Business.UseCases.EventsUcs.Queries.GetEventsByUser;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
-namespace CRM.App.API.Controllers
+namespace CRM.App.API.Controllers;
+
+[Route("api/[controller]"), Authorize]
+[ApiController]
+public class EventController : BaseController
 {
-    [Route("api/[controller]"), Authorize]
-    [ApiController]
-    public class EventController : BaseController
+    private readonly ISender _sender;
+
+    public EventController(ISender sender)
     {
-        private readonly ISender _sender;
+        _sender = sender;
+    }
 
-        public EventController(ISender sender)
+    [HttpGet]
+    [Route("{eventId:Guid}")]
+    public async Task<IActionResult> GetEventById([FromRoute] Guid eventId)
+    {
+        var query = new GetEventByIdQuery
         {
-            _sender = sender;
-        }
+            EventId = eventId
+        };
+        var result = await _sender.Send(query);
+        if(result.Success)
+            return Ok(result);
+        return NotFound(result);
+    }
 
-        [HttpGet("{id:Guid}")]
-        [ProducesResponseType(typeof(Dictionary<string, string>), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> GetOne([FromRoute] Guid id)
+    [HttpPost]
+    [ProducesResponseType(typeof(AddEventCommandResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(AddEventCommandResponse), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> Add([FromBody] AddEventCommand newEvent)
+    {
+        var result = await _sender.Send(newEvent);
+        if(!result.Success) return BadRequest(result);
+
+        return CreatedAtAction(nameof(GetEventById), new { eventId = result.Data.Id },result);
+    }
+
+    [HttpDelete]
+    [Route("{eventId:Guid}")]
+    public async Task<IActionResult> DeleteEvent([FromRoute] Guid eventId)
+    {
+        var command = new DeleteEventCommand
         {
-            var cmd = new GetOneEvents.Query(id, Username);
-            return await GetAction(async () => await _sender.Send(cmd));
-        }
+            EventId = eventId
+        };
+        await _sender.Send(command);
+        return NoContent();
+    }
 
-        [HttpPut("{id:Guid}")]
-        [ProducesResponseType(typeof(Dictionary<string, string>), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] EventInModel model)
-        {
-            var command = new EditEvent.Command(id, model);
-            model.UserName = Username;
+    [HttpPut]
+    public async Task<IActionResult> UpdateEvent([FromBody] UpdateEventCommand updateEvent)
+    {
+        var result = await _sender.Send(updateEvent);
+        if (!result.Success) return BadRequest(result);
+        return Ok(result);
+    }
 
-            return await GetAction(async () => await _sender.Send(command));
-        }
+    [HttpGet]
+    [Route("GetMine")]
+    public async Task<IActionResult> GetMyEvents()
+    {
+        var query = new GetEventsByUserQuery();
+        var result = await _sender.Send(query);
 
-        [HttpDelete("{id:Guid}")]
-        [ProducesResponseType(typeof(Dictionary<string, string>), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> Delete([FromRoute] Guid id)
-        {
-            var command = new DeleteEvent.Command(id, Username);
-            return await GetAction(async () =>
-            {
-                await _sender.Send(command);
-                return new {};
-            });
-        }
-
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-
-        [HttpGet]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> Get()
-        {
-            var query = new GetEvents.Query(Username);
-            return await GetAction(async () => await _sender.Send(query));
-        }
-
-
-        [HttpPost]
-        [ProducesResponseType(typeof(Dictionary<string, ICollection<string>>), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(Dictionary<string, string>), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> Add([FromBody] EventInWithoutUserName newEvent)
-        {
-            EventInModel model = new()
-            {
-                UserName = Username,
-
-                ProductId = newEvent.ProductId,
-                CompanyId = newEvent.CompanyId,
-                AgentId = newEvent.AgentId,
-                OwnerId = newEvent.OwnerId,
-
-                StartDate = newEvent.StartDate,
-                EndDate = newEvent.EndDate,
-                Description = newEvent.Description,
-                Name = newEvent.Name,
-                ContactIds = newEvent.ContactIds,
-                Topic = newEvent.Topic
-            };
-            var query = new AddEvent.Command(model);
-
-            try
-            {
-                var data = await _sender.Send(query);
-                return CreatedAtAction(nameof(GetOne), new {data.Id},data);
-            } catch (UnauthorizedAccessException ex)
-            {
-                return Unauthorized(ex);
-            } catch(Exception ex)
-            {
-                return NotFound(ex);
-            }
-        }
+        return Ok(result);
     }
 }

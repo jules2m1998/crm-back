@@ -70,55 +70,6 @@ public static class EntityToModel
         };
     }
 
-    public static EventOutModel ToModel(this Event evnt) => new()
-    {
-        Id = evnt.Id,
-        StartDate = evnt.StartDate,
-        EndDate = evnt.EndDate,
-        Description = evnt.Description,
-        Name = evnt.Name,
-        Topic = evnt.Topic,
-
-        Prospection = evnt.Prospect?.ToModel(),
-        Creator = evnt.Creator?.ToUserModel(),
-        Owner = evnt.Owner.ToUserModel(),
-        Contacts = evnt.Contact?.Select(c => c.ToModel()).ToList()
-    };
-    public static EventOutModel ToSimpleModel(this Event evnt)
-    {
-        ProspectionOutModel? prospectionModel = null;
-
-        if(evnt.Prospect != null)
-        {
-            var p = evnt.Prospect;
-            prospectionModel = new(p.CreatedAt, null, null, p.Agent.ToUserModel(), p.Creator?.ToUserModel(), p.UpdatedAt, p.IsActivated);
-        }
-        return new()
-        {
-            Id = evnt.Id,
-            StartDate = evnt.StartDate,
-            EndDate = evnt.EndDate,
-            Description = evnt.Description,
-            Name = evnt.Name,
-
-            Prospection = prospectionModel,
-            Creator = evnt.Creator?.ToUserModel(),
-            Owner = evnt.Owner.ToUserModel(),
-            Contacts = evnt.Contact?.Select(c => new ContactOutModel
-            {
-                Id= c.Id,
-                Email = c.Email,
-                Name = c.Name,
-                Phones = c.Phones.Select(p => new PhoneOutWithoutContact
-                {
-                    CreatedAt = p.CreatedAt,
-                    Value = p.Value
-                }).ToList(),
-                Job = c.Job,
-                Visibility = c.Visibility
-            }).ToList()
-        };
-    }
     public static ProductStageModel.Out ToModel(this ProductStage model) => new()
     {
         Name = model.Name,

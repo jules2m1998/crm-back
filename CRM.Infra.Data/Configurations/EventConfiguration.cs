@@ -14,5 +14,10 @@ public class EventConfiguration : IEntityTypeConfiguration<Event>
 {
     public void Configure(EntityTypeBuilder<Event> builder)
     {
+        builder
+            .HasOne(e => e.Prospect)
+            .WithMany()
+            .HasForeignKey(x => new { x.AgentId, x.ProductId, x.CompanyId })
+            .OnDelete(DeleteBehavior.NoAction);
     }
 }

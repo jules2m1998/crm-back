@@ -14,9 +14,13 @@ public static class InfraServiceRegistration // ServiceCollectionRegistration
 {
     public static IServiceCollection AddInfrastructureServices(this IServiceCollection @this)
     {
+        @this.AddHttpContextAccessor(); // This line
+
         @this.AddScoped(typeof(IAsyncRepository<>), typeof(BaseRepository<>));
 
 
+
+        @this.AddScoped<IHttpContextService, HttpContextService>();
         @this.AddScoped<IJWTService, JWTService>();
         @this.AddScoped<IUserRepository, UserRepository>();
         @this.AddScoped<IFileHelper, FileHelper>();
@@ -28,7 +32,6 @@ public static class InfraServiceRegistration // ServiceCollectionRegistration
         @this.AddScoped<IProspectionRepository, ProspectionRepository>();
         @this.AddScoped<IContactRepository, ContactRepository>();
         @this.AddScoped<IPhoneRepository, PhoneRepository>();
-        @this.AddScoped<IEventRepository, EventRepository>();
         @this.AddScoped<IEmailService, EmailService>();
         @this.AddScoped<IEmailRepository, EmailRepository>();
         @this.AddScoped<IProductStageRepository, ProductStageRepository>();
@@ -37,6 +40,7 @@ public static class InfraServiceRegistration // ServiceCollectionRegistration
         @this.AddScoped<IHeadProspectionRepository, HeadProspectionRepository>();
         @this.AddScoped<IResponseRepository, ResponseRepository>();
         @this.AddScoped<IStageRepository, StageRepository>();
+        @this.AddScoped<IEventRepository, EventRepository>();
 
         return @this;
     }

@@ -7,13 +7,8 @@ using System.Threading.Tasks;
 
 namespace CRM.Core.Business.Repositories;
 
-public interface IEventRepository
+public interface IEventRepository : IAsyncRepository<Event>
 {
-    Task AddAsync(Event e);
-    Task DeleteAsync(Event e);
-    Task<Event?> GetAsync(Guid id, string userName);
-    Task<Event?> GetAsync(Guid id);
-    Task<ICollection<Event>> GetAsync();
-    Task<ICollection<Event>> GetByUserAsync(string userName);
-    Task UpdateAsync(Event e);
+    Task<ICollection<Event>> GetEventsByOwnerAsync(Guid? ownerId, CancellationToken cancellationToken);
+    public Task<Event?> GetEventWithHeadAndContactByIdAsync(Guid id);
 }

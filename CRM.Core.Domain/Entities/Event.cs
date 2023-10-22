@@ -13,8 +13,15 @@ public class Event: BaseEntity
     public string Description { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
     public string Topic { get; set; } = string.Empty;
+    public Guid OwnerId { get; set; }
 
-    public virtual Prospect? Prospect { get; set; } = null!;
+    #region Prospection id
+    public Guid ProductId { get; set; }
+    public Guid CompanyId { get; set; }
+    public Guid AgentId { get; set; }
+    #endregion
+
+    public virtual HeadProspection? Prospect { get; set; } = null!;
     public virtual User Owner { get; set; } = null!;
     public virtual ICollection<Contact>? Contact { get; set; }
     public virtual ICollection<Email> Emails { get; set; } = new List<Email>();

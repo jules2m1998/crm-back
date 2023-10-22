@@ -1,74 +1,36 @@
 ﻿using CRM.Core.Business.Repositories;
 using CRM.Core.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace CRM.Infra.Data.Repositories;
 
-public class EventRepository : IEventRepository
+public class EventRepository : BaseRepository<Event>, IEventRepository
 {
-    private readonly IApplicationDbContext _context;
-
-    private DbSet<Event> _events => _context.Events;
-    private IQueryable<Event> Included => 
-        _events
-        .Include(e => e.Creator)
-        .Include(e => e.Prospect).ThenInclude(p => p.Product)
-        .Include(e => e.Prospect).ThenInclude(p => p.Company).ThenInclude(c => c.Creator)
-        .Include(e => e.Prospect).ThenInclude(p => p.Agent)
-        .Include(e => e.Prospect).ThenInclude(p => p.Creator)
-        .Include(e => e.Contact).ThenInclude(c => c.Company)
-        .Include(e => e.Creator)
-        .Include(e => e.Owner);
-
-    private IQueryable<Event> Simple =>
-        _events
-        .Include(e => e.Creator)
-        .Include(e => e.Prospect).ThenInclude(p => p.Product)
-        .Include(e => e.Prospect).ThenInclude(p => p.Company)
-        .Include(e => e.Prospect).ThenInclude(p => p.Agent)
-        .Include(e => e.Prospect).ThenInclude(p => p.Creator)
-        .Include(e => e.Contact)
-        .Include(e => e.Creator)
-        .Include(e => e.Owner);
-
-    public EventRepository(IApplicationDbContext context)
+    public EventRepository(ApplicationDbContext dbContext) : base(dbContext)
     {
-        _context = context;
     }
 
-    public async Task AddAsync(Event e)
+    public async Task<Event?> GetEventWithHeadAndContactByIdAsync(Guid id)
     {
-        _events.Add(e);
-        await _context.SaveChangesAsync();
-        _events.Attach(e);
+        return await Set
+            .Include(x => x.Prospect)
+            .Include(x => x.Contact)
+            .Include(x => x.Owner)
+            .FirstOrDefaultAsync(x => x.Id == id);
     }
 
-    public async Task<ICollection<Event>> GetAsync() =>
-        await Simple.ToListAsync();
-
-    public async Task<ICollection<Event>> GetByUserAsync(string userName) => 
-        await Simple
-        .Where(e => e.Owner.UserName == userName || (e.Creator != null && e.Creator.UserName == userName))
-        .ToListAsync();
-
-    public async Task<Event?> GetAsync(Guid id, string userName) =>
-        await Included
-        .FirstOrDefaultAsync(e => (e.Owner.UserName == userName || (e.Creator != null && e.Creator.UserName == userName)) && e.Id == id);
-
-    public async Task<Event?> GetAsync(Guid id) => 
-        await Included.FirstOrDefaultAsync(e => e.Id == id);
-
-    public async Task UpdateAsync(Event e)
+    public async Task<ICollection<Event>> GetEventsByOwnerAsync(Guid? ownerId, CancellationToken cancellationToken)
     {
-        _events.Update(e);
-        await _context.SaveChangesAsync();
-
-    }
-
-    public async Task DeleteAsync(Event e)
-    {
-        _events.Remove(e);
-        await _context.SaveChangesAsync();
+        return await Set
+            .Include(x => x.Prospect)
+            .Include(x => x.Contact)
+            .Include(x => x.Owner)
+            .Where(x => x.OwnerId == ownerId)
+            .ToListAsync(cancellationToken);
     }
 }

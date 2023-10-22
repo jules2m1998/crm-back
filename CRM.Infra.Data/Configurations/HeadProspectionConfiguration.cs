@@ -13,6 +13,6 @@ public class HeadProspectionConfiguration : IEntityTypeConfiguration<HeadProspec
 {
     public void Configure(EntityTypeBuilder<HeadProspection> builder)
     {
-        builder.HasIndex(x => new { x.AgentId, x.ProductId, x.CompanyId }).IsUnique();
+        builder.HasKey(x => new { x.AgentId, x.ProductId, x.CompanyId });
     }
 }

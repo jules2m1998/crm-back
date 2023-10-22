@@ -3,6 +3,7 @@ using CRM.Core.Business.Authentication;
 using CRM.Core.Business.Helpers;
 using CRM.Core.Business.Repositories;
 using CRM.Core.Business.Services;
+using CRM.Core.Domain;
 using CRM.Core.Domain.Entities;
 using CRM.Infra.Data;
 using CRM.Infra.Data.Helpers;
@@ -124,6 +125,7 @@ public static class ConfigureServiceCollection
     public async static Task<WebApplication> ManageApp(this WebApplication @this)
     {
         using var scope = @this.Services.CreateScope();
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
         try
         {
             var context = scope.ServiceProvider.GetService<ApplicationDbContext>();
@@ -135,8 +137,25 @@ public static class ConfigureServiceCollection
         }
         catch (Exception ex)
         {
-            var logger = scope.ServiceProvider.GetRequiredService<ILogger>();
             logger.LogError(ex, "An error occurred while migrating the database.");
+        }
+
+        try
+        {
+            //var userRepo = scope.ServiceProvider.GetRequiredService<IUserRepository>();
+            //var user = new User
+            //{
+            //    UserName = "admin",
+            //    Email = "admin@admin.com",
+            //    FirstName = "admin",
+            //    LastName = "admin",
+            //    PhoneNumber = "690981056"
+            //};
+            //_ = await userRepo.AddAsync(user, "12345678", Roles.ADMIN);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "An error occurred while creating default user.");
         }
         return @this;
     }
