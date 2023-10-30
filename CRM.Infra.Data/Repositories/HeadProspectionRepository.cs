@@ -63,4 +63,8 @@ public class HeadProspectionRepository : IHeadProspectionRepository
         await dbContext.SaveChangesAsync(cancellationToken);
     }
 
+    public async Task<ICollection<HeadProspection>> GetByAgentIdAsync(Guid agentId, CancellationToken cancellationToken)
+    {
+        return await Included.Include(x => x.Agent).Where(x => x.Agent.Id == agentId).ToListAsync(cancellationToken);
+    }
 }
