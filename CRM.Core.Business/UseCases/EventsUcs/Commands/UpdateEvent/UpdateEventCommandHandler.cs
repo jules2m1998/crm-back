@@ -49,8 +49,11 @@ public class UpdateEventCommandHandler : IRequestHandler<UpdateEventCommand, Upd
             Message = "This event doesn't exist."
         };
         _mapper.Map(request, @event, typeof(UpdateEventCommand), typeof(Event));
-        var contacts = await _contactRepo.GetContactByUserAsync(request.ContactIds, _httpContextService.GetConnectedUserName() ?? string.Empty);
-        @event.Contact = contacts;
+        if (request.ContactIds.Any())
+        {
+            var contacts = await _contactRepo.GetContactByUserAsync(request.ContactIds, _httpContextService.GetConnectedUserName() ?? string.Empty);
+            @event.Contact = contacts;
+        }
         try
         {
             await _eventRepository.UpdateAsync(@event);
@@ -61,7 +64,8 @@ public class UpdateEventCommandHandler : IRequestHandler<UpdateEventCommand, Upd
                 Message = "Event successfully updated.",
                 Data = _mapper.Map<UpdateEventCommandDto>(newEvent)
             };
-        }catch (Exception ex)
+        }
+        catch (Exception ex)
         {
             _logger.LogError(ex, ex.Message, @event);
             return new UpdateEventCommandResponse
