@@ -134,5 +134,28 @@ namespace CRM.App.API.Controllers
             var result = await sender.Send(command);
             return Ok(result);
         }
+
+        [HttpGet]
+        [Route("{agentId:Guid}")]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> GetByAgentId([FromRoute] Guid agentId)
+        {
+            var query = new GetHeadProspectionByAgent.Query(agentId);
+            try
+            {
+                var result = await sender.Send(query);
+                return Ok(result);
+            }
+            catch (NotFoundEntityException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
+            }
+        }
     }
 }
