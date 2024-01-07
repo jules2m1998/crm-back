@@ -4,6 +4,7 @@ using CRM.Infra.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CRM.App.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231226103244_AddOnDeletePolicyToStageResponse")]
+    partial class AddOnDeletePolicyToStageResponse
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -61,7 +64,7 @@ namespace CRM.App.API.Migrations
 
                     b.HasIndex("ResponseId");
 
-                    b.ToTable("Commits", (string)null);
+                    b.ToTable("Commits");
                 });
 
             modelBuilder.Entity("CRM.Core.Domain.Entities.Company", b =>
@@ -131,7 +134,7 @@ namespace CRM.App.API.Migrations
 
                     b.HasIndex("CreatorId");
 
-                    b.ToTable("Companies", (string)null);
+                    b.ToTable("Companies");
                 });
 
             modelBuilder.Entity("CRM.Core.Domain.Entities.Contact", b =>
@@ -182,7 +185,7 @@ namespace CRM.App.API.Migrations
                     b.HasIndex("Name", "CompanyId")
                         .IsUnique();
 
-                    b.ToTable("Contacts", (string)null);
+                    b.ToTable("Contacts");
                 });
 
             modelBuilder.Entity("CRM.Core.Domain.Entities.Contract", b =>
@@ -210,7 +213,7 @@ namespace CRM.App.API.Migrations
 
                     b.HasIndex("CreatorId");
 
-                    b.ToTable("Contracts", (string)null);
+                    b.ToTable("Contracts");
                 });
 
             modelBuilder.Entity("CRM.Core.Domain.Entities.Email", b =>
@@ -249,7 +252,7 @@ namespace CRM.App.API.Migrations
 
                     b.HasIndex("EventId");
 
-                    b.ToTable("Emails", (string)null);
+                    b.ToTable("Emails");
                 });
 
             modelBuilder.Entity("CRM.Core.Domain.Entities.Event", b =>
@@ -311,7 +314,7 @@ namespace CRM.App.API.Migrations
 
                     b.HasIndex("AgentId", "ProductId", "CompanyId");
 
-                    b.ToTable("Events", (string)null);
+                    b.ToTable("Events");
                 });
 
             modelBuilder.Entity("CRM.Core.Domain.Entities.HeadProspection", b =>
@@ -353,7 +356,7 @@ namespace CRM.App.API.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("HeadProspections", (string)null);
+                    b.ToTable("HeadProspections");
                 });
 
             modelBuilder.Entity("CRM.Core.Domain.Entities.PhoneNumber", b =>
@@ -371,7 +374,7 @@ namespace CRM.App.API.Migrations
 
                     b.HasIndex("ContactId");
 
-                    b.ToTable("PhoneNumbers", (string)null);
+                    b.ToTable("PhoneNumbers");
                 });
 
             modelBuilder.Entity("CRM.Core.Domain.Entities.Product", b =>
@@ -411,7 +414,7 @@ namespace CRM.App.API.Migrations
 
                     b.HasIndex("CreatorId");
 
-                    b.ToTable("Products", (string)null);
+                    b.ToTable("Products");
                 });
 
             modelBuilder.Entity("CRM.Core.Domain.Entities.ProductStage", b =>
@@ -455,7 +458,7 @@ namespace CRM.App.API.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductStages", (string)null);
+                    b.ToTable("ProductStages");
                 });
 
             modelBuilder.Entity("CRM.Core.Domain.Entities.Prospect", b =>
@@ -492,7 +495,7 @@ namespace CRM.App.API.Migrations
 
                     b.HasIndex("CreatorId");
 
-                    b.ToTable("Prospects", (string)null);
+                    b.ToTable("Prospects");
                 });
 
             modelBuilder.Entity("CRM.Core.Domain.Entities.Role", b =>
@@ -579,7 +582,7 @@ namespace CRM.App.API.Migrations
 
                     b.HasIndex("StudentId");
 
-                    b.ToTable("Skills", (string)null);
+                    b.ToTable("Skills");
                 });
 
             modelBuilder.Entity("CRM.Core.Domain.Entities.StageResponse", b =>
@@ -621,7 +624,7 @@ namespace CRM.App.API.Migrations
 
                     b.HasIndex("StageId");
 
-                    b.ToTable("StageResponses", (string)null);
+                    b.ToTable("StageResponses");
                 });
 
             modelBuilder.Entity("CRM.Core.Domain.Entities.SupervisionHistory", b =>
@@ -642,7 +645,7 @@ namespace CRM.App.API.Migrations
 
                     b.HasIndex("SupervisorId");
 
-                    b.ToTable("SupervisionHistories", (string)null);
+                    b.ToTable("SupervisionHistories");
                 });
 
             modelBuilder.Entity("CRM.Core.Domain.Entities.User", b =>
@@ -767,7 +770,7 @@ namespace CRM.App.API.Migrations
 
                     b.HasIndex("EventsId");
 
-                    b.ToTable("ContactEvent", (string)null);
+                    b.ToTable("ContactEvent");
                 });
 
             modelBuilder.Entity("ContactUser", b =>
@@ -782,7 +785,7 @@ namespace CRM.App.API.Migrations
 
                     b.HasIndex("SharedToId");
 
-                    b.ToTable("ContactUser", (string)null);
+                    b.ToTable("ContactUser");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>

@@ -13,6 +13,8 @@ namespace CRM.Infra.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<Commit> builder)
         {
+            builder.HasOne(x => x.Response).WithMany().OnDelete(DeleteBehavior.ClientCascade);
+            builder.HasOne(x => x.Parent).WithMany().OnDelete(DeleteBehavior.ClientCascade);
         }
     }
 }

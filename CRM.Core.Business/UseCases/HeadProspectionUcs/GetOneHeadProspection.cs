@@ -20,9 +20,9 @@ public static class GetOneHeadProspection
     {
         private readonly IMapper mapper;
         private readonly IHeadProspectionRepository repo;
-        private readonly IAsyncRepository<Commit> _commit;
+        private readonly IAsyncCommitRepository _commit;
 
-        public Handler(IMapper mapper, IHeadProspectionRepository repo, IAsyncRepository<Commit> commit)
+        public Handler(IMapper mapper, IHeadProspectionRepository repo, IAsyncCommitRepository commit)
         {
             this.mapper = mapper;
             this.repo = repo;

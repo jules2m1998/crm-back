@@ -11,10 +11,12 @@ public class StageResponseConfiguration : IEntityTypeConfiguration<StageResponse
         builder
             .HasOne(x => x.Stage)
             .WithMany(x => x.Responses)
-            .HasForeignKey(x => x.StageId);
+            .HasForeignKey(x => x.StageId)
+            .OnDelete(DeleteBehavior.ClientSetNull);
         builder
             .HasOne(x => x.NextStage)
             .WithMany()
-            .HasForeignKey(x => x.NextStageId);
+            .HasForeignKey(x => x.NextStageId)
+            .OnDelete(DeleteBehavior.ClientSetNull);
     }
 }

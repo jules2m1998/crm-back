@@ -19,18 +19,22 @@ public class StageRepository : BaseRepository<ProductStage>, IStageRepository
 
     public async Task DeleteStageAsync(Guid stageId)
     {
-        using var transaction = _dbContext.Database.BeginTransaction();
-        try
-        {
-            var stage = await Set.Where(x => x.Id.Equals(stageId)).FirstOrDefaultAsync();
-            if (stage == null) return;
-            Set.Remove(stage);
-            await _dbContext.SaveChangesAsync();
-            await transaction.CommitAsync();
-        }
-        catch
-        {
-            await transaction.RollbackAsync();
-        }
+        var stage = await Set.Where(x => x.Id.Equals(stageId)).FirstOrDefaultAsync();
+        if (stage == null) return;
+        stage.DeletedAt = DateTime.Now;
+        Set.Update(stage);
+        await _dbContext.SaveChangesAsync();
+    }
+
+    public override async Task<IReadOnlyList<ProductStage>> GetAllAsync()
+    {
+        return await Set
+            .Where(x => x.DeletedAt != null)
+            .ToListAsync();
+    }
+
+    public override async Task<ProductStage?> GetByIdAsync(Guid id)
+    {
+        return await Set.FirstOrDefaultAsync(x => x.DeletedAt != null && x.Id == id);
     }
 }

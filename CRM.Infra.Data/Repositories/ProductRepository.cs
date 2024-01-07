@@ -17,7 +17,10 @@ public class ProductRepository : IProductRepository
     private readonly IApplicationDbContext _dbContext;
     private readonly DbSet<Product> _products;
 
-    private IQueryable<Product> _includeCreator => _products.Include(p => p.Creator).Include(x => x.Stages).Where(p => p.DeletedAt == null);
+    private IQueryable<Product> _includeCreator => _products
+        .Include(p => p.Creator)
+        .Include(x => x.Stages)
+        .Where(p => p.DeletedAt == null);
 
     public ProductRepository(IApplicationDbContext dbContext)
     {
@@ -35,7 +38,9 @@ public class ProductRepository : IProductRepository
 
     public async Task<ICollection<Product>> GetAllAsync()
     {
-        return await _includeCreator
+        return await _products
+            .Include(p => p.Creator)
+            .Include(x => x.Stages.Where(x => x.DeletedAt != null))
             .ToListAsync();
     }
 

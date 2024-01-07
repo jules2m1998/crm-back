@@ -41,6 +41,7 @@ public static class InfraServiceRegistration // ServiceCollectionRegistration
         @this.AddScoped<IResponseRepository, ResponseRepository>();
         @this.AddScoped<IStageRepository, StageRepository>();
         @this.AddScoped<IEventRepository, EventRepository>();
+        @this.AddScoped<IAsyncCommitRepository, AsyncCommitRepository>();
 
         return @this;
     }

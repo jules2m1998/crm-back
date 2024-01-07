@@ -1,12 +1,6 @@
-﻿using CRM.Core.Business.Models;
-using CRM.Core.Business.Repositories;
+﻿using CRM.Core.Business.Repositories;
 using CRM.Core.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CRM.Infra.Data.Repositories;
 
@@ -28,10 +22,12 @@ public class ProductStageRepository : IProductStageRepository
     }
 
     public async Task<ICollection<ProductStage>> GetAllAsync() =>
-        await Table.ToListAsync();
+        await Table.Where(x => x.DeletedAt == null).ToListAsync();
 
     public async Task<ProductStage?> GetOneAsync(Guid id) => 
-        await Table.FirstOrDefaultAsync(t => t.Id == id);
+        await Table
+        .Where(x => x.DeletedAt == null)
+        .FirstOrDefaultAsync(t => t.Id == id);
 
     public async Task UpdateAsync(ProductStage productStage)
     {
@@ -42,7 +38,10 @@ public class ProductStageRepository : IProductStageRepository
 
     public async Task DeleteAsync(ProductStage item)
     {
-        var data = await _context.Products.FirstOrDefaultAsync();
+        var data = await _context
+            .Products
+            .Where(x => x.DeletedAt == null)
+            .FirstOrDefaultAsync();
         if (data == null) return;
         await _context.SaveChangesAsync();
         Table.Remove(item);
@@ -57,8 +56,15 @@ public class ProductStageRepository : IProductStageRepository
     }
 
     public async Task<IEnumerable<ProductStage>> GetByProductAsync(Guid productId) => 
-        await Table.Include(x => x.Responses).Where(x => x.ProductId == productId).ToListAsync();
+        await Table
+        .Include(x => x.Responses)
+        .Where(x => x.ProductId == productId && x.DeletedAt == null)
+        .ToListAsync();
 
     public async Task<ProductStage?> GetFirstByProductAsync(Guid productId, CancellationToken cancellationToken) =>
-        await Table.Include(x => x.Responses).Where(x => x.ProductId == productId).OrderBy(x => x.StageLevel).FirstOrDefaultAsync(cancellationToken);
+        await Table
+        .Include(x => x.Responses)
+        .Where(x => x.ProductId == productId && x.DeletedAt == null)
+        .OrderBy(x => x.StageLevel)
+        .FirstOrDefaultAsync(cancellationToken);
 }
